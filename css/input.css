@@ -1,0 +1,142 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@700&display=swap');
+
+/* ==========================================================================
+   THEME VARIABLES — 1:1 with Constellation CRM (light default, dark toggle)
+   ========================================================================== */
+:root {
+    --bg-dark: #f1f5f9;
+    --bg-medium: #f8fafc;
+    --bg-light: #ffffff;
+    --text-light: #333333;
+    --text-medium: #6b7280;
+    --text-muted: #9ca3af;
+    --primary-blue: #3b82f6;
+    --danger-red: #ef4444;
+    --secondary-gray: #6b7280;
+    --border-color: #e2e8f0;
+    --completed-color: #22c55e;
+    --warning-yellow: #f59e0b;
+    --meeting-purple: #8b5cf6;
+    --gradient-start: #f8f9fa;
+    --gradient-end: #e9ecef;
+    --shadow-light: rgba(0, 0, 0, 0.03);
+    --shadow-medium: rgba(0, 0, 0, 0.06);
+    --shadow-strong: rgba(0, 0, 0, 0.08);
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.04);
+    --font-main: 'Inter', sans-serif;
+    --logo-primary-color: var(--primary-blue);
+    --logo-secondary-color: #ffffff;
+    --success-color: #28a745;
+    --error-color: #dc3545;
+    --input-bg: #ffffff;
+    --input-border: #e2e8f0;
+    --input-focus-border: #93c5fd;
+    --proposal-accent: #DE5A24;
+    --proposal-dark: #12243D;
+}
+
+body.theme-dark {
+    --bg-dark: #0f172a;
+    --bg-medium: #1e293b;
+    --bg-light: #334155;
+    --text-light: #f1f5f9;
+    --text-medium: #cbd5e1;
+    --text-muted: #94a3b8;
+    --primary-blue: #60a5fa;
+    --danger-red: #f87171;
+    --secondary-gray: #64748b;
+    --border-color: #475569;
+    --gradient-start: #0f172a;
+    --gradient-end: #1e293b;
+    --shadow-light: rgba(0, 0, 0, 0.2);
+    --shadow-medium: rgba(0, 0, 0, 0.3);
+    --shadow-strong: rgba(0, 0, 0, 0.4);
+    --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 10px 20px -5px rgba(0, 0, 0, 0.15);
+    --input-bg: #1e293b;
+    --input-border: #475569;
+    --input-focus-border: #60a5fa;
+}
+
+/* ==========================================================================
+   BASE
+   ========================================================================== */
+@layer base {
+    html {
+        font-size: 87.5%;
+        height: 100%;
+    }
+    body {
+        margin: 0;
+        min-height: 100%;
+        font-family: var(--font-main);
+        background-color: var(--bg-dark);
+        color: var(--text-light);
+        transition: background-color 0.3s, color 0.3s;
+    }
+}
+
+/* ==========================================================================
+   COMPONENTS — Section cards & buttons (1:1 with CRM)
+   ========================================================================== */
+@layer components {
+    .section-card {
+        @apply rounded-2xl overflow-hidden mb-6;
+        background-color: var(--bg-light);
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-card);
+        transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+    }
+    .section-card-header {
+        @apply px-5 pt-5 pb-2;
+    }
+    .section-title {
+        @apply text-lg font-semibold m-0;
+        color: var(--text-light);
+    }
+    .subsection-title {
+        @apply text-sm font-semibold mt-4 mb-2;
+        color: var(--text-light);
+    }
+
+    .btn-primary,
+    .btn-secondary,
+    .btn-tertiary {
+        @apply inline-flex items-center justify-center min-h-[34px] min-w-[34px] p-2 px-3 text-sm font-semibold cursor-pointer no-underline box-border rounded-lg;
+        border: none;
+        transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s, background-color 0.3s;
+    }
+    .btn-primary,
+    .btn-secondary {
+        color: white;
+    }
+    .btn-primary {
+        background-color: var(--primary-blue);
+        box-shadow: 0 1px 3px var(--shadow-light);
+    }
+    .btn-secondary {
+        background-color: var(--secondary-gray);
+        box-shadow: 0 1px 3px var(--shadow-medium);
+    }
+    .btn-tertiary {
+        background-color: transparent;
+        border: 1px solid var(--border-color);
+        color: var(--text-medium);
+    }
+    .btn-primary:hover,
+    .btn-secondary:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px -1px var(--shadow-medium);
+    }
+    .btn-primary:active,
+    .btn-secondary:active {
+        transform: translateY(0);
+        box-shadow: 0 1px 3px var(--shadow-light);
+    }
+    .btn-tertiary:hover {
+        background-color: var(--bg-light);
+        color: var(--text-light);
+        border-color: var(--primary-blue);
+    }
+}
