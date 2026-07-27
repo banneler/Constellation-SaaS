@@ -999,8 +999,8 @@
     --tw-border-style: dashed;
     border-style: dashed;
   }
-  .border-\[\#DE5A24\] {
-    border-color: #DE5A24;
+  .border-\[\#3880ee\] {
+    border-color: #3880ee;
   }
   .border-\[var\(--border-color\)\] {
     border-color: var(--border-color);
@@ -1016,9 +1016,6 @@
     @supports (color: color-mix(in lab, red, red)) {
       border-color: color-mix(in oklab, var(--color-blue-500) 30%, transparent);
     }
-  }
-  .border-orange-500 {
-    border-color: var(--color-orange-500);
   }
   .border-slate-100 {
     border-color: var(--color-slate-100);
@@ -1050,8 +1047,8 @@
   .border-l-blue-400 {
     border-left-color: var(--color-blue-400);
   }
-  .border-l-orange-500 {
-    border-left-color: var(--color-orange-500);
+  .border-l-blue-500 {
+    border-left-color: var(--color-blue-500);
   }
   .bg-\[\#525659\] {
     background-color: #525659;
@@ -1470,12 +1467,6 @@
   .text-blue-600 {
     color: var(--color-blue-600);
   }
-  .text-orange-600 {
-    color: var(--color-orange-600);
-  }
-  .text-red-600 {
-    color: var(--color-red-600);
-  }
   .text-slate-50 {
     color: var(--color-slate-50);
   }
@@ -1658,10 +1649,10 @@
       }
     }
   }
-  .group-hover\:text-orange-600 {
+  .group-hover\:text-blue-600 {
     &:is(:where(.group):hover *) {
       @media (hover: hover) {
-        color: var(--color-orange-600);
+        color: var(--color-blue-600);
       }
     }
   }
@@ -1718,17 +1709,10 @@
       }
     }
   }
-  .hover\:border-orange-400 {
+  .hover\:border-blue-500 {
     &:hover {
       @media (hover: hover) {
-        border-color: var(--color-orange-400);
-      }
-    }
-  }
-  .hover\:border-orange-500 {
-    &:hover {
-      @media (hover: hover) {
-        border-color: var(--color-orange-500);
+        border-color: var(--color-blue-500);
       }
     }
   }
@@ -1767,27 +1751,20 @@
       }
     }
   }
+  .hover\:bg-blue-50\/80 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: color-mix(in srgb, oklch(97% 0.014 254.604) 80%, transparent);
+        @supports (color: color-mix(in lab, red, red)) {
+          background-color: color-mix(in oklab, var(--color-blue-50) 80%, transparent);
+        }
+      }
+    }
+  }
   .hover\:bg-blue-700 {
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-blue-700);
-      }
-    }
-  }
-  .hover\:bg-orange-50 {
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-orange-50);
-      }
-    }
-  }
-  .hover\:bg-orange-50\/80 {
-    &:hover {
-      @media (hover: hover) {
-        background-color: color-mix(in srgb, oklch(98% 0.016 73.684) 80%, transparent);
-        @supports (color: color-mix(in lab, red, red)) {
-          background-color: color-mix(in oklab, var(--color-orange-50) 80%, transparent);
-        }
       }
     }
   }
@@ -1920,11 +1897,6 @@
   .focus\:border-blue-500 {
     &:focus {
       border-color: var(--color-blue-500);
-    }
-  }
-  .focus\:border-orange-500 {
-    &:focus {
-      border-color: var(--color-orange-500);
     }
   }
   .focus\:bg-slate-50 {

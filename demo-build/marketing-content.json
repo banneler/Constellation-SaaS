@@ -1,38 +1,44 @@
 {
   "coverSnippets": [
     {
-      "label": "Constellation partnership",
-      "text": "Constellation is designed for enterprise teams that need network decisions to move with account strategy. Our team aligns technical design, commercial planning, and implementation execution around the business outcomes that matter most to {BIZ}."
+      "label": "Strategic account partnership",
+      "text": "Constellation gives {BIZ} one operating system for enterprise revenue work: account strategy, executive coverage, AI signal intelligence, coordinated outreach, proposal generation, and investment review in a single CRM-native motion."
     },
     {
-      "label": "Strategic operating model",
-      "text": "This proposal brings together the operating model, technology roadmap, and financial plan required to support {BIZ} with resilient, scalable connectivity across critical locations."
+      "label": "Why Constellation",
+      "text": "Most CRMs record activity after the fact. Constellation helps strategic account teams decide what to do next, why it matters, who owns it, and how it advances the account plan before the opportunity stalls."
     },
     {
-      "label": "Reliability and execution",
-      "text": "From discovery through deployment, Constellation emphasizes clear success criteria, visible milestones, and proactive communication so every stakeholder understands the path from proposal to production."
+      "label": "Demo-friendly implementation",
+      "text": "The recommended rollout starts with a focused enterprise pilot: activate the Command Center, import target accounts, configure Cognito signals, launch priority Campaigns and Sequences, and publish proposal and IRR workflows for the revenue team."
     }
   ],
   "customPageSnippets": [
     {
-      "label": "Network modernization thesis",
-      "text": "The strongest enterprise network programs connect technical resilience to business continuity, customer experience, and operating leverage. Constellation helps teams make those links explicit so every investment has a measurable role in the broader account plan."
+      "label": "Enterprise CRM thesis",
+      "text": "Constellation turns CRM from a passive database into an enterprise selling cockpit. Account plans, relationship maps, deal strategy, next steps, proposal assets, and executive signals live together so leadership can see where attention is creating pipeline."
     },
     {
-      "label": "Implementation approach",
-      "text": "The recommended approach phases design, site readiness, carrier coordination, testing, and acceptance into a transparent operating plan. This reduces surprises while giving executive and technical teams a shared view of progress."
+      "label": "Command Center rollout",
+      "text": "The Command Center gives sales leaders a live view of account health, priority pursuits, stuck opportunities, campaign execution, and proposal readiness. It is designed to make the next best action obvious without asking teams to leave their workflow."
     },
     {
-      "label": "Why now",
-      "text": "Expansion, digital operations, and growing dependency on cloud applications create a narrow window to improve reliability before complexity compounds. Acting now helps the organization reduce risk while preserving rollout flexibility."
+      "label": "Cognito signal motion",
+      "text": "Cognito scans account, contact, and market context for timely expansion triggers. Those signals feed campaigns, sequences, account plans, and proposal narratives so reps can act on executive-relevant moments while the window is still open."
+    },
+    {
+      "label": "Proposal Studio",
+      "text": "Constellation Proposal Studio connects account strategy to polished customer-facing assets. Teams can assemble a multi-page proposal, reuse approved messaging, pull structured pricing, and include ROI or IRR context without rebuilding the story from scratch."
     }
   ],
   "productSuggestions": [
-    "Dedicated Internet Access",
-    "Managed SD-WAN",
-    "Cloud Connect",
-    "Managed Router",
-    "Ethernet",
-    "Voice"
+    "Strategic Account OS",
+    "Enterprise CRM Workspace",
+    "Command Center",
+    "Cognito Signal Intelligence",
+    "Campaigns & Sequences",
+    "Proposal Studio",
+    "IRR & Business Case",
+    "Implementation Enablement"
   ]
 }

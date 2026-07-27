@@ -103,8 +103,8 @@
   ];
 
   const deals = [
-    { id: 3001, user_id: userId, account_id: 1001, name: 'Caesars Multi-Property Fiber Expansion', stage: 'Proposal', term: 60, mrc: 42800, close_month: monthFromToday(60), products: 'DIA, Managed SD-WAN, Cloud Connect', notes: 'Executive business case pending finance review.', is_committed: true, notes_last_updated: now },
-    { id: 3002, user_id: userId, account_id: 1002, name: 'Stark Logistics SD-WAN Refresh', stage: 'Negotiation', term: 60, mrc: 34400, close_month: monthFromToday(15), products: 'DIA, SD-WAN, Managed Router', notes: 'Waiting on redline feedback from procurement.', is_committed: true, notes_last_updated: now },
+    { id: 3001, user_id: userId, account_id: 1001, name: 'Caesars Multi-Property Fiber Expansion', stage: 'Proposal', term: 60, mrc: 42800, close_month: monthFromToday(0), products: 'DIA, Managed SD-WAN, Cloud Connect', notes: 'Executive business case pending finance review.', is_committed: true, notes_last_updated: now },
+    { id: 3002, user_id: userId, account_id: 1002, name: 'Stark Logistics SD-WAN Refresh', stage: 'Negotiation', term: 60, mrc: 34400, close_month: monthFromToday(0), products: 'DIA, SD-WAN, Managed Router', notes: 'Waiting on redline feedback from procurement.', is_committed: true, notes_last_updated: now },
     { id: 3003, user_id: userId, account_id: 1001, name: 'Caesars Regional Resiliency Upgrade', stage: 'Discovery', term: 48, mrc: 18600, close_month: monthFromToday(90), products: 'DIA, Ethernet, Voice', notes: 'Technical discovery scheduled.', is_committed: false, notes_last_updated: now }
   ];
 
@@ -209,62 +209,87 @@
     {
       id: 'proposal-1002',
       account_id: 1002,
-      name: 'Stark Logistics SD-WAN Refresh Proposal',
+      name: 'Constellation Strategic Account OS Proposal',
       updated_at: now,
       spec: {
-        globalRfp: 'STARK-WAN-2026',
+        globalRfp: 'SAOS-ENTERPRISE-PILOT',
         globalBiz: 'Stark Logistics',
         globalRep: 'Alex Rivera',
         globalDate: dateOnlyFromToday(0),
-        coverText: 'Thank you for the opportunity to support Stark Logistics with a resilient, scalable SD-WAN refresh.',
+        coverText: 'Thank you for the opportunity to evaluate Constellation as the Strategic Account Operating System for Stark Logistics.\n\nConstellation is built for enterprise revenue teams that need more than CRM record keeping. It brings account planning, relationship intelligence, Cognito signals, campaigns, sequences, proposal generation, and investment review into one guided workflow so leaders can see where strategic attention is creating pipeline.\n\nFor this pilot, we recommend activating a focused set of high-value accounts, enabling the Command Center for leadership visibility, configuring signal-driven plays through Cognito, and using Proposal Studio and IRR workflows to connect account strategy to customer-facing assets and business cases.\n\nThe result is a cleaner operating rhythm for enterprise selling: fewer disconnected spreadsheets, faster follow-up on market signals, stronger executive alignment, and a proposal motion that reflects the full account strategy.',
         customPages: {
           '0': {
-            title: 'Network Modernization Thesis',
-            body: 'Stark Logistics is expanding operational capacity while increasing dependency on real-time network performance. The proposed Constellation design reduces provider complexity, improves resiliency across distribution sites, and gives leadership a phased path from today’s WAN environment to a more predictable operating model.'
+            title: 'Enterprise CRM, Rebuilt for Strategic Accounts',
+            body: 'Constellation turns CRM from a passive system of record into an active operating system for enterprise revenue teams.\n\nThe platform gives account executives, sales leaders, sales engineering, and executive sponsors a shared workspace for pursuit strategy, relationship mapping, opportunity movement, and customer-ready proposal assets. Instead of chasing context across call notes, spreadsheets, decks, and disconnected AI tools, teams work from one account command surface.\n\nThe goal for Stark Logistics is simple: make strategic selling visible, repeatable, and measurable.'
+          },
+          '1': {
+            title: 'Command Center',
+            body: 'The Command Center gives leadership a live view of the accounts and pursuits that need attention.\n\n- Account health, stage movement, committed revenue, and priority tasks are visible in one place.\n- Reps can see what changed, what is due, and where executive support is needed.\n- Managers can coach from real account context instead of relying on stale forecast notes.\n- Strategic account plans become operating documents, not one-time planning exercises.\n\nFor the pilot, Command Center will focus on target-account visibility, opportunity movement, proposal readiness, and campaign execution.'
+          },
+          '2': {
+            title: 'Cognito, Campaigns, and Sequences',
+            body: 'Cognito surfaces timely account and market signals, then connects those signals to action.\n\nWhen expansion news, leadership change, buying committee movement, renewal timing, or strategic initiative signals appear, Constellation helps the team turn that context into account-plan updates, campaign audiences, sequence steps, and customer-ready messaging.\n\nCampaigns and Sequences give teams a structured way to coordinate outreach without losing the human judgment required for enterprise deals. The result is faster signal response, better personalization, and clearer accountability for every next step.'
+          },
+          '3': {
+            title: 'Proposal Studio',
+            body: 'Proposal Studio connects account strategy to polished customer-facing assets.\n\nTeams can assemble a multi-page proposal, reuse approved positioning, add custom executive narratives, import pricing, include references, and package ROI or impact analysis without rebuilding the story from scratch. The same workflow supports internal review and customer delivery.\n\nFor Stark Logistics, this means proposals can reflect the full strategic account plan: business priorities, stakeholder context, solution scope, commercial terms, and investment rationale.'
+          },
+          '4': {
+            title: 'Pilot Success Plan',
+            body: 'Recommended pilot scope:\n\n- Activate a focused set of enterprise accounts and contacts.\n- Configure Command Center views for sales leadership and account owners.\n- Enable Cognito signals for expansion triggers, executive movement, and account-risk moments.\n- Launch two coordinated Campaigns or Sequences tied to priority account plays.\n- Build customer-ready proposal assets through Proposal Studio.\n- Review IRR or business-case workflows for opportunities that require investment approval.\n\nSuccess will be measured by account-plan adoption, signal-to-action speed, campaign follow-through, proposal cycle time, and leadership visibility into strategic pipeline movement.'
           }
         },
-        impactCurrentState: 'Fragmented WAN providers, inconsistent site resiliency, and limited visibility across new cold-chain facilities.',
-        impactProposedState: 'A standardized managed network architecture with SD-WAN, dedicated internet access, and phased site deployment governance.',
-        impactCurrentCost: '42000',
-        impactProposedCost: '34400',
+        impactCurrentState: 'Strategic account work is split across CRM records, spreadsheets, slide decks, ad hoc AI prompts, and manual proposal assembly. Leaders have limited visibility into whether account strategy is turning into coordinated action.',
+        impactProposedState: 'Constellation centralizes strategic account planning, Command Center visibility, Cognito signals, coordinated Campaigns and Sequences, Proposal Studio, and IRR workflows in one enterprise selling motion.',
+        impactCurrentCost: '58000',
+        impactProposedCost: '42000',
         enableLocationSubtotals: true,
         enableQuoteExpiration: true,
         quoteExpirationDays: '30',
         enableTaxesFeesExclusion: true,
         pricingOptions: [{
-          term: '60',
-          solutionId: 'DEMO-SQ-001',
+          term: '36',
+          solutionId: 'SAOS-PILOT-001',
           locations: [{
-            name: 'Chicago Distribution HQ',
-            promotions: [{ description: 'First month service credit', amount: '-11250' }],
+            name: 'Enterprise Revenue Team',
+            promotions: [{ description: 'Pilot launch credit', amount: '-7500' }],
             items: [
-              { prod: 'Dedicated Internet Access 1Gbps', price: '11250', qty: '1', nrcEnabled: true, nrcDescription: 'Installation', nrcAmount: '78000' },
-              { prod: 'Managed SD-WAN Edge', price: '1850', qty: '1', nrcEnabled: false, nrcDescription: '', nrcAmount: '' }
+              { prod: 'Strategic Account OS platform', price: '18000', qty: '1', nrcEnabled: true, nrcDescription: 'Implementation enablement', nrcAmount: '24000' },
+              { prod: 'Command Center leadership workspace', price: '6500', qty: '1', nrcEnabled: false, nrcDescription: '', nrcAmount: '' },
+              { prod: 'Cognito signal intelligence', price: '7200', qty: '1', nrcEnabled: false, nrcDescription: '', nrcAmount: '' },
+              { prod: 'Campaigns, Sequences, and Proposal Studio', price: '10300', qty: '1', nrcEnabled: false, nrcDescription: '', nrcAmount: '' }
             ]
           }]
         }],
         readiness: { rfpBiz: true, cover: true, pricing: true, ready: true },
         modules: [
           { filename: '01_Title_Page.pdf', checked: true },
-          { filename: 'COVER_LETTER', checked: true },
+          { filename: 'CUSTOM_COVER', checked: true },
           { filename: 'TOC', checked: true },
           { filename: '02_Why_GPC.pdf', checked: false },
-          { filename: 'DIA.pdf', checked: true },
-          { filename: '24_Hour_NOC.pdf', checked: true },
+          { filename: '05_DIA.pdf', checked: false },
+          { filename: '04_NOC_Monitoring.pdf', checked: false },
           { filename: 'CUSTOM_PDF', checked: false },
-          { filename: 'PRICING', checked: true },
+          { filename: 'CUSTOM_PRICING', checked: true },
           { filename: '03_About_GPC.pdf', checked: false },
           { filename: 'CUSTOM_TEXT', checked: true, customIndex: '0' },
-          { filename: 'REFERENCES', checked: false },
-          { filename: 'IMPACT_ROI', checked: true },
-          { filename: '04_Escalation.pdf', checked: false },
-          { filename: '05_Implementation.pdf', checked: true },
+          { filename: 'CUSTOM_TEXT', checked: true, customIndex: '1' },
+          { filename: 'CUSTOM_TEXT', checked: true, customIndex: '2' },
+          { filename: 'CUSTOM_TEXT', checked: true, customIndex: '3' },
+          { filename: 'CUSTOM_TEXT', checked: true, customIndex: '4' },
+          { filename: 'CUSTOM_REFERENCES', checked: true },
+          { filename: 'CUSTOM_IMPACT', checked: true },
+          { filename: '11_Escalation.pdf', checked: false },
+          { filename: '09_Project.pdf', checked: false },
           { filename: '08_SPIN.pdf', checked: false },
-          { filename: '07_SeniorLeadership.pdf', checked: false },
-          { filename: 'SIA.pdf', checked: false },
+          { filename: '10_Leadership.pdf', checked: false },
+          { filename: '06_SIA.pdf', checked: false },
           { filename: 'USAC_RFP', checked: false }
         ],
-        references: []
+        references: [
+          { name: 'Enterprise Sales Leadership', org: 'Constellation CRM', addr: 'Strategic Account OS customer reference', phone: 'Demo reference', email: 'success@constellation-crm.com' },
+          { name: 'Revenue Operations', org: 'Constellation CRM', addr: 'CRM workflow and implementation reference', phone: 'Demo reference', email: 'revops@constellation-crm.com' }
+        ]
       }
     }
   ];
@@ -305,6 +330,7 @@
   const lastNames = ['Stone', 'Rivera', 'Bennett', 'Cole', 'Hayes', 'Brooks', 'Reed', 'Sullivan', 'Bishop', 'Lane', 'Porter', 'Ellis', 'Morris'];
   const stages = ['Discovery', 'Qualification', 'Proposal', 'Negotiation'];
   const products = ['DIA, Managed SD-WAN', 'Ethernet, Cloud Connect', 'DIA, Voice', 'Managed Router, SD-WAN', 'Dark Fiber, Cloud Connect'];
+  const proposalProducts = ['Strategic Account OS', 'Command Center', 'Cognito Signal Intelligence', 'Campaigns & Sequences', 'Proposal Studio', 'IRR & Business Case'];
   const expansionAccountNamesById = new Map(expansionAccounts.map(([name], index) => [1010 + index, name]));
   const baseAccountNamesById = new Map(accounts.map(account => [account.id, account.name]));
   const baseContactAccountIds = new Map(contacts.map(contact => [contact.id, contact.account_id]));
@@ -313,6 +339,7 @@
   const activityContactTargets = [2010, 2002, 2012, 2010, 2014, 2014, 2016, 2018, 2018, 2019, 2003, 2021, 2001];
   const activityDateOffsets = [-2, -3, -4, -5, -6, -8, -10, -12, -13, -15, -18, -21, -25];
   const dealAccountTargets = [1010, 1001, 1012, 1013, 1002, 1010, 1016, 1018, 1018, 1019, 1001, 1021, 1012];
+  const dealCloseMonthOffsets = [0, 30, 60, 90, 0, 120, 30, 60, 0, 90, 30, 120, 0];
 
   function accountIdForContact(contactId) {
     if (baseContactAccountIds.has(contactId)) return baseContactAccountIds.get(contactId);
@@ -334,7 +361,7 @@
     const contactName = `${firstNames[index]} ${lastNames[index]}`;
     const mrc = 8200 + (index * 2750);
     const stage = stages[index % stages.length];
-    const closeMonth = monthFromToday(30 * ((index % 6) + 1));
+    const closeMonth = monthFromToday(dealCloseMonthOffsets[index] != null ? dealCloseMonthOffsets[index] : 30 * ((index % 6) + 1));
     const dealAccountId = dealAccountTargets[index] || accountId;
     const dealAccountName = accountNameForId(dealAccountId);
     const activityContactId = activityContactTargets[index] || contactId;
@@ -482,15 +509,21 @@
     proposal_specs.push({
       id: `proposal-${accountId}`,
       account_id: accountId,
-      name: `${name} Connectivity Proposal`,
+      name: `${name} Constellation SAOS Proposal`,
       updated_at: now,
       spec: {
-        globalRfp: `${safeDomain.toUpperCase().slice(0, 8)}-2026`,
+        globalRfp: `${safeDomain.toUpperCase().slice(0, 8)}-SAOS`,
         globalBiz: name,
         globalRep: 'Alex Rivera',
         globalDate: dateOnlyFromToday(0),
-        coverText: `Thank you for the opportunity to support ${name} with a more resilient network operating model.`,
-        pricingOptions: [{ term: '60', solutionId: `DEMO-${accountId}`, locations: [{ name: `${city} Primary Site`, promotions: [], items: [{ prod: products[index % products.length], price: String(mrc), qty: '1', nrcEnabled: true, nrcDescription: 'Implementation', nrcAmount: String(24000 + index * 3000) }] }] }],
+        coverText: `Thank you for the opportunity to evaluate Constellation as the Strategic Account Operating System for ${name}. This proposal outlines a focused enterprise CRM pilot spanning Command Center visibility, Cognito signal intelligence, coordinated Campaigns and Sequences, Proposal Studio, and business-case workflows.`,
+        customPages: {
+          '0': {
+            title: 'Constellation Pilot Overview',
+            body: `${name} can use Constellation to connect account strategy, timely signals, coordinated outreach, proposal generation, and investment review in one CRM-native operating rhythm.`
+          }
+        },
+        pricingOptions: [{ term: '36', solutionId: `SAOS-${accountId}`, locations: [{ name: `${city} Revenue Team`, promotions: [], items: [{ prod: proposalProducts[index % proposalProducts.length], price: String(mrc), qty: '1', nrcEnabled: true, nrcDescription: 'Implementation enablement', nrcAmount: String(18000 + index * 2500) }] }] }],
         readiness: { rfpBiz: true, cover: true, pricing: true, ready: true },
         references: []
       }
@@ -546,7 +579,7 @@
       activity_types: [{ id: 1, type_name: 'Call' }, { id: 2, type_name: 'Email' }, { id: 3, type_name: 'Meeting' }],
       email_log: [],
       personal_context: [],
-      product_knowledge: [{ product_name: 'Dedicated Internet Access' }, { product_name: 'Managed SD-WAN' }],
+      product_knowledge: [{ product_name: 'Strategic Account OS' }, { product_name: 'Command Center' }, { product_name: 'Cognito Signal Intelligence' }],
       marketing_sequences,
       marketing_sequence_steps
     }

@@ -56,7 +56,7 @@
         async function refreshBrandBackgrounds() {
             ASSETS_BASE = new URL(ASSETS_FOLDER + '/', window.location.href).href;
             brandTitleBackground = await resolveBrandBackground('01_Title_Page', '01_Title_Page.pdf');
-            brandInteriorBackground = await resolveBrandBackground('GPC_Blank_Letterhead', 'GPC_Blank_Letterhead.pdf');
+            brandInteriorBackground = await resolveBrandBackground('Constellation_Blank_Letterhead', 'Constellation_Blank_Letterhead.pdf');
             usePdfLetterheadUnderlay = brandInteriorBackground.mode === 'pdf';
         }
 
@@ -244,39 +244,22 @@
         });
 
         var GPC_COVER_SNIPPETS = [
-            { label: 'Exceptional customer service', text: 'You gain a team of knowledgeable experts dedicated to building a tailored, endtoend solution that fits your business. From initial contact through design, turnup, testing, and ongoing maintenance, you work with a local team committed to creating solutions that support your goals. Because our teams live and work in the communities we serve, we\'re invested in helping them thrive -- including your organization.' },
-            { label: 'Scalable fiber-driven technology', text: 'Our technology is designed to meet the needs of small storefronts and medium-to-large enterprises. Our network and products are fully scalable, backed by fiber-driven technology services that will accelerate the success of your business.' },
-            { label: 'Why Us - Local Team & Custom Solutions', text: 'Experience a true partnership with GPC, a proven provider that delivers stable, future-proof solutions backed by over 100 years of expertise. Our teams are strategically placed across our network footprint that stretches Nebraska, Colorado, Iowa and Southeast Indiana. Powered by our 20,000-mile MEF-certified, high-capacity network, businesses and carriers benefit from state-of-the-art connectivity backed by custom-built strategies, expert engineering and local support.' },
-            { label: '24/7 NOC', text: 'Local network monitoring in our Blair, Nebraska Network Operations Center (NOC) provides real time and rapid response to outages and alarms, ensuring optimal up-time and operational efficiency.' },
-            { label: 'High-Performing Network - Midwest', text: 'Your business is our priority. We build reliable, scalable network solutions that meet your needs now and adapt seamlessly as they evolve. Keep operations running smoothly with the confidence that your connectivity is powered by one of the Midwest\'s largest privately owned business internet providers.' },
-            { label: 'Network Differentiators', text: 'GPC\'s fiber network spans over 20,000 miles and is 99% buried, featuring unique routes and ringed redundancy to ensure maximum uptime. The MEF-certified network delivers 99.99% core reliability, and its secure design provides scalability and flexibility. GPC maintains a strong local presence, with technicians strategically located across Nebraska and Indiana for rapid outage resolutions.' },
-            { label: 'Business Internet', text: 'GPC offers flexible business internet solutions built to meet the demands of your organization. From 10 Mbps to 400 Gbps, our high-performing network delivers the reliability and speeds your business depends on to ensure you have the bandwidth to operate efficiently and grow confidently.' },
-            { label: 'Managed Ethernet', text: 'Increase efficiency and cost savings, with scalable, secure transport across your different business locations.' }
+            { label: 'Strategic account partnership', text: 'Constellation gives {BIZ} one operating system for enterprise revenue work: account strategy, executive coverage, AI signal intelligence, coordinated outreach, proposal generation, and investment review in a single CRM-native motion.' },
+            { label: 'Why Constellation', text: 'Most CRMs record activity after the fact. Constellation helps strategic account teams decide what to do next, why it matters, who owns it, and how it advances the account plan before the opportunity stalls.' },
+            { label: 'Demo-friendly implementation', text: 'The recommended rollout starts with a focused enterprise pilot: activate the Command Center, import target accounts, configure Cognito signals, launch priority Campaigns and Sequences, and publish proposal and IRR workflows for the revenue team.' },
+            { label: 'Proposal Studio value', text: 'Proposal Studio turns the account plan into a polished customer-facing asset by combining approved messaging, custom narrative, structured pricing, impact analysis, and implementation context in one proposal workflow.' }
         ];
         var GPC_CUSTOM_PAGE_SNIPPETS = [
-            { label: 'Executive Summary - General', text: `Great Plains Communications (GPC) is pleased to present this proposal for enterprise-grade connectivity and managed services. From small storefronts to large enterprises, our fully scalable, fiber-driven technology services are designed to accelerate the success of your business. We are one of the largest privately owned internet service providers for businesses in the Midwest, with a high-performing network built for redundancy and scalability to meet your needs today and grow with you tomorrow.
+            { label: 'Executive Summary - Constellation', text: `Constellation CRM is pleased to present this proposal for an enterprise Strategic Account Operating System. The platform is designed for revenue teams that need a clearer way to plan strategic accounts, act on timely signals, coordinate account-based outreach, assemble polished proposals, and review the business case behind major pursuits.
 
-What sets our company apart is our exceptional customer service. From the first customer contact through design, turn-up, testing, and maintenance, you will work with a local team committed to developing custom solutions to help you achieve your business goals. Our Nebraska- and Indiana-based teams provide a true local presence, with technicians strategically located in communities across Nebraska and Southeast Indiana. We combine a high-performing network with high-performing people and 24/7 tech support so you can focus on what matters most.
+Constellation brings the daily operating rhythm of enterprise selling into one CRM-native workspace. Command Center gives leaders visibility into priority accounts, opportunity movement, stuck work, proposal readiness, and execution health. Strategic Account OS keeps account plans, relationship maps, competitive context, white space, 30/60/90 actions, and next moves connected to the CRM records the team already uses.
 
-Our network differentiators include 99% buried fiber, unique routes, and MEF-certified reliability with 99.99% availability on the core. We operate a 20,000+ mile fiber-optic network—including over 500 miles in the Omaha area—with a secure, fiber-ringed design built for redundancy, scalability, and flexibility. Our fully meshed transport core and 24/7 Network Operations Center in Blair, Nebraska, provide local network monitoring, rapid response to outages and alarms, and a central point of contact for network maintenance and dispatch.
+Cognito signal intelligence monitors account and market context for expansion triggers, executive movement, buying signals, and account-risk moments. Those signals can feed Campaigns and Sequences so the revenue team can respond with relevant messaging while the moment is still active.
 
-We offer reliable, high-performance dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet for scalable, secure transport across multiple locations with cost savings and efficiency; managed business Wi-Fi for fast, reliable wireless connectivity; and business voice solutions that combine voice, video, chat, and file sharing in a single platform. Wireless internet backup keeps your business running during outages with automatic failover and 24/7 support. GPC Managed Firewall, DDoS protection, Cloud Connect, and SD-WAN round out our portfolio for improved performance, lower cost, and always-on reliability.
-
-We look forward to working with you and helping you reach your goals. Tell one of our local team members about your business and we will help determine the solution that will best fit your needs.` },
-            { label: 'Executive Summary - Education', text: `Great Plains Communications is pleased to present this executive summary for your organization's connectivity and technology needs in the education sector. From small storefronts to large enterprises, our fully scalable, fiber-driven technology services are designed to accelerate success—and that includes enabling schools, libraries, and community learning spaces to lead in innovation and digital access.
-
-What sets our company apart is our exceptional customer service. From the first contact through design, turn-up, testing, and maintenance, you will work with a local team committed to developing custom solutions for your unique environment. Our Nebraska- and Indiana-based teams provide a true local presence, with technicians strategically located across our service footprint. We have been a key partner to education-focused organizations: for example, Do Space—one of the first community spaces in the country to offer a gigabit of bandwidth free to its members—has relied on Great Plains Communications to help enable Omaha to lead the nation in innovation. We combine a high-performing network with high-performing people and 24/7 tech support so your students, faculty, and staff can stay connected and productive.
-
-Our network is built for reliability and scale. We operate a 20,000+ mile fiber-optic network with 99% buried fiber, MEF-certified design, and 99.99% availability on the core. Our 24/7 Network Operations Center in Blair, Nebraska, provides local monitoring, rapid response to outages and alarms, and a central point of contact for maintenance and dispatch. For education, that means dependable connectivity for learning management systems, video, collaboration tools, and campus-wide Wi-Fi.
-
-We offer dedicated business internet from 10 Mbps to 400 Gbps; managed business Wi-Fi for fast, reliable coverage across campuses and buildings; managed Ethernet for secure transport between locations; and wireless internet backup to keep learning continuous during outages. Our team will work with you to design a solution that fits your budget and growth plans. We look forward to connecting with you and helping your organization reach its goals.` },
-            { label: 'Executive Summary - Healthcare', text: `Great Plains Communications is pleased to present this executive summary for your organization's connectivity and network needs in the healthcare sector. Reliable, secure, and always-on connectivity is critical for patient care, clinical workflows, and compliance. From small practices to large enterprises, our fully scalable, fiber-driven technology services are designed to support the demanding requirements of healthcare environments.
-
-What sets our company apart is our exceptional customer service. From the first contact through design, turn-up, testing, and maintenance, you will work with a local team committed to developing custom solutions that fit your workflows and security posture. Our Nebraska- and Indiana-based teams provide a true local presence, with technicians strategically located across our footprint. We combine a high-performing network with high-performing people and 24/7 tech support, so your staff can focus on patient care rather than connectivity issues.
-
-Our network is built for reliability and security. We operate a 20,000+ mile fiber-optic network with 99% buried fiber, MEF-certified design, and 99.99% availability on the core. Our 24/7 Network Operations Center in Blair, Nebraska, provides round-the-clock monitoring, rapid response to outages and alarms, and a central point of contact for network maintenance and dispatch. Our secure, fiber-ringed network is designed with redundancy, scalability, and flexibility to support critical applications and protect sensitive data.
-
-We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet for scalable, secure transport between facilities; GPC Managed Firewall for round-the-clock network protection to safeguard sensitive data; and GPC DDoS Protection to help avoid disruptions and block high-volume attacks. Wireless internet backup with automatic failover and 24/7 support helps keep your business running during outages. GPC Cloud Connect and SD-WAN can deliver improved performance, lower cost, and always-on reliability across multiple delivery methods. We look forward to working with you to design a solution that meets your clinical and operational goals.` }
+Proposal Studio and IRR workflows complete the motion by connecting internal strategy to customer-ready assets and investment review. The result is a cleaner enterprise selling system: fewer disconnected tools, faster follow-through, stronger executive alignment, and better visibility into where strategic attention is creating pipeline.` },
+            { label: 'Command Center', text: `The Command Center gives sales leaders and account owners a live operating view of strategic account work. It brings together target-account health, deal movement, priority tasks, campaign execution, proposal readiness, and coaching context so the team can see where attention is needed before momentum is lost.` },
+            { label: 'Cognito Signals', text: `Cognito monitors account and market context for timely triggers such as expansion, executive movement, technology initiatives, buying-committee activity, and account-risk moments. Those signals become practical next steps inside account plans, campaigns, sequences, and proposal narratives.` },
+            { label: 'Proposal Studio', text: `Proposal Studio connects the account strategy to a polished customer-facing proposal. Teams can assemble multi-page assets, reuse approved positioning, import structured pricing, add impact or ROI analysis, and include references without rebuilding the story from scratch.` }
         ];
         async function loadMarketingContent() {
             try {
@@ -332,7 +315,7 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
             GPC_COVER_SNIPPETS.forEach(function(s) {
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.className = 'w-full text-left px-3 py-2 rounded-lg border border-slate-200 bg-white hover:border-orange-500 hover:bg-orange-50/80 text-slate-700 text-[11px] leading-tight transition shadow-sm';
+                btn.className = 'w-full text-left px-3 py-2 rounded-lg border border-slate-200 bg-white hover:border-blue-500 hover:bg-blue-50/80 text-slate-700 text-[11px] leading-tight transition shadow-sm';
                 btn.textContent = s.label;
                 btn.title = s.text.slice(0, 80) + (s.text.length > 80 ? '…' : '');
                 btn.addEventListener('click', function() { insertIntoCoverBody(s.text); });
@@ -378,7 +361,7 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
                 GPC_CUSTOM_PAGE_SNIPPETS.forEach(function(s) {
                     const btn = document.createElement('button');
                     btn.type = 'button';
-                    btn.className = 'w-full text-left px-3 py-2 rounded-lg border border-slate-200 bg-white hover:border-orange-500 hover:bg-orange-50/80 text-slate-700 text-[11px] leading-tight transition shadow-sm';
+                    btn.className = 'w-full text-left px-3 py-2 rounded-lg border border-slate-200 bg-white hover:border-blue-500 hover:bg-blue-50/80 text-slate-700 text-[11px] leading-tight transition shadow-sm';
                     btn.textContent = s.label;
                     btn.title = s.text.slice(0, 80) + (s.text.length > 80 ? '…' : '');
                     btn.addEventListener('click', function() { insertIntoCustomTextBody(s.text, sectionTa); });
@@ -501,7 +484,7 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
                 section.id = 'custom-text-section-' + nextIdx;
                 section.className = 'custom-text-section hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 transition-all duration-300';
                 section.setAttribute('data-custom-index', String(nextIdx));
-                section.innerHTML = '<div class="flex items-center mb-4 border-b border-slate-100 pb-2 gap-2"><svg class="w-6 h-6 text-slate-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg><h3 class="text-2xl font-bold text-slate-800 custom-text-section-title">Custom Page ' + (nextIdx + 1) + '</h3></div><input type="text" id="custom-text-title-input-' + nextIdx + '" class="custom-text-title-input w-full border border-slate-300 p-2 rounded-lg mb-3 bg-slate-50 outline-none focus:border-orange-500 font-semibold text-slate-700" placeholder="Document Title (Leave blank for no header)"><div class="flex gap-6 flex-nowrap items-start"><div class="flex-1 min-w-[500px]"><textarea id="custom-text-body-' + nextIdx + '" class="custom-text-body w-full h-64 p-3 border border-slate-300 rounded-lg bg-white resize-y font-sans text-base focus:outline-none focus:border-orange-500" placeholder="Start typing custom content..." style="white-space: pre-wrap;"></textarea><p class="warning-customText hidden text-red-600 text-sm font-bold mt-2">⚠️ Warning: Text exceeds PDF page height and may be cut off. Please shorten.</p></div><div class="w-[280px] flex-shrink-0 rounded-xl bg-slate-50 border border-slate-200 p-4 text-slate-600 flex flex-col gap-4"><div><h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Click to add</h3><p class="text-xs text-slate-400 mb-2">Inserts at cursor in the custom page.</p><div class="custom-page-snippets space-y-2 overflow-auto min-h-0"></div></div></div></div>';
+                section.innerHTML = '<div class="flex items-center mb-4 border-b border-slate-100 pb-2 gap-2"><svg class="w-6 h-6 text-slate-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg><h3 class="text-2xl font-bold text-slate-800 custom-text-section-title">Custom Page ' + (nextIdx + 1) + '</h3></div><input type="text" id="custom-text-title-input-' + nextIdx + '" class="custom-text-title-input w-full border border-slate-300 p-2 rounded-lg mb-3 bg-slate-50 outline-none focus:border-blue-500 font-semibold text-slate-700" placeholder="Document Title (Leave blank for no header)"><div class="flex gap-6 flex-nowrap items-start"><div class="flex-1 min-w-[500px]"><textarea id="custom-text-body-' + nextIdx + '" class="custom-text-body w-full h-64 p-3 border border-slate-300 rounded-lg bg-white resize-y font-sans text-base focus:outline-none focus:border-blue-500" placeholder="Start typing custom content..." style="white-space: pre-wrap;"></textarea><p class="warning-customText hidden text-amber-600 text-sm font-bold mt-2">Note: Content extends beyond one page. Additional pages will be added to the PDF.</p></div><div class="w-[280px] flex-shrink-0 rounded-xl bg-slate-50 border border-slate-200 p-4 text-slate-600 flex flex-col gap-4"><div><h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Click to add</h3><p class="text-xs text-slate-400 mb-2">Inserts at cursor in the custom page.</p><div class="custom-page-snippets space-y-2 overflow-auto min-h-0"></div></div></div></div>';
                 container.appendChild(section);
                 renderCustomPageSnippets();
                 updateCustomPageRowLabels();
@@ -535,7 +518,7 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
                 section.id = 'custom-pdf-section-' + nextIdx;
                 section.className = 'custom-pdf-section hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 transition-all duration-300';
                 section.setAttribute('data-custom-index', String(nextIdx));
-                section.innerHTML = '<div class="flex items-center mb-4 border-b border-slate-100 pb-2 gap-2"><svg class="w-6 h-6 text-slate-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg><h3 class="text-2xl font-bold text-slate-800 custom-pdf-section-title">Upload Custom PDF ' + (nextIdx + 1) + '</h3></div><div class="mb-4"><label class="block text-sm font-semibold text-slate-700 mb-1">Section name for Table of Contents</label><input type="text" id="custom-pdf-section-name-' + nextIdx + '" class="custom-pdf-section-name w-full border border-slate-300 p-2 rounded-lg bg-slate-50 focus:bg-white outline-none focus:border-orange-500 font-medium text-slate-700" maxlength="80" placeholder="e.g. Executive Summary"></div><input type="file" id="custom-pdf-upload-' + nextIdx + '" class="custom-pdf-upload hidden" accept="application/pdf"><div class="custom-pdf-dropzone border-2 border-dashed border-slate-300 rounded-xl p-8 text-center bg-slate-50 hover:bg-orange-50 hover:border-orange-400 transition cursor-pointer group" onclick="this.closest(\'.custom-pdf-section\').querySelector(\'.custom-pdf-upload\').click()"><svg class="mx-auto h-12 w-12 text-slate-400 group-hover:text-blue-500 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg><span class="custom-pdf-filename mt-2 block text-slate-600 font-medium group-hover:text-orange-600">Drag and drop Custom PDF here, or click to browse</span></div></div>';
+                section.innerHTML = '<div class="flex items-center mb-4 border-b border-slate-100 pb-2 gap-2"><svg class="w-6 h-6 text-slate-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg><h3 class="text-2xl font-bold text-slate-800 custom-pdf-section-title">Upload Custom PDF ' + (nextIdx + 1) + '</h3></div><div class="mb-4"><label class="block text-sm font-semibold text-slate-700 mb-1">Section name for Table of Contents</label><input type="text" id="custom-pdf-section-name-' + nextIdx + '" class="custom-pdf-section-name w-full border border-slate-300 p-2 rounded-lg bg-slate-50 focus:bg-white outline-none focus:border-blue-500 font-medium text-slate-700" maxlength="80" placeholder="e.g. Executive Summary"></div><input type="file" id="custom-pdf-upload-' + nextIdx + '" class="custom-pdf-upload hidden" accept="application/pdf"><div class="custom-pdf-dropzone border-2 border-dashed border-slate-300 rounded-xl p-8 text-center bg-slate-50 hover:bg-blue-50 hover:border-blue-400 transition cursor-pointer group" onclick="this.closest(\'.custom-pdf-section\').querySelector(\'.custom-pdf-upload\').click()"><svg class="mx-auto h-12 w-12 text-slate-400 group-hover:text-blue-500 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg><span class="custom-pdf-filename mt-2 block text-slate-600 font-medium group-hover:text-blue-600">Drag and drop Custom PDF here, or click to browse</span></div></div>';
                 container.appendChild(section);
                 updateCustomPdfRowLabels();
                 syncCustomSectionsVisibility();
@@ -560,7 +543,7 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
 
         // --- File Upload Handlers ---
         document.getElementById('usac-upload').addEventListener('change', e => {
-            document.getElementById('usac-filename').textContent = e.target.files[0] ? e.target.files[0].name : "Drag and drop USAC RFP PDF here";
+            document.getElementById('usac-filename').textContent = e.target.files[0] ? e.target.files[0].name : "Drag and drop a requirements PDF here";
         });
         var customPdfUploadEl = document.getElementById('custom-pdf-upload');
         if (customPdfUploadEl) customPdfUploadEl.addEventListener('change', function(e) {
@@ -583,12 +566,12 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
             refsContainer.insertAdjacentHTML('beforeend', `
                 <div class="space-y-2 border border-slate-200 p-5 rounded-xl bg-slate-50 shadow-sm ref-block">
                     <h4 class="font-bold text-slate-700 text-sm uppercase">Reference ${i}</h4>
-                    <input type="text" placeholder="Reference Name" class="w-full border border-slate-300 p-2 rounded text-sm ref-name outline-none focus:border-orange-500">
-                    <input type="text" placeholder="Organization Name" class="w-full border border-slate-300 p-2 rounded text-sm ref-org outline-none focus:border-orange-500">
-                    <input type="text" placeholder="Organization Address" class="w-full border border-slate-300 p-2 rounded text-sm ref-addr outline-none focus:border-orange-500">
+                    <input type="text" placeholder="Reference Name" class="w-full border border-slate-300 p-2 rounded text-sm ref-name outline-none focus:border-blue-500">
+                    <input type="text" placeholder="Organization Name" class="w-full border border-slate-300 p-2 rounded text-sm ref-org outline-none focus:border-blue-500">
+                    <input type="text" placeholder="Organization Address" class="w-full border border-slate-300 p-2 rounded text-sm ref-addr outline-none focus:border-blue-500">
                     <div class="flex gap-2">
-                        <input type="text" placeholder="Phone Number" class="w-1/2 border border-slate-300 p-2 rounded text-sm ref-phone outline-none focus:border-orange-500">
-                        <input type="text" placeholder="Email Address" class="w-1/2 border border-slate-300 p-2 rounded text-sm ref-email outline-none focus:border-orange-500">
+                        <input type="text" placeholder="Phone Number" class="w-1/2 border border-slate-300 p-2 rounded text-sm ref-phone outline-none focus:border-blue-500">
+                        <input type="text" placeholder="Email Address" class="w-1/2 border border-slate-300 p-2 rounded text-sm ref-email outline-none focus:border-blue-500">
                     </div>
                 </div>
             `);
@@ -596,9 +579,9 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
 
         // --- Dynamic Pricing UI (multi-option) ---
         var PRODUCT_SUGGESTIONS = [
-            'Dedicated Internet Access (DIA)', 'Standard Internet Access (SIA)', 'Managed Ethernet', 'Business Voice',
-            'Managed Business Wi-Fi', 'Wireless Internet Backup', 'Managed Firewall', 'DDoS Protection',
-            'Cloud Connect', 'SD-WAN', 'SIP Trunking', 'PRI', 'Dark Fiber', 'Colocation', 'Professional Services'
+            'Strategic Account OS', 'Enterprise CRM Workspace', 'Command Center', 'Cognito Signal Intelligence',
+            'Campaigns & Sequences', 'Proposal Studio', 'IRR & Business Case', 'Implementation Enablement',
+            'Executive Sponsor Workflow', 'Revenue Operations Enablement', 'Data Migration', 'Training'
         ];
         loadMarketingContent();
 
@@ -1134,8 +1117,8 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
             var desc = (p.description != null) ? String(p.description).replace(/&/g, '&amp;').replace(/"/g, '&quot;') : '';
             var amount = (p.amount != null) ? String(p.amount) : '';
             return '<div class="location-promo-row flex items-center gap-2">' +
-                '<input type="text" class="promo-description w-full border border-slate-200 p-2 rounded text-sm outline-none focus:border-orange-500" placeholder="Promotion description" value="' + desc + '">' +
-                '<input type="number" class="promo-amount w-36 border border-slate-200 p-2 rounded text-sm text-right outline-none focus:border-orange-500" step="0.01" placeholder="Amount" value="' + amount + '">' +
+                '<input type="text" class="promo-description w-full border border-slate-200 p-2 rounded text-sm outline-none focus:border-blue-500" placeholder="Promotion description" value="' + desc + '">' +
+                '<input type="number" class="promo-amount w-36 border border-slate-200 p-2 rounded text-sm text-right outline-none focus:border-blue-500" step="0.01" placeholder="Amount" value="' + amount + '">' +
                 '<button type="button" class="remove-promo-btn text-slate-300 hover:text-red-500 font-bold px-2">X</button>' +
                 '</div>';
         }
@@ -1208,11 +1191,11 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
                         '</div>' +
                     '</td>' +
                     '<td class="p-2 align-middle"><div class="relative">' +
-                        '<textarea class="w-full border border-slate-200 p-2 rounded text-sm outline-none focus:border-orange-500 prod-name" rows="2" autocomplete="off">' + prod + '</textarea>' +
+                        '<textarea class="w-full border border-slate-200 p-2 rounded text-sm outline-none focus:border-blue-500 prod-name" rows="2" autocomplete="off">' + prod + '</textarea>' +
                         '<ul class="prod-suggestion-dropdown fixed bg-white border border-slate-200 rounded shadow-xl text-sm text-slate-700 py-1 z-[9999] hidden list-none max-h-56 overflow-y-auto overflow-x-hidden" role="listbox"></ul>' +
                     '</div></td>' +
-                    '<td class="p-2 align-middle"><input type="number" class="w-full border border-slate-200 p-2 rounded text-sm outline-none focus:border-orange-500 price-input" step="0.01" value="' + price + '"></td>' +
-                    '<td class="p-2 align-middle"><input type="number" class="w-full border border-slate-200 p-2 rounded text-sm text-center outline-none focus:border-orange-500 qty-input" min="1" value="' + qty + '"></td>' +
+                    '<td class="p-2 align-middle"><input type="number" class="w-full border border-slate-200 p-2 rounded text-sm outline-none focus:border-blue-500 price-input" step="0.01" value="' + price + '"></td>' +
+                    '<td class="p-2 align-middle"><input type="number" class="w-full border border-slate-200 p-2 rounded text-sm text-center outline-none focus:border-blue-500 qty-input" min="1" value="' + qty + '"></td>' +
                     '<td class="p-2 text-right font-semibold text-slate-700 row-total align-middle">$0.00</td>' +
                     '<td class="p-2 align-middle text-center w-14">' +
                         '<input type="checkbox" class="row-nrc-toggle w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer align-middle" ' + (nrcEnabled ? 'checked' : '') + ' title="Non-recurring charge (NRC)">' +
@@ -1224,8 +1207,8 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
                 '<tr class="row-nrc-subline ' + (nrcEnabled ? '' : 'hidden') + ' bg-slate-50 border-b border-slate-100">' +
                     '<td colspan="7" class="px-2 pb-3">' +
                         '<div class="rounded border border-slate-200 bg-white px-3 py-2 flex items-center gap-3">' +
-                            '<input type="text" class="row-nrc-description w-full border border-slate-200 p-1.5 rounded text-sm outline-none focus:border-orange-500" placeholder="NRC description" value="' + nrcDescription + '">' +
-                            '<input type="number" class="row-nrc-amount w-40 border border-slate-200 p-1.5 rounded text-sm text-right outline-none focus:border-orange-500" step="0.01" placeholder="NRC amount" value="' + nrcAmount + '">' +
+                            '<input type="text" class="row-nrc-description w-full border border-slate-200 p-1.5 rounded text-sm outline-none focus:border-blue-500" placeholder="NRC description" value="' + nrcDescription + '">' +
+                            '<input type="number" class="row-nrc-amount w-40 border border-slate-200 p-1.5 rounded text-sm text-right outline-none focus:border-blue-500" step="0.01" placeholder="NRC amount" value="' + nrcAmount + '">' +
                         '</div>' +
                     '</td>' +
                 '</tr>';
@@ -1429,7 +1412,7 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
                 '<button type="button" class="absolute top-3 right-3 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full w-8 h-8 font-bold text-sm remove-location-btn">✕</button>' +
                 '<div class="mb-5 pr-10 flex items-center gap-2">' +
                 '<div class="location-drag-handle cursor-grab active:cursor-grabbing text-slate-300 hover:text-blue-500 select-none rounded p-1 hover:bg-slate-100 shrink-0 leading-none" title="Drag to reorder locations" aria-hidden="true">⋮⋮</div>' +
-                '<input type="text" class="w-full min-w-0 border-b-2 border-slate-200 p-2 text-lg font-bold text-slate-800 outline-none focus:border-orange-500 loc-name-input" placeholder="Location Name or Address (e.g., 123 Main St)" value="' + nameEsc + '"></div>' +
+                '<input type="text" class="w-full min-w-0 border-b-2 border-slate-200 p-2 text-lg font-bold text-slate-800 outline-none focus:border-blue-500 loc-name-input" placeholder="Team, segment, or scope name" value="' + nameEsc + '"></div>' +
                 '<div class="location-pricing-table-wrap mb-4">' +
                 '<table class="w-full text-left border-collapse">' +
                 '<thead><tr class="bg-slate-100 text-slate-600 text-xs uppercase">' +
@@ -1515,11 +1498,11 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
                 '<div class="pricing-option-controls-row mb-6">' +
                 '<div class="pricing-option-term-wrap">' +
                 '<label class="block text-sm font-semibold text-slate-700">Contract Term</label>' +
-                '<input type="text" class="contract-term option-term-input w-full border border-slate-300 p-2 rounded-lg mt-1 bg-white focus:outline-none focus:border-orange-500 transition" placeholder="e.g. 36" value="' + termVal + '">' +
+                '<input type="text" class="contract-term option-term-input w-full border border-slate-300 p-2 rounded-lg mt-1 bg-white focus:outline-none focus:border-blue-500 transition" placeholder="e.g. 36" value="' + termVal + '">' +
                 '</div>' +
                 '<div class="pricing-solution-id-wrap">' +
                 '<label class="block text-sm font-semibold text-slate-700">Solution ID <span class="font-normal text-slate-400">(optional)</span></label>' +
-                '<input type="text" class="solution-id-input w-full border border-slate-300 p-2 rounded-lg mt-1 bg-white focus:outline-none focus:border-orange-500 transition" placeholder="e.g. Q-40776" maxlength="32" value="' + solutionVal + '">' +
+                '<input type="text" class="solution-id-input w-full border border-slate-300 p-2 rounded-lg mt-1 bg-white focus:outline-none focus:border-blue-500 transition" placeholder="e.g. SAOS-PILOT-001" maxlength="32" value="' + solutionVal + '">' +
                 '</div>' + csvWrapHtml +
                 '</div>' +
                 '<div class="locations-container space-y-8"></div>' +
@@ -2009,7 +1992,7 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
                 section.id = 'custom-text-section-' + nextIdx;
                 section.className = 'custom-text-section hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 transition-all duration-300';
                 section.setAttribute('data-custom-index', String(nextIdx));
-                section.innerHTML = '<div class="flex items-center mb-4 border-b border-slate-100 pb-2 gap-2"><svg class="w-6 h-6 text-slate-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg><h3 class="text-2xl font-bold text-slate-800 custom-text-section-title">Custom Page ' + (nextIdx + 1) + '</h3></div><input type="text" id="custom-text-title-input-' + nextIdx + '" class="custom-text-title-input w-full border border-slate-300 p-2 rounded-lg mb-3 bg-slate-50 outline-none focus:border-orange-500 font-semibold text-slate-700" placeholder="Document Title (Leave blank for no header)"><div class="flex gap-6 flex-nowrap items-start"><div class="flex-1 min-w-[500px]"><textarea id="custom-text-body-' + nextIdx + '" class="custom-text-body w-full h-64 p-3 border border-slate-300 rounded-lg bg-white resize-y font-sans text-base focus:outline-none focus:border-orange-500" placeholder="Start typing custom content..." style="white-space: pre-wrap;"></textarea><p class="warning-customText hidden text-red-600 text-sm font-bold mt-2">⚠️ Warning: Text exceeds PDF page height and may be cut off. Please shorten.</p></div><div class="w-[280px] flex-shrink-0 rounded-xl bg-slate-50 border border-slate-200 p-4 text-slate-600 flex flex-col gap-4"><div><h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Click to add</h3><p class="text-xs text-slate-400 mb-2">Inserts at cursor in the custom page.</p><div class="custom-page-snippets space-y-2 overflow-auto min-h-0"></div></div></div></div>';
+                section.innerHTML = '<div class="flex items-center mb-4 border-b border-slate-100 pb-2 gap-2"><svg class="w-6 h-6 text-slate-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg><h3 class="text-2xl font-bold text-slate-800 custom-text-section-title">Custom Page ' + (nextIdx + 1) + '</h3></div><input type="text" id="custom-text-title-input-' + nextIdx + '" class="custom-text-title-input w-full border border-slate-300 p-2 rounded-lg mb-3 bg-slate-50 outline-none focus:border-blue-500 font-semibold text-slate-700" placeholder="Document Title (Leave blank for no header)"><div class="flex gap-6 flex-nowrap items-start"><div class="flex-1 min-w-[500px]"><textarea id="custom-text-body-' + nextIdx + '" class="custom-text-body w-full h-64 p-3 border border-slate-300 rounded-lg bg-white resize-y font-sans text-base focus:outline-none focus:border-blue-500" placeholder="Start typing custom content..." style="white-space: pre-wrap;"></textarea><p class="warning-customText hidden text-amber-600 text-sm font-bold mt-2">Note: Content extends beyond one page. Additional pages will be added to the PDF.</p></div><div class="w-[280px] flex-shrink-0 rounded-xl bg-slate-50 border border-slate-200 p-4 text-slate-600 flex flex-col gap-4"><div><h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Click to add</h3><p class="text-xs text-slate-400 mb-2">Inserts at cursor in the custom page.</p><div class="custom-page-snippets space-y-2 overflow-auto min-h-0"></div></div></div></div>';
                 container.appendChild(section);
                 renderCustomPageSnippets();
             }
@@ -2028,7 +2011,7 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
                 section.id = 'custom-pdf-section-' + nextIdx;
                 section.className = 'custom-pdf-section hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8 transition-all duration-300';
                 section.setAttribute('data-custom-index', String(nextIdx));
-                section.innerHTML = '<div class="flex items-center mb-4 border-b border-slate-100 pb-2 gap-2"><svg class="w-6 h-6 text-slate-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg><h3 class="text-2xl font-bold text-slate-800 custom-pdf-section-title">Upload Custom PDF ' + (nextIdx + 1) + '</h3></div><div class="mb-4"><label class="block text-sm font-semibold text-slate-700 mb-1">Section name for Table of Contents</label><input type="text" id="custom-pdf-section-name-' + nextIdx + '" class="custom-pdf-section-name w-full border border-slate-300 p-2 rounded-lg bg-slate-50 focus:bg-white outline-none focus:border-orange-500 font-medium text-slate-700" maxlength="80" placeholder="e.g. Executive Summary"></div><input type="file" id="custom-pdf-upload-' + nextIdx + '" class="custom-pdf-upload hidden" accept="application/pdf"><div class="custom-pdf-dropzone border-2 border-dashed border-slate-300 rounded-xl p-8 text-center bg-slate-50 hover:bg-orange-50 hover:border-orange-400 transition cursor-pointer group" onclick="this.closest(\'.custom-pdf-section\').querySelector(\'.custom-pdf-upload\').click()"><svg class="mx-auto h-12 w-12 text-slate-400 group-hover:text-blue-500 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg><span class="custom-pdf-filename mt-2 block text-slate-600 font-medium group-hover:text-orange-600">Drag and drop Custom PDF here, or click to browse</span></div></div>';
+                section.innerHTML = '<div class="flex items-center mb-4 border-b border-slate-100 pb-2 gap-2"><svg class="w-6 h-6 text-slate-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg><h3 class="text-2xl font-bold text-slate-800 custom-pdf-section-title">Upload Custom PDF ' + (nextIdx + 1) + '</h3></div><div class="mb-4"><label class="block text-sm font-semibold text-slate-700 mb-1">Section name for Table of Contents</label><input type="text" id="custom-pdf-section-name-' + nextIdx + '" class="custom-pdf-section-name w-full border border-slate-300 p-2 rounded-lg bg-slate-50 focus:bg-white outline-none focus:border-blue-500 font-medium text-slate-700" maxlength="80" placeholder="e.g. Executive Summary"></div><input type="file" id="custom-pdf-upload-' + nextIdx + '" class="custom-pdf-upload hidden" accept="application/pdf"><div class="custom-pdf-dropzone border-2 border-dashed border-slate-300 rounded-xl p-8 text-center bg-slate-50 hover:bg-blue-50 hover:border-blue-400 transition cursor-pointer group" onclick="this.closest(\'.custom-pdf-section\').querySelector(\'.custom-pdf-upload\').click()"><svg class="mx-auto h-12 w-12 text-slate-400 group-hover:text-blue-500 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg><span class="custom-pdf-filename mt-2 block text-slate-600 font-medium group-hover:text-blue-600">Drag and drop Custom PDF here, or click to browse</span></div></div>';
                 container.appendChild(section);
             }
             if (typeof updateCustomPageRowLabels === 'function') updateCustomPageRowLabels();
@@ -2240,7 +2223,7 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
             URL.revokeObjectURL(a.href);
             var subject = 'Proposal Proofing Request - ' + (projectData.globalBiz || 'Account');
             var body = 'Hi Marketing,\n\nPlease review the attached proposal spec and provide feedback when convenient.\n\nProposal engine: https://enterprise-proposals.vercel.app\n\nThanks.';
-            var mailto = 'mailto:stinkham@gpcom.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+            var mailto = 'mailto:proofing@constellation-crm.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
             window.location.href = mailto;
             var reminder = document.getElementById('send-for-proofing-reminder');
             if (reminder) { reminder.classList.remove('hidden'); setTimeout(function() { reminder.classList.add('hidden'); }, 6000); }
@@ -2359,7 +2342,7 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
                 }
             }
             const usacFile = document.getElementById('usac-upload').files[0];
-            if (activeSlides.includes('USAC_RFP') && !usacFile) { alert("Please select a file for the USAC RFP Upload."); return null; }
+            if (activeSlides.includes('USAC_RFP') && !usacFile) { alert("Please select a file for the requirements upload."); return null; }
             return {
                 globals: { biz: document.getElementById('global-biz').value },
                 slides: activeSlides,
@@ -2417,7 +2400,7 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
 
     let letterheadPdf;
     try {
-        const letterheadRes = await fetch(getAssetPath('GPC_Blank_Letterhead.pdf'));
+        const letterheadRes = await fetch(getAssetPath('Constellation_Blank_Letterhead.pdf'));
         if (letterheadRes.ok) {
             const letterheadBytes = await letterheadRes.arrayBuffer();
             letterheadPdf = await PDFDocument.load(letterheadBytes);
@@ -2623,7 +2606,7 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
             addr: b.querySelector('.ref-addr').value, phone: b.querySelector('.ref-phone').value, email: b.querySelector('.ref-email').value
         })).filter(r => r.name || r.org);
         refs.forEach(ref => {
-            renderBody.insertAdjacentHTML('beforeend', `<div class="mb-6 border-b-4 border-[#DE5A24] pb-6" style="line-height: 1.2;"><div class="text-2xl font-bold text-black" style="line-height: 1.4;">${ref.name}</div><div class="text-xl font-bold text-black" style="line-height: 1.4;">${ref.org}</div><div class="text-xl text-black mb-4" style="line-height: 1.4;">${ref.addr}</div><div class="text-xl text-black" style="line-height: 1.4;">${ref.phone} &nbsp;|&nbsp; ${ref.email}</div></div>`);
+            renderBody.insertAdjacentHTML('beforeend', `<div class="mb-6 border-b-4 border-[#3880ee] pb-6" style="line-height: 1.2;"><div class="text-2xl font-bold text-black" style="line-height: 1.4;">${ref.name}</div><div class="text-xl font-bold text-black" style="line-height: 1.4;">${ref.org}</div><div class="text-xl text-black mb-4" style="line-height: 1.4;">${ref.addr}</div><div class="text-xl text-black" style="line-height: 1.4;">${ref.phone} &nbsp;|&nbsp; ${ref.email}</div></div>`);
         });
         await new Promise(r => requestAnimationFrame(r));
     }
@@ -2712,15 +2695,15 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
                             '<div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid #e2e8f0;padding-bottom:8px;margin-bottom:12px;">Current State</div>' +
                             '<div style="font-size:13px;line-height:1.6;color:#0f172a;font-weight:500;">' + toHtmlLines(cur) + '</div>' +
                         '</div>' +
-                        '<div style="border:1px solid #d1d5db;border-left:4px solid #DE5A24;border-radius:12px;background:#f8fafc;padding:18px;">' +
+                        '<div style="border:1px solid #d1d5db;border-left:4px solid #3880ee;border-radius:12px;background:#f8fafc;padding:18px;">' +
                             '<div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid #e2e8f0;padding-bottom:8px;margin-bottom:12px;">Proposed Solution</div>' +
                             '<div style="font-size:13px;line-height:1.6;color:#0f172a;font-weight:500;">' + toHtmlLines(prop) + '</div>' +
                         '</div>' +
                     '</div>' +
-                    '<div style="display:grid;grid-template-columns:1fr auto 1fr auto;align-items:center;gap:20px;background:#12243D;color:#fff;border-radius:12px;padding:18px 20px;border:1px solid #334155;">' +
+                    '<div style="display:grid;grid-template-columns:1fr auto 1fr auto;align-items:center;gap:20px;background:#0b3a75;color:#fff;border-radius:12px;padding:18px 20px;border:1px solid #2563eb;">' +
                         '<div style="text-align:center;"><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;">Current Spend</div><div style="font-size:20px;font-weight:700;">' + escapeHtml(curDollar) + '</div></div>' +
                         '<div style="font-size:20px;opacity:.55;">→</div>' +
-                        '<div style="text-align:center;"><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;">Proposed GPC Spend</div><div style="font-size:20px;font-weight:700;">' + escapeHtml(propDollar) + '</div></div>' +
+                        '<div style="text-align:center;"><div style="font-size:10px;color:#bfdbfe;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;">Proposed Constellation Spend</div><div style="font-size:20px;font-weight:700;">' + escapeHtml(propDollar) + '</div></div>' +
                         '<div style="text-align:center;background:#fff;color:' + impactAccent + ';padding:10px 16px;border-radius:10px;border:2px solid ' + impactAccent + ';min-width: 180px;">' +
                             '<div style="font-size:10px;font-weight:800;letter-spacing:.08em;margin-bottom:3px;text-transform:uppercase;">' + escapeHtml(impactLabel) + '</div>' +
                             '<div style="font-size:20px;font-weight:800;line-height:1.1;white-space:nowrap;">' + escapeHtml(impactAmount) + '</div>' +
@@ -2737,7 +2720,7 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
             })).filter(r => r.name || r.org);
             let refsHtml = '';
             refs.forEach(ref => {
-                refsHtml += '<div style="margin-bottom: 1.75rem; padding-bottom: 1.25rem; border-bottom: 1px solid #DE5A24;"><div style="font-size: 1.5rem; font-weight: bold; color: #0f172a;">' + escapeHtml(ref.name) + '</div><div style="font-size: 1.3rem; font-weight: bold; color: #1e293b;">' + escapeHtml(ref.org) + '</div><div style="font-size: 1.1rem; color: #334155; margin-bottom: 0.75rem;">' + escapeHtml(ref.addr) + '</div><div style="font-size: 1.1rem; color: #334155;">' + escapeHtml(ref.phone) + ' &nbsp;|&nbsp; ' + escapeHtml(ref.email) + '</div></div>';
+                refsHtml += '<div style="margin-bottom: 1.75rem; padding-bottom: 1.25rem; border-bottom: 1px solid #3880ee;"><div style="font-size: 1.5rem; font-weight: bold; color: #0f172a;">' + escapeHtml(ref.name) + '</div><div style="font-size: 1.3rem; font-weight: bold; color: #1e293b;">' + escapeHtml(ref.org) + '</div><div style="font-size: 1.1rem; color: #334155; margin-bottom: 0.75rem;">' + escapeHtml(ref.addr) + '</div><div style="font-size: 1.1rem; color: #334155;">' + escapeHtml(ref.phone) + ' &nbsp;|&nbsp; ' + escapeHtml(ref.email) + '</div></div>';
             });
             const refsWrapped = '<div style="max-width: ' + REFERENCES_CONTENT_MAX_WIDTH_PX + 'px; margin: 0 auto;">' + (refsHtml || '<p style="color:#64748b;">No references added.</p>') + '</div>';
             const canvas = await captureInteriorPageGPC('References', refsWrapped, { extraPaddingTop: 52 });
@@ -2747,7 +2730,7 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
             const optionBlocks = Array.from(document.querySelectorAll('.pricing-option-block'));
             const borderClr = '#d1d5db';
             const useAmyDecimalsPdf = pricingUsesDecimalPoints();
-            const locHeaderOrange = '<div style="display: flex; background-color: #DE5A24; color: white; font-weight: bold; text-transform: uppercase; border: 1px solid ' + borderClr + '; border-bottom: none;"><div style="width: 380px; padding: 12px 16px; border-right: 1px solid ' + borderClr + ';">PRODUCT</div><div style="width: 140px; padding: 12px 5px; text-align: center; border-right: 1px solid ' + borderClr + ';">LIST PRICE</div><div style="width: 90px; padding: 12px 5px; text-align: center; border-right: 1px solid ' + borderClr + ';">QTY</div><div style="width: 140px; padding: 12px 16px; text-align: center;">TOTAL</div></div>';
+            const locHeaderOrange = '<div style="display: flex; background-color: #3880ee; color: white; font-weight: bold; text-transform: uppercase; border: 1px solid ' + borderClr + '; border-bottom: none;"><div style="width: 380px; padding: 12px 16px; border-right: 1px solid ' + borderClr + ';">PRODUCT</div><div style="width: 140px; padding: 12px 5px; text-align: center; border-right: 1px solid ' + borderClr + ';">LIST PRICE</div><div style="width: 90px; padding: 12px 5px; text-align: center; border-right: 1px solid ' + borderClr + ';">QTY</div><div style="width: 140px; padding: 12px 16px; text-align: center;">TOTAL</div></div>';
             
             const rowToHtml = (item, bg) => {
                 var priceVal = formatLineListPriceDisplay(item.price);
@@ -2823,7 +2806,7 @@ We offer dedicated business internet from 10 Mbps to 400 Gbps; managed Ethernet 
                     });
                 });
                 var grandTotalFormatted = formatPricingMoney(optTotalPdf, useAmyDecimalsPdf);
-                const totalBlockHtml = '<div style="margin-top: 20px;">' + '<div style="display: flex; background-color: #12243D; color: white; font-weight: bold; font-size: 1.1rem; border: 1px solid ' + borderClr + '; border-radius: 0; box-sizing: border-box;"><div style="width: 610px; padding: 16px;">TOTAL MONTHLY COST</div><div style="width: 140px; padding: 16px; text-align: center;">' + escapeHtml(grandTotalFormatted) + '</div></div>' + '</div>';
+                const totalBlockHtml = '<div style="margin-top: 20px;">' + '<div style="display: flex; background-color: #0b3a75; color: white; font-weight: bold; font-size: 1.1rem; border: 1px solid ' + borderClr + '; border-radius: 0; box-sizing: border-box;"><div style="width: 610px; padding: 16px;">TOTAL MONTHLY COST</div><div style="width: 140px; padding: 16px; text-align: center;">' + escapeHtml(grandTotalFormatted) + '</div></div>' + '</div>';
                 const termLineHtml = buildPricingTermLineHtml(contractTerm);
 
                 let baseHeader = optionBlocks.length > 1 ? `Proposed Pricing Option ${optIdx + 1}` : 'Proposed Pricing';
@@ -3070,7 +3053,7 @@ if (slideFile === '09_Project.pdf') {
         if (downloadBtn) {
             downloadBtn.classList.remove('hidden');
             downloadBtn.onclick = () => {
-                const defaultPdf = `${(payload.globals.biz || 'GPC').replace(/\s+/g, '_')}_Proposal`;
+                const defaultPdf = `${(payload.globals.biz || 'Constellation').replace(/\s+/g, '_')}_Proposal`;
                 const pdfFileName = promptPdfFileName(defaultPdf);
                 if (!pdfFileName) return;
                 const a = document.createElement('a');
