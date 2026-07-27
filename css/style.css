@@ -1,2 +1,167 @@
-/* Marketing site overrides and custom styles.
-   Component classes (.btn-primary, .section-card) come from output.css. */
+/* Marketing site overrides and custom styles. */
+
+:root {
+    --primary-blue: #60a5fa;
+    --secondary-gray: #475569;
+    --border-color: #334155;
+    --shadow-medium: rgba(15, 23, 42, 0.35);
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+.btn-primary,
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    border-radius: 0.75rem;
+    font-weight: 700;
+    transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.btn-primary {
+    color: white;
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
+    box-shadow: 0 12px 30px rgba(37, 99, 235, 0.28);
+}
+
+.btn-secondary {
+    color: #e2e8f0;
+    background: rgba(51, 65, 85, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.btn-primary:hover,
+.btn-secondary:hover {
+    opacity: 0.95;
+    transform: translateY(-2px);
+    box-shadow: 0 16px 36px var(--shadow-medium);
+}
+
+.section-card {
+    box-shadow: 0 18px 45px rgba(2, 6, 23, 0.22);
+}
+
+.product-panel {
+    position: relative;
+    min-height: 22rem;
+    overflow: hidden;
+    border-radius: 1.5rem;
+    border: 1px solid rgba(51, 65, 85, 0.9);
+    background:
+        radial-gradient(circle at top right, rgba(59, 130, 246, 0.18), transparent 35%),
+        linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.82));
+    padding: 1.25rem;
+    box-shadow: 0 24px 60px rgba(2, 6, 23, 0.34);
+}
+
+.product-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(148, 163, 184, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: linear-gradient(to bottom, black, transparent 88%);
+    pointer-events: none;
+}
+
+.product-panel > * {
+    position: relative;
+}
+
+.panel-kicker {
+    color: #93c5fd;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+}
+
+.metric-pill,
+.tag-pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, 0.14);
+    border: 1px solid rgba(96, 165, 250, 0.25);
+    color: #bfdbfe;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.metric-pill {
+    padding: 0.35rem 0.7rem;
+}
+
+.tag-pill {
+    padding: 0.3rem 0.6rem;
+}
+
+.mini-card,
+.stage-card {
+    border-radius: 1rem;
+    border: 1px solid rgba(51, 65, 85, 0.95);
+    background: rgba(15, 23, 42, 0.72);
+    padding: 1rem;
+}
+
+.timeline-row,
+.contact-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(51, 65, 85, 0.9);
+    background: rgba(15, 23, 42, 0.72);
+    padding: 0.9rem 1rem;
+}
+
+.timeline-row span,
+.contact-row span {
+    flex: 0 0 auto;
+    color: #60a5fa;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.timeline-row p,
+.contact-row p {
+    margin: 0;
+    color: #cbd5e1;
+    font-size: 0.9rem;
+    text-align: right;
+}
+
+.rank-badge {
+    display: inline-flex;
+    height: 1.75rem;
+    width: 1.75rem;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, 0.18);
+    color: #bfdbfe;
+    font-size: 0.8rem;
+    font-weight: 800;
+}
+
+.stage-card p {
+    margin: 0 0 0.4rem;
+    color: #94a3b8;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.stage-card strong {
+    color: #f8fafc;
+    font-size: 1.1rem;
+}
