@@ -34,6 +34,12 @@ html {
     border: 1px solid rgba(148, 163, 184, 0.18);
 }
 
+.nav-cta {
+    min-height: 2.5rem;
+    padding: 0.625rem 1rem;
+    line-height: 1;
+}
+
 .btn-primary:hover,
 .btn-secondary:hover {
     opacity: 0.95;
