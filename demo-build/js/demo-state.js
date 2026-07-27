@@ -102,18 +102,21 @@
   const sequence_steps = [
     { id: 6101, sequence_id: 6001, user_id: userId, step_number: 1, type: 'Email', assigned_to: 'Sales', subject: 'Connection Request', message: 'Short value-oriented outreach around network modernization.', content: 'Short value-oriented outreach around network modernization.', delay_days: 0 },
     { id: 6102, sequence_id: 6001, user_id: userId, step_number: 2, type: 'LinkedIn', assigned_to: 'Sales', subject: 'Capability Statement', message: 'Share Constellation network transformation proof points.', content: 'Share Constellation network transformation proof points.', delay_days: 2 },
-    { id: 6103, sequence_id: 6001, user_id: userId, step_number: 3, type: 'Call', assigned_to: 'Sales', subject: 'Discovery Call', message: 'Ask about site count, redundancy, and renewal timing.', content: 'Ask about site count, redundancy, and renewal timing.', delay_days: 5 }
+    { id: 6103, sequence_id: 6001, user_id: userId, step_number: 3, type: 'Call', assigned_to: 'Sales', subject: 'Discovery Call', message: 'Ask about site count, redundancy, and renewal timing.', content: 'Ask about site count, redundancy, and renewal timing.', delay_days: 5 },
+    { id: 6104, sequence_id: 6002, user_id: userId, step_number: 1, type: 'Email', assigned_to: 'Sales', subject: 'Architecture recap', message: 'Send the cloud connectivity recap and confirm next design review.', content: 'Send the cloud connectivity recap and confirm next design review.', delay_days: 0 },
+    { id: 6105, sequence_id: 6002, user_id: userId, step_number: 2, type: 'Call', assigned_to: 'Sales', subject: 'Technical validation', message: 'Confirm redundancy, cloud region, and migration timing requirements.', content: 'Confirm redundancy, cloud region, and migration timing requirements.', delay_days: 2 },
+    { id: 6106, sequence_id: 6002, user_id: userId, step_number: 3, type: 'Email', assigned_to: 'Sales', subject: 'Business case follow-up', message: 'Share the business case summary and proposed next step.', content: 'Share the business case summary and proposed next step.', delay_days: 4 }
   ];
 
   const contact_sequences = [
-    { id: 6201, user_id: userId, contact_id: 2003, sequence_id: 6001, current_step_number: 2, status: 'Active', next_step_due_date: '2026-07-28' },
-    { id: 6202, user_id: userId, contact_id: 2005, sequence_id: 6002, current_step_number: 1, status: 'Active', next_step_due_date: '2026-07-29' }
+    { id: 6201, user_id: userId, contact_id: 2003, sequence_id: 6001, current_step_number: 2, status: 'Active', next_step_due_date: '2026-07-24' },
+    { id: 6202, user_id: userId, contact_id: 2005, sequence_id: 6002, current_step_number: 1, status: 'Active', next_step_due_date: '2026-07-25' }
   ];
 
   const contact_sequence_steps = [
     { id: 6301, contact_sequence_id: 6201, sequence_step_id: 6101, status: 'completed', completed_at: '2026-07-24T12:00:00.000Z' },
     { id: 6302, contact_sequence_id: 6201, sequence_step_id: 6102, status: 'pending', completed_at: null },
-    { id: 6303, contact_sequence_id: 6202, sequence_step_id: 6101, status: 'pending', completed_at: null }
+    { id: 6303, contact_sequence_id: 6202, sequence_step_id: 6104, status: 'pending', completed_at: null }
   ];
 
   const campaigns = [
@@ -389,7 +392,9 @@
       sequence_id: seqId,
       current_step_number: (index % 3) + 1,
       status: 'Active',
-      next_step_due_date: `2026-08-${String((index % 14) + 1).padStart(2, '0')}`
+      next_step_due_date: index < 9
+        ? `2026-07-${String(17 + index).padStart(2, '0')}`
+        : `2026-08-${String((index % 14) + 1).padStart(2, '0')}`
     });
 
     campaigns.push({
