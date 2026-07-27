@@ -40,6 +40,15 @@
         const codeInput = document.getElementById('demo-code');
         const message = document.getElementById('demo-auth-message');
         const sendButton = document.getElementById('send-code-btn');
+        const codeFromEmail = new URLSearchParams(window.location.search).get('code');
+
+        if (codeFromEmail) {
+            emailForm.classList.add('hidden');
+            codeForm.classList.remove('hidden');
+            codeInput.value = codeFromEmail;
+            message.textContent = 'Your code is ready. Tap Enter Demo to continue.';
+            codeInput.focus();
+        }
 
         emailForm.addEventListener('submit', async (event) => {
             event.preventDefault();

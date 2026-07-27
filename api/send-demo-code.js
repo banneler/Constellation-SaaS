@@ -48,9 +48,9 @@ module.exports = async function handler(req, res) {
           <div style="padding:32px;">
             <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 22px;">Use this one-time code to enter the Constellation interactive demo.</p>
             <div style="text-align:center;margin:28px 0;">
-              <div style="display:inline-block;max-width:100%;padding:16px 22px;border-radius:14px;background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;font-family:Menlo,Consolas,Monaco,'Courier New',monospace;font-size:28px;font-weight:800;letter-spacing:0.03em;white-space:nowrap;word-break:keep-all;overflow-wrap:normal;">${DEMO_CODE}</div>
+              <div style="display:block;width:100%;box-sizing:border-box;padding:14px 12px;border-radius:14px;background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;font-family:Menlo,Consolas,Monaco,'Courier New',monospace;font-size:22px;font-weight:800;letter-spacing:0.01em;line-height:1.2;text-align:center;white-space:nowrap;word-break:keep-all;overflow-wrap:normal;">${DEMO_CODE}</div>
+              <a href="https://www.constellation-crm.com/demo-build/index.html?code=${encodeURIComponent(DEMO_CODE)}" style="display:block;margin-top:16px;padding:13px 18px;border-radius:999px;background:#2563eb;color:#ffffff;font-size:15px;font-weight:800;text-decoration:none;text-align:center;">Open demo login with code</a>
             </div>
-            <p style="font-size:13px;line-height:1.6;color:#64748b;margin:0;">This code is for demo access only. The demo uses local sample data and does not access production customer records.</p>
           </div>
         </div>
       </div>
