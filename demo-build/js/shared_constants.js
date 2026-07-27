@@ -1046,14 +1046,14 @@ const GLOBAL_NAV_TEMPLATE = `
     <a href="irr.html" class="nav-button"><i class="fa-solid fa-calculator nav-icon"></i><span class="nav-label-text">IRR</span></a>
     <a href="campaigns.html" class="nav-button"><i class="fa-solid fa-bullhorn nav-icon"></i><span class="nav-label-text">Campaigns</span></a>
     <a href="sequences.html" class="nav-button"><i class="fa-solid fa-arrows-rotate nav-icon"></i><span class="nav-label-text">Sequences</span></a>
-    <a href="social_hub.html" class="nav-button"><i class="fa-solid fa-share-nodes nav-icon"></i><span class="nav-label-text">Social Hub</span> <i class="fa-solid fa-bell nav-notification-dot hidden" id="social_hub-notification"></i></a>
+    <a href="social_hub.html" class="nav-button"><i class="fa-solid fa-share-nodes nav-icon"></i><span class="nav-label-text">Social Hub</span> <i class="fa-solid fa-bell nav-notification-dot" id="social_hub-notification"></i></a>
 </div>
 <div class="nav-cognito-wrap">
     <a href="cognito.html" class="nav-button cognito-nav-btn" title="Cognito">
         <span class="cognito-icon-collapsed"><i class="fa-solid fa-magnifying-glass nav-icon"></i></span>
         <span class="nav-label-text cognito-text"><h1>C<svg class="cognito-logo-magnifying-glass" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="glassGradient" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#60a5fa;"></stop><stop offset="100%" style="stop-color:#3b82f6;"></stop></linearGradient></defs><g fill="none" stroke="url(#glassGradient)" stroke-width="5" stroke-linecap="round"><path d="M32.2,32.2 L45,45"></path><circle cx="20" cy="20" r="15"></circle></g></svg>gnito</h1></span>
     </a>
-    <i class="fa-solid fa-bell nav-notification-dot hidden" id="cognito-notification"></i>
+    <i class="fa-solid fa-bell nav-notification-dot" id="cognito-notification"></i>
 </div>
 <div class="nav-bottom-section">
     <div class="user-menu">
