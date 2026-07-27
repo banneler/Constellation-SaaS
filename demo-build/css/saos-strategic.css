@@ -1,0 +1,1981 @@
+/**
+ * Strategic Account OS — component overrides (plain CSS).
+ * Loaded after output.css so Tailwind v4 nested @supports compilation
+ * cannot break descriptor padding/borders.
+ */
+
+.strategic-composite-field--with-hint .strategic-composite-field-body {
+    display: grid;
+    grid-template-columns: minmax(11rem, 32%) minmax(0, 1fr);
+    gap: 0.75rem 1rem;
+    align-items: start;
+}
+
+.strategic-composite-field-aside {
+    align-self: start;
+    min-width: 0;
+    width: 100%;
+}
+
+.strategic-composite-field-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.strategic-composite-field-meta label {
+    display: block;
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--text-light);
+}
+
+.strategic-field-context {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 0.5rem 0.625rem 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: var(--text-muted);
+    background-color: #f1f5f9;
+    background-color: color-mix(in srgb, var(--bg-medium) 55%, transparent);
+    border-left: 2px solid #93c5fd;
+    border-left: 2px solid color-mix(in srgb, var(--primary-blue) 30%, var(--border-color));
+}
+
+.strategic-field-context p {
+    margin: 0;
+}
+
+.strategic-pills-narrative-split-text .strategic-composite-field--with-hint .strategic-composite-field-body {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .strategic-composite-field--with-hint .strategic-composite-field-body {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ---------------------------------------------------------------------------
+ * Active Coaching Workspace — Strategic Ghosting reminder, Insight Density
+ * nudge, and Influence -> Entry Point "Unmapped" tab flag.
+ *
+ * Lives here (not output.css) by project convention: plain CSS loaded after
+ * Tailwind output so we never need to rebuild the bundle for component-level
+ * tweaks, and never have to fight Tailwind's nested @supports compilation.
+ * ------------------------------------------------------------------------ */
+
+.strategic-ghost-reminder {
+    display: block;
+    margin: 0 0 1rem 0;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px dashed color-mix(in srgb, var(--primary-blue) 45%, transparent);
+    background: color-mix(in srgb, var(--primary-blue) 6%, transparent);
+    color: color-mix(in srgb, var(--text-light) 78%, transparent);
+    font-size: 0.8125rem;
+    line-height: 1.45;
+}
+
+.strategic-ghost-headline {
+    margin: 0;
+    color: color-mix(in srgb, var(--text-light) 85%, transparent);
+}
+
+.strategic-ghost-headline--empty {
+    color: color-mix(in srgb, var(--text-muted) 90%, transparent);
+    font-style: italic;
+}
+
+.strategic-ghost-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin-top: 0.5rem;
+}
+
+.strategic-ghost-pill {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.25rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--primary-blue) 14%, transparent);
+    border: 1px solid color-mix(in srgb, var(--primary-blue) 35%, transparent);
+    font-size: 0.75rem;
+}
+
+.strategic-ghost-pill strong {
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.strategic-ghost-pill-alt {
+    color: var(--text-muted);
+    font-size: 0.7rem;
+}
+
+.strategic-insight-wrap {
+    position: relative;
+    width: 100%;
+}
+
+.strategic-insight-textarea {
+    transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+
+/* Soft 400-char nudge for Pursuit Strategy / Competitive Landscape.
+ * No !important — we want the user's own focus styles to win. */
+.strategic-insight-textarea--dense {
+    border-color: rgba(234, 179, 8, 0.65);
+    box-shadow: 0 0 0 1px rgba(234, 179, 8, 0.35);
+}
+
+.strategic-insight-textarea--dense:focus {
+    border-color: rgba(234, 179, 8, 0.9);
+    box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.35);
+}
+
+.strategic-insight-counter {
+    position: absolute;
+    right: 0.5rem;
+    bottom: 0.35rem;
+    font-size: 0.6875rem;
+    line-height: 1;
+    padding: 0.125rem 0.375rem;
+    border-radius: 4px;
+    color: var(--text-muted);
+    background: color-mix(in srgb, var(--bg-dark) 60%, transparent);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 200ms ease, color 200ms ease;
+}
+
+.strategic-insight-wrap:hover .strategic-insight-counter,
+.strategic-insight-wrap:focus-within .strategic-insight-counter {
+    opacity: 0.85;
+}
+
+.strategic-insight-counter--dense {
+    color: rgb(234, 179, 8);
+    opacity: 1;
+}
+
+/* Unmapped entry-point tab: amber border + dot — but ONLY when the tab is not
+ * the currently selected ("active") tab. The active state must always win the
+ * border-color cascade so the rep never loses track of which profile is open.
+ * Hence the :not(.entry-point-tab--active) qualifier and no !important. */
+.entry-point-tab--unmapped:not(.entry-point-tab--active) {
+    border-color: rgba(234, 179, 8, 0.6);
+}
+
+.entry-point-tab-unmapped-dot {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-left: 0.4rem;
+    border-radius: 50%;
+    background: rgb(234, 179, 8);
+    box-shadow: 0 0 0 2px color-mix(in srgb, rgb(234, 179, 8) 25%, transparent);
+    vertical-align: middle;
+}
+
+/* ===========================================================================
+ * Tailwind v4 nested-@supports cascade fix (parity with commit 1f6ce2b).
+ *
+ * Why these rules are duplicated here as plain CSS:
+ *   Tailwind v4 compiles any @apply'd or hand-written rule that contains a
+ *   color-mix(in srgb, ...) call into a structure like
+ *
+ *     .selector {
+ *         background: <fallback>;
+ *         @supports (color: color-mix(in lab, red, red)) {
+ *             background: <color-mix gradient>;
+ *         }
+ *         color: white;           // <- this lands AFTER a nested at-rule
+ *         box-shadow: 0 2px 8px var(--primary-blue);
+ *         @supports (...) { ... } // <- second nested at-rule
+ *     }
+ *
+ *   In browsers whose CSS Nesting + @supports interop is imperfect (we have
+ *   observed it in real users' Chromiums via the SAOS), properties that
+ *   appear AFTER a nested at-rule inside a regular ruleset are silently
+ *   dropped during parse. The visible symptoms on the 30/60/90 badge are
+ *   exactly what we get when the trailing declarations are eaten:
+ *     - color: white  -> dropped, badge text falls back to inherited black
+ *     - box-shadow    -> dropped, badge looks flat
+ *     - similar issue collapses .entry-point-tab into a near-default <button>.
+ *
+ *   The earlier commit (1f6ce2b "Fix SAOS descriptor styling with plain CSS
+ *   override layer") already hit this problem on .strategic-field-context.
+ *   The proven, low-risk fix is to re-author the affected rules as plain CSS
+ *   in this file (loaded AFTER output.css) so the cascade resolves to a
+ *   clean, un-nested ruleset that every browser parses identically.
+ *
+ *   We do NOT remove the Tailwind/@apply versions in input.css — keeping
+ *   both means the cascade still works if/when Tailwind's compiler stops
+ *   emitting trailing-property nesting, and grep-ability of class definitions
+ *   in input.css is preserved.
+ * ======================================================================== */
+
+/* 30/60/90 row container: keep the soft tinted card background. */
+.plan-306090-row {
+    display: grid;
+    grid-template-columns: minmax(11rem, 24%) minmax(0, 1fr);
+    gap: 1rem;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-color);
+    background-color: color-mix(in srgb, var(--bg-medium) 45%, transparent);
+}
+
+.plan-306090-row-meta {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* The 30/60/90 badge — blue rounded chip with white numerals.
+ * Trailing color/box-shadow were getting silently dropped after the
+ * @supports wrappers in output.css; this plain-CSS version makes them stick. */
+.plan-306090-badge {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    font-weight: 700;
+    color: #ffffff;
+    background: linear-gradient(
+        135deg,
+        var(--primary-blue),
+        color-mix(in srgb, var(--primary-blue) 65%, #6366f1)
+    );
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--primary-blue) 35%, transparent);
+}
+
+.plan-306090-column-heading {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.plan-306090-column-title {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.plan-306090-column-hint {
+    margin: 0;
+    font-size: 0.75rem;
+    line-height: 1.45;
+    color: var(--text-muted);
+}
+
+.plan-306090-commitments {
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.plan-306090-commitments-title {
+    margin: 0 0 0.75rem;
+    font-size: 1.125rem;
+    line-height: 1.35;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.plan-306090-commitments-title-qualifier {
+    font-weight: 400;
+    color: var(--text-muted);
+}
+
+/* Entry Point carousel tabs — pill-shaped, bordered, with a clear active state.
+ * Same trailing-declaration issue: color/cursor on the base tab and color on
+ * the active tab were being dropped after the @supports background-color block. */
+.entry-point-tab {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    border: 1px solid var(--border-color);
+    padding: 0.375rem 0.875rem;
+    font-size: 0.75rem;
+    line-height: 1;
+    font-weight: 500;
+    color: var(--text-medium);
+    background-color: color-mix(in srgb, var(--bg-medium) 65%, transparent);
+    cursor: pointer;
+    transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease;
+}
+
+.entry-point-tab:hover {
+    border-color: var(--primary-blue);
+    color: var(--text-light);
+}
+
+.entry-point-tab--active {
+    border-color: var(--primary-blue);
+    color: var(--text-light);
+    background-color: color-mix(in srgb, var(--primary-blue) 16%, var(--bg-medium));
+}
+
+.entry-point-tab--add {
+    border-style: dashed;
+    color: var(--text-muted);
+}
+
+.entry-point-tab--add:hover {
+    color: var(--text-light);
+}
+
+.entry-point-add-wrap {
+    position: relative;
+    display: inline-flex;
+}
+
+.entry-point-add-menu {
+    position: absolute;
+    top: calc(100% + 0.4rem);
+    right: 0;
+    z-index: 20;
+    min-width: 16rem;
+    max-width: min(22rem, 80vw);
+    max-height: 18rem;
+    overflow-y: auto;
+    padding: 0.45rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    background: var(--bg-dark);
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.28);
+}
+
+.entry-point-add-menu-label {
+    padding: 0.35rem 0.45rem 0.45rem;
+    color: var(--text-muted);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.entry-point-add-menu-item {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    align-items: flex-start;
+    padding: 0.55rem 0.65rem;
+    border: 0;
+    border-radius: 0.5rem;
+    color: var(--text-light);
+    background: transparent;
+    font-size: 0.8rem;
+    line-height: 1.25;
+    text-align: left;
+    cursor: pointer;
+}
+
+.entry-point-add-menu-item:hover {
+    background: color-mix(in srgb, var(--primary-blue) 14%, transparent);
+}
+
+.entry-point-add-menu-item small,
+.entry-point-add-menu-empty {
+    color: var(--text-muted);
+    font-size: 0.72rem;
+}
+
+.entry-point-add-menu-item--cancel {
+    margin-top: 0.25rem;
+    border-top: 1px solid var(--border-color);
+    border-radius: 0 0 0.5rem 0.5rem;
+}
+
+.entry-point-add-menu-empty {
+    padding: 0.55rem 0.65rem;
+    font-style: italic;
+}
+
+/* ===========================================================================
+ * .strategic-section-context — same Tailwind v4 nested @supports parse drop
+ * as the badge/tab fixes above. The compiled rule has `border-left` + extra
+ * declarations after a nested @supports block; in browsers with imperfect
+ * CSS Nesting/@supports interop the trailing declarations get eaten, so the
+ * descriptor block (the "What is shifting in the relationship?" tinted call-
+ * out under Relationship Momentum) renders as plain unstyled text.
+ *
+ * Plain-CSS override below mirrors the input.css declaration list flat, so
+ * the cascade resolves cleanly without any nesting.
+ * ======================================================================== */
+.strategic-section-context {
+    margin-bottom: 0.75rem;
+    padding: 0.625rem 0.75rem;
+    border-radius: 0.375rem;
+    border-left: 3px solid color-mix(in srgb, var(--primary-blue) 35%, var(--border-color));
+    background-color: color-mix(in srgb, var(--bg-medium) 65%, transparent);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+}
+
+.strategic-section-context p {
+    margin: 0;
+}
+
+.strategic-section-context p + ul {
+    margin-top: 0.5rem;
+}
+
+.strategic-section-context ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    list-style-type: disc;
+}
+
+.strategic-section-context li {
+    margin-bottom: 0.25rem;
+}
+
+.strategic-section-context li:last-child {
+    margin-bottom: 0;
+}
+
+/* ===========================================================================
+ * Interaction Log form — pill-style toggles for Political Signal and Momentum
+ * Shift. We intentionally do NOT reuse .strategic-pill because the global
+ * click handler grabs every .strategic-pill and writes to _liveSections[
+ * sectionId][pillField] — interaction-log form pills are ephemeral form state
+ * (held in a hidden input), not section state.
+ *
+ * Visual parity with .strategic-pill is the goal; behavior (single-select per
+ * field, toggle-off by re-clicking) is owned by initInteractionLogControls.
+ * ======================================================================== */
+.interaction-log-pills-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+}
+
+.interaction-log-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    border: 1px solid var(--border-color);
+    background-color: color-mix(in srgb, var(--bg-medium) 65%, transparent);
+    color: var(--text-medium);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease;
+}
+
+.interaction-log-pill:hover {
+    border-color: var(--primary-blue);
+    color: var(--text-light);
+}
+
+.interaction-log-pill--active {
+    border-color: var(--primary-blue);
+    background-color: color-mix(in srgb, var(--primary-blue) 18%, var(--bg-medium));
+    color: var(--text-light);
+}
+
+/* ===========================================================================
+ * Influence Mapping fixes
+ *
+ * Symptoms (all confirmed in the live SAOS canvas):
+ *
+ *   A. The "Unassigned Contacts" column was huge — ~16rem tall even when it
+ *      held nothing but a single row of pills. Caused by belt-and-braces
+ *      min-height on both .influence-board-column--bench (16rem) and the
+ *      inner .influence-board-dropzone--bench (12rem). The bench is meant
+ *      to be a spill area, not a sized dropzone like the leadership tiers.
+ *
+ *   B. The column-hint paragraph ("Contacts not yet mapped to a leadership
+ *      tier.") rendered as unstyled plain text. Same Tailwind v4 nested
+ *      @supports trap as the badge/tab/descriptor fixes earlier: the
+ *      compiled output.css has
+ *          @supports (color: color-mix(in lab, red, red)) { border-color: ... }
+ *          background-color: var(--bg-medium);       <-- DROPPED
+ *          @supports (color: color-mix(in lab, red, red)) { background-color: ... }
+ *      so the tinted background never applies in browsers with the parse
+ *      drop. We re-author the rule flat below.
+ *
+ *   C. Invisible Org Chart + Political Dynamics blocks had the textarea
+ *      wrapping into the 32% narrow hint column. That's a structural fix
+ *      in the JS (now uses .strategic-composite-field--nested-meta with
+ *      label + hint stacked in the aside) — nothing further needed in CSS
+ *      because the .strategic-composite-field-meta rules above already
+ *      cover that variant.
+ * ======================================================================== */
+
+/* Bench column: sized to its content. Padding gives the row of pills a
+ * little breathing room without forcing 16rem of empty pixels. */
+.influence-board-column--bench {
+    min-height: 0;
+}
+
+.influence-board-dropzone--bench {
+    min-height: 0;
+    padding: 0.5rem 0.75rem 0.625rem;
+}
+
+/* Restore the column-hint visual — tinted background, soft bottom border,
+ * left padding so it reads as a callout under the column title. Flat CSS,
+ * no nested @supports, so trailing declarations stay attached. */
+.influence-board-column-hint {
+    margin: 0;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--border-color) 65%, transparent);
+    font-size: 0.75rem;
+    line-height: 1.45;
+    color: var(--text-muted);
+    background-color: color-mix(in srgb, var(--bg-medium) 40%, transparent);
+}
+
+/* ===========================================================================
+ * White Space matrix — pill-group selectors replace the old <select>s.
+ *
+ * Same one-tap pattern used for strategic_tensions, interaction_log, and
+ * snapshot pills: a single click sets/clears the value. The 9-area selector
+ * (Cloud / Security / AI / Infrastructure / SD-WAN / DR / UCaaS / Wireless /
+ * Backup) wraps onto two rows on narrow viewports; flex-wrap handles it
+ * without a media query.
+ * ======================================================================== */
+
+.white-space-pills-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+}
+
+.white-space-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.7rem;
+    border-radius: 9999px;
+    border: 1px solid var(--border-color);
+    background-color: color-mix(in srgb, var(--bg-medium) 65%, transparent);
+    color: var(--text-medium);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease;
+}
+
+.white-space-pill:hover {
+    border-color: var(--primary-blue);
+    color: var(--text-light);
+}
+
+.white-space-pill--active {
+    border-color: var(--primary-blue);
+    background-color: color-mix(in srgb, var(--primary-blue) 18%, var(--bg-medium));
+    color: var(--text-light);
+}
+
+/* ===========================================================================
+ * Entry Point contact header — was a <select> dropdown, now a read-only
+ * label. Contact assignment now happens upstream (influence-board drag or
+ * "+ Add Point" creation), so the card just displays who this profile
+ * belongs to. Unassigned state uses dashed/muted styling to signal "this
+ * profile is orphaned — drop a contact into Executive or Mid-Level".
+ * ======================================================================== */
+
+/* ============================================================================
+ * White Space — editable opportunity name (row header).
+ * The row's header was previously a static "Opportunity 1/2/3..." caption.
+ * It is now a real editable input that doubles as the row's identity. The
+ * placeholder renders the fallback "Opportunity N" so unset rows still read
+ * cleanly. Styled to feel like the entry-point name (subdued container, bold
+ * type) so reps recognize the "named pursuit" pattern across both sections.
+ * Plain CSS to dodge the Tailwind v4 nested-@supports trap.
+ * ======================================================================== */
+.white-space-row-header {
+    align-items: center;
+}
+
+.white-space-row-name-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0.4375rem 0.625rem;
+    border-radius: 0.375rem;
+    border: 1px solid transparent;
+    background-color: transparent;
+    color: var(--text-light);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.3;
+    transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+}
+
+.white-space-row-name-input::placeholder {
+    color: color-mix(in srgb, var(--text-muted) 80%, transparent);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.75rem;
+    font-style: normal;
+}
+
+.white-space-row-name-input:hover {
+    border-color: color-mix(in srgb, var(--primary-blue) 30%, var(--border-color));
+    background-color: color-mix(in srgb, var(--bg-medium) 35%, transparent);
+}
+
+.white-space-row-name-input:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    background-color: color-mix(in srgb, var(--bg-medium) 55%, transparent);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-blue) 25%, transparent);
+}
+
+.entry-point-contact-row--inline {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.entry-point-contact-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.entry-point-contact-name {
+    min-width: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-light);
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+}
+
+.entry-point-contact-name--unassigned {
+    font-weight: 400;
+    font-style: italic;
+    color: var(--text-muted);
+}
+
+.entry-point-delete-btn {
+    margin-left: auto;
+    width: 2rem;
+    height: 2rem;
+    display: inline-grid;
+    place-items: center;
+    border: 1px solid rgba(239, 68, 68, 0.22);
+    border-radius: 999px;
+    color: rgba(248, 113, 113, 0.9);
+    background: rgba(239, 68, 68, 0.08);
+    cursor: pointer;
+    transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease;
+}
+
+.entry-point-delete-btn:hover {
+    color: rgb(254, 202, 202);
+    border-color: rgba(239, 68, 68, 0.45);
+    background: rgba(239, 68, 68, 0.16);
+}
+
+/* ===========================================================================
+ * Firmographics (CRM) — upgraded card-grid presentation.
+ *
+ * Why this exists as a dedicated block:
+ *   The previous markup was a flat 2-column label/value list that read as a
+ *   generic spec sheet — visually indistinguishable from the editable
+ *   "Strategic Judgments" block underneath, so reps kept reflexively trying
+ *   to type into firmographics fields. New treatment makes three signals
+ *   explicit:
+ *     1. "This is sourced data" — small CRM badge in the header.
+ *     2. "These are facts, not opinions" — icon + card layout reads as a
+ *         data card stack rather than a form.
+ *     3. "Customer Status is the heaviest signal here" — rendered as a
+ *         colored pill so it pops over the surrounding rows.
+ *
+ *   All values come pre-escaped from the JS; no @apply, all plain CSS to
+ *   avoid the Tailwind v4 nested @supports trap we've hit elsewhere.
+ * ======================================================================== */
+
+.strategic-section--account-snapshot .account-snapshot-crm-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.strategic-section--account-snapshot .account-snapshot-crm-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--text-light);
+    letter-spacing: 0.01em;
+}
+
+.strategic-section--account-snapshot .account-snapshot-crm-title-icon {
+    color: var(--primary-blue);
+    font-size: 0.875rem;
+}
+
+/* The "CRM" provenance chip — small, lowercase, non-interactive, sits to
+ * the right of the section title. Subtle linear-gradient gives it a soft
+ * tech-card vibe without competing with real action affordances on the page. */
+.strategic-section--account-snapshot .account-snapshot-crm-source {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    border: 1px solid color-mix(in srgb, var(--primary-blue) 35%, var(--border-color));
+    background: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--primary-blue) 14%, transparent),
+        color-mix(in srgb, var(--primary-blue) 6%, transparent)
+    );
+    color: color-mix(in srgb, var(--primary-blue) 75%, var(--text-light));
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: help;
+}
+
+.strategic-section--account-snapshot .account-snapshot-crm-source i {
+    font-size: 0.625rem;
+    opacity: 0.85;
+}
+
+.strategic-section--account-snapshot .account-snapshot-crm-note {
+    margin: 0 0 0.875rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Override the existing 2-col grid with a snug card grid. min(220px, 1fr)
+ * lets the grid collapse to a single column on narrow viewports without a
+ * media query — auto-fit handles the breakpoint behavior. */
+.strategic-section--account-snapshot .account-snapshot-crm-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.5rem;
+}
+
+/* Each fact reads as a small card: icon on the left, label+value stacked
+ * on the right. Subtle inner border + soft tinted background — readable
+ * but visually demoted vs the editable judgments below. */
+.strategic-section--account-snapshot .account-snapshot-crm-card {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: 0.5rem;
+    border: 1px solid color-mix(in srgb, var(--border-color) 90%, transparent);
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--bg-medium) 35%, transparent),
+        color-mix(in srgb, var(--bg-medium) 18%, transparent)
+    );
+    transition: border-color 150ms ease, background-color 150ms ease, transform 150ms ease;
+    min-width: 0;
+}
+
+.strategic-section--account-snapshot .account-snapshot-crm-card:hover {
+    border-color: color-mix(in srgb, var(--primary-blue) 35%, var(--border-color));
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--primary-blue) 8%, transparent),
+        color-mix(in srgb, var(--bg-medium) 22%, transparent)
+    );
+}
+
+.strategic-section--account-snapshot .account-snapshot-crm-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 1.85rem;
+    height: 1.85rem;
+    border-radius: 0.5rem;
+    background: color-mix(in srgb, var(--primary-blue) 12%, transparent);
+    color: color-mix(in srgb, var(--primary-blue) 80%, var(--text-light));
+    font-size: 0.8125rem;
+}
+
+.strategic-section--account-snapshot .account-snapshot-crm-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.strategic-section--account-snapshot .account-snapshot-crm-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.strategic-section--account-snapshot .account-snapshot-crm-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-light);
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.strategic-section--account-snapshot .account-snapshot-crm-value--empty {
+    font-weight: 400;
+    font-style: italic;
+    color: var(--text-muted);
+}
+
+/* Customer Status — three visual states. The status pill replaces the
+ * "value" line for this single row; everything else (label, icon, hover)
+ * inherits from .account-snapshot-crm-card. */
+.strategic-section--account-snapshot .account-snapshot-crm-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    align-self: flex-start;
+    padding: 0.2rem 0.55rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+    border: 1px solid transparent;
+}
+
+.strategic-section--account-snapshot .account-snapshot-crm-status i {
+    font-size: 0.6875rem;
+}
+
+.strategic-section--account-snapshot .account-snapshot-crm-status--customer {
+    background-color: color-mix(in srgb, rgb(34, 197, 94) 18%, transparent);
+    border-color: color-mix(in srgb, rgb(34, 197, 94) 50%, transparent);
+    color: rgb(22, 163, 74);
+}
+
+.strategic-section--account-snapshot .account-snapshot-crm-status--prospect {
+    background-color: color-mix(in srgb, var(--primary-blue) 16%, transparent);
+    border-color: color-mix(in srgb, var(--primary-blue) 45%, transparent);
+    color: color-mix(in srgb, var(--primary-blue) 80%, var(--text-light));
+}
+
+.strategic-section--account-snapshot .account-snapshot-crm-status--unknown {
+    background-color: transparent;
+    border-color: color-mix(in srgb, var(--border-color) 80%, transparent);
+    border-style: dashed;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* ===========================================================================
+ * Accounts page — picker panel must not shrink when an account is selected.
+ *
+ * Symptom: clicking an account name made the left-hand .account-picker-panel
+ * jump narrower (sometimes down to its 12rem floor).
+ *
+ * Cause: .accounts-layout is `display: flex`. The picker had `flex-shrink: 1`
+ * with `width: min(18rem, max(12rem, 15vw))` and `min-width: 12rem`. When an
+ * account is selected, .account-details-content (the flex sibling) populates
+ * with the form, deals column, contacts, and activities cards. Its intrinsic
+ * min-content grows — particularly because .account-details-top-row is a CSS
+ * grid with a FIXED 320px right column (`grid-template-columns: minmax(0, 1fr)
+ * 320px`) and `flex-shrink: 0`. Flexbox then negotiates by shrinking the only
+ * shrinkable sibling: the picker.
+ *
+ * Fix: pin the picker with flex-shrink: 0 so its preferred width is stable
+ * regardless of details-panel content. The details panel still adapts via its
+ * own `minmax(0, 1fr)` internal grid track.
+ *
+ * input.css carries the same change; this override ensures the fix is live
+ * without waiting for a Tailwind rebuild of output.css.
+ * ======================================================================== */
+.account-picker-panel {
+    flex-shrink: 0;
+}
+
+/* ===========================================================================
+ * Legacy left-rail TOC — superseded by #strategic-path (Option A: Path + scroll).
+ * Kept hidden; do not re-enable the strategic-mode picker swap below.
+ * ======================================================================== */
+
+.strategic-toc-body,
+.strategic-toc-body.hidden {
+    display: none !important;
+}
+
+/* Core vs. Deep Dive — toggle beside Strategic Plan header */
+.saos-view-mode {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.5rem;
+    flex-shrink: 0;
+    padding: 0.35rem 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid color-mix(in srgb, var(--border-color) 85%, transparent);
+    background: color-mix(in srgb, var(--bg-medium) 40%, transparent);
+}
+
+.saos-view-mode-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-right: 0.15rem;
+}
+
+.saos-view-mode-option {
+    appearance: none;
+    border: none;
+    background: transparent;
+    padding: 0.2rem 0.35rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-medium);
+    cursor: pointer;
+    border-radius: 0.35rem;
+    line-height: 1.2;
+    transition: color 150ms ease, background-color 150ms ease;
+}
+
+.saos-view-mode-option:hover,
+.saos-view-mode-option:focus-visible {
+    color: var(--text-light);
+    background: color-mix(in srgb, var(--bg-medium) 65%, transparent);
+    outline: none;
+}
+
+.saos-view-mode-option--active {
+    color: var(--primary-blue);
+    background: color-mix(in srgb, var(--primary-blue) 12%, transparent);
+}
+
+.saos-view-mode-sep {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    user-select: none;
+}
+
+/* Core view — hide Deep Dive-only framework sections on the canvas */
+#strategic-document-canvas.saos-mode-core #strategic-section-psychology,
+#strategic-document-canvas.saos-mode-core #strategic-section-strategic_tensions,
+#strategic-document-canvas.saos-mode-core #strategic-section-critical_unknowns {
+    display: none !important;
+}
+
+.strategic-workspace-header-main {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.strategic-view-mode-host {
+    flex-shrink: 0;
+}
+
+/* ---------------------------------------------------------------------------
+ * Hide the strategic workspace in tactical mode (cascade bug fix).
+ *
+ * input.css declares the workspace twice:
+ *
+ *     .strategic-workspace { display: none; }                  // gate
+ *     .strategic-mode-active .strategic-workspace {            // unlock
+ *         display: flex;
+ *     }
+ *     .strategic-workspace {                                    // sizing
+ *         @apply flex flex-col flex-1 min-h-0 min-w-0;
+ *         ...
+ *     }
+ *
+ * The third rule's `@apply flex` compiles to `display: flex`, which has the
+ * same specificity as the first rule and lands LATER in output.css — so the
+ * cascade promotes the workspace to display: flex even in tactical mode. The
+ * static <h3>Strategic Account Plan</h3> then renders as a sliver column
+ * inside .accounts-layout, competing with #account-details for space.
+ *
+ * Fix here uses the id selector (specificity 1,0,0) which beats the .class
+ * rules (0,1,0) so neither @apply flex nor any later same-class declaration
+ * can re-enable display. input.css gets the source-side fix in parallel so
+ * the next Tailwind rebuild produces clean output.
+ * ------------------------------------------------------------------------ */
+#strategic-workspace {
+    display: none;
+}
+
+body.strategic-mode-active #strategic-workspace {
+    display: flex;
+}
+
+/* ===========================================================================
+ * Horizontal Path (Salesforce-style section nav) — Option A: Path + scroll.
+ * Plain CSS so it applies before the next Tailwind rebuild of output.css.
+ * ======================================================================== */
+
+.strategic-path {
+    display: block;
+    flex-shrink: 0;
+    margin-bottom: 0.75rem;
+    padding: 0.5rem 0.375rem 0.625rem;
+    border-bottom: 1px solid var(--border-color);
+    overflow: visible;
+}
+
+.strategic-path.hidden {
+    display: none;
+}
+
+.strategic-path-track {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 0.35rem;
+    overflow: visible;
+}
+
+.strategic-path-row {
+    display: block;
+    width: 100%;
+    list-style: none;
+}
+
+.strategic-path-row-track {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow: visible;
+}
+
+.strategic-path-item {
+    display: flex;
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.strategic-path-track--core .strategic-path-row-track .strategic-path-item,
+.strategic-path-track--deep .strategic-path-row-track .strategic-path-item {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.strategic-path-step {
+    --path-chevron: 9px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 2rem;
+    margin-left: calc(var(--path-chevron) * -0.65);
+    padding: 0.4rem calc(0.55rem + var(--path-chevron)) 0.4rem calc(0.6rem + var(--path-chevron));
+    border: none;
+    border-radius: 0;
+    background-color: var(--bg-medium);
+    color: #475569;
+    font-family: inherit;
+    font-size: 0.625rem;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    white-space: normal;
+    cursor: pointer;
+    clip-path: polygon(
+        0 0,
+        calc(100% - var(--path-chevron)) 0,
+        100% 50%,
+        calc(100% - var(--path-chevron)) 100%,
+        0 100%,
+        var(--path-chevron) 50%
+    );
+    z-index: calc(10 + var(--path-index, 0));
+    transition: background-color 150ms ease, color 150ms ease;
+}
+
+.strategic-path-row-track > .strategic-path-item:first-child .strategic-path-step {
+    margin-left: 0;
+    padding-left: 0.65rem;
+    clip-path: polygon(
+        0 0,
+        calc(100% - var(--path-chevron)) 0,
+        100% 50%,
+        calc(100% - var(--path-chevron)) 100%,
+        0 100%
+    );
+}
+
+.strategic-path-row-track > .strategic-path-item:last-child .strategic-path-step {
+    padding-right: 0.65rem;
+    clip-path: polygon(
+        0 0,
+        100% 0,
+        100% 100%,
+        0 100%,
+        var(--path-chevron) 50%
+    );
+}
+
+.strategic-path-row-track > .strategic-path-item:first-child:last-child .strategic-path-step {
+    clip-path: none;
+    border-radius: 0.375rem;
+    margin-left: 0;
+    padding: 0.4rem 0.65rem;
+}
+
+.strategic-path-step:hover,
+.strategic-path-step:focus-visible {
+    color: var(--text-light);
+    background-color: color-mix(in srgb, var(--bg-medium) 75%, var(--primary-blue));
+    outline: none;
+    z-index: 50;
+}
+
+.strategic-path-step--active {
+    color: var(--text-light);
+    background-color: color-mix(in srgb, var(--primary-blue) 22%, var(--bg-medium));
+    z-index: 100;
+}
+
+.strategic-path-step--active .strategic-path-step-label {
+    font-weight: 700;
+}
+
+.strategic-path-step-label {
+    white-space: normal;
+    text-align: center;
+    overflow: visible;
+    text-overflow: clip;
+    word-break: normal;
+    overflow-wrap: anywhere;
+}
+
+body.strategic-mode-active .strategic-document-canvas {
+    max-height: calc(100vh - 168px);
+}
+
+body.strategic-mode-active #strategic-document-canvas {
+    background-color: #f1f5f9;
+    border-radius: 0.75rem;
+}
+
+body.strategic-mode-active #strategic-document-canvas .strategic-document-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    max-width: min(1180px, 100%);
+    padding-left: 1.75rem;
+    padding-right: 1.75rem;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+body.strategic-mode-active #strategic-document-canvas .strategic-section-card {
+    margin: 0;
+    padding: 1.25rem 1.5rem 1.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    background-color: #ffffff;
+    box-shadow:
+        0 4px 6px -1px rgb(15 23 42 / 0.08),
+        0 2px 4px -2px rgb(15 23 42 / 0.06);
+}
+
+body.strategic-mode-active #strategic-document-canvas .strategic-section-card .strategic-section-title {
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--border-color) 72%, transparent);
+}
+
+/* ===========================================================================
+ * Plan export overlay + PDF preview modal — z-index lift, true viewport anchor,
+ * and a usable preview dialog size.
+ *
+ * Why this is here (and not just left in input.css):
+ *   1. The export overlay was nested inside `.strategic-workspace`, whose
+ *      ancestor chain (`.content-area` with `overflow-y: auto`,
+ *      `.strategic-workspace` itself `position: relative` with a `max-height`
+ *      clamp) was confining the supposedly-fixed overlay to the workspace box
+ *      on Chromium. We moved the markup to <body> level in accounts.html so
+ *      `position: fixed; inset: 0` once again anchors to the viewport. The CSS
+ *      below codifies the z-index lift so the spinner card sits on TOP of the
+ *      global loader (z 9999), nav chrome, and any other overlay.
+ *
+ *   2. The PDF preview dialog used `width: min(100%, calc(85vh * 0.82))` —
+ *      width tied to viewport HEIGHT. On a typical 1366x768 laptop that
+ *      resolves to ~535px wide, and since the iframe is opened with
+ *      `view=FitH` (fit to width), the rendered page was shrunk to that 535px
+ *      box and effectively unreadable. New sizing uses viewport WIDTH (capped
+ *      at 1100px so it doesn't run away on ultra-wide displays) and 92vh tall,
+ *      which yields a comfortable letter-portrait preview on every screen.
+ *
+ *   3. Both rules are duplicated here as plain CSS so the cascade resolves
+ *      cleanly without nested @supports — see the long-form note about the
+ *      Tailwind v4 nested-@supports parse drop earlier in this file. We do
+ *      NOT want a future regression where `backdrop-filter` (currently the
+ *      trailing declaration after a color-mix @supports block in output.css)
+ *      gets silently dropped in some Chromium build.
+ * ======================================================================== */
+
+.plan-export-generating-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10010;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100dvh;
+    min-height: -webkit-fill-available;
+    background-color: color-mix(in srgb, var(--bg-dark, #0f1419) 45%, transparent);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.plan-pdf-preview-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background-color: rgba(5, 27, 45, 0.92);
+}
+
+.plan-pdf-preview-modal.hidden {
+    display: none;
+}
+
+/* Use id-scoped selector so the cascade can never fall back to the older
+ * `.plan-pdf-preview-dialog { width: min(100%, calc(85vh * 0.82)); height:
+ * 85vh }` block compiled into output.css (id specificity 1,0,0 beats class
+ * 0,1,0 regardless of file load order or browser cache state). */
+#plan-pdf-preview-modal .plan-pdf-preview-dialog {
+    display: flex;
+    flex-direction: column;
+    width: min(95vw, 1100px);
+    height: min(95vh, 1400px);
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* The iframe wrapper compiled in output.css drops `background` + `box-shadow`
+ * after a nested @supports block; we re-author flat here. Also ensures the
+ * wrapper actually claims the remaining flex space — `flex: 1; min-height: 0`
+ * was already in output.css but we restate it so a future Tailwind change
+ * cannot drop it. */
+#plan-pdf-preview-modal .plan-pdf-preview-frame-wrap {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    border: 4px solid color-mix(in srgb, var(--border-color) 70%, #334155);
+    background: #525659;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+}
+
+#plan-pdf-preview-modal .plan-pdf-preview-iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+/* ---------------------------------------------------------------------------
+ * Export-generating spinner — animation kept getting dropped.
+ *
+ * Compiled output (output.css):
+ *     .plan-export-generating-spinner {
+ *         width: 2.25rem;
+ *         height: 2.25rem;
+ *         border-radius: 9999px;
+ *         border: 2px solid var(--primary-blue);
+ *         @supports (color: color-mix(...)) {
+ *             border: 2px solid color-mix(...);
+ *         }
+ *         border-top-color: var(--primary-blue);  <-- DROPPED
+ *         animation: spin 0.8s linear infinite;   <-- DROPPED
+ *     }
+ *
+ * Same Tailwind v4 nested-@supports trap as the badge / tab / descriptor /
+ * column-hint fixes earlier in this file. The `border-top-color` drop
+ * removes the notched edge that makes the ring readable as "spinning", and
+ * the `animation` drop is the obvious one — there is no rotation at all.
+ * Re-authored flat below; both declarations now land before any nested
+ * at-rule so every browser parses them consistently.
+ * ------------------------------------------------------------------------ */
+.plan-export-generating-spinner {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 9999px;
+    border: 2px solid color-mix(in srgb, var(--primary-blue) 26%, transparent);
+    border-top-color: var(--primary-blue);
+    animation: plan-export-spin 0.8s linear infinite;
+}
+
+/* Own keyframe namespace so we don't rely on a globally-defined `spin` from
+ * elsewhere in output.css (which could drift if Tailwind reorganizes the
+ * animation utilities in a future release). */
+@keyframes plan-export-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* -------------------------------------------------------------------------
+ * Task 3 — "The Blindspots" rapid-fire checklist UI.
+ *
+ * Sales-psychology rationale: by styling each blindspot as a small,
+ * checklist-row chip (with a discrete remove "×" button) and giving the
+ * Add input/button row visual weight, the section reads like a punch-
+ * list rather than a journal page. The visual mass is intentionally on
+ * the Add affordance — the rep should feel mild friction every time
+ * they have NOT yet captured an outstanding discovery question.
+ * ------------------------------------------------------------------------- */
+
+.strategic-section--blindspots .blindspots-list-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.blindspots-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.blindspots-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--bg-dark) 55%, transparent);
+    border: 1px solid color-mix(in srgb, var(--primary-blue) 22%, transparent);
+    color: var(--text-light);
+    font-size: 0.875rem;
+    line-height: 1.35;
+}
+
+.blindspots-item-bullet {
+    font-size: 0.875rem;
+    color: color-mix(in srgb, var(--primary-blue) 75%, var(--text-muted));
+    transform: translateY(1px);
+    flex: 0 0 auto;
+}
+
+.blindspots-item-text {
+    flex: 1 1 auto;
+    word-break: break-word;
+}
+
+.blindspots-item-remove {
+    flex: 0 0 auto;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--text-muted) 45%, transparent);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+
+.blindspots-item-remove:hover,
+.blindspots-item-remove:focus-visible {
+    background: color-mix(in srgb, #ef4444 18%, transparent);
+    border-color: color-mix(in srgb, #ef4444 60%, transparent);
+    color: #fecaca;
+    outline: none;
+}
+
+.blindspots-empty {
+    padding: 0.5rem 0;
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 0.8125rem;
+}
+
+.blindspots-add-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: stretch;
+}
+
+.blindspots-add-input {
+    flex: 1 1 auto;
+    /* Inherit .strategic-field styles for borders/padding; only add the
+     * row-local layout tweaks here so the input matches surrounding
+     * textareas visually. */
+}
+
+.blindspots-add-btn {
+    flex: 0 0 auto;
+    padding: 0 1rem;
+    border-radius: 6px;
+    border: 1px solid color-mix(in srgb, var(--primary-blue) 55%, transparent);
+    background: color-mix(in srgb, var(--primary-blue) 22%, transparent);
+    color: var(--text-light);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 150ms ease, border-color 150ms ease;
+}
+
+.blindspots-add-btn:hover,
+.blindspots-add-btn:focus-visible {
+    background: color-mix(in srgb, var(--primary-blue) 38%, transparent);
+    border-color: color-mix(in srgb, var(--primary-blue) 78%, transparent);
+    outline: none;
+}
+
+/* -------------------------------------------------------------------------
+ * Task 4 — Strategic Tension accountability prompt.
+ *
+ * Rendered as a follow-on paragraph inside the same ghost-reminder
+ * <aside> that already carries the read-only tension pills. The styling
+ * deliberately mimics a direct question (warm amber accent, slightly
+ * heavier weight) so the rep's eye lands on it before they start
+ * typing the Land & Expand strategy below.
+ * ------------------------------------------------------------------------- */
+
+.strategic-ghost-linkage-prompt {
+    margin: 0.625rem 0 0;
+    padding: 0.5rem 0.75rem;
+    border-left: 3px solid rgba(234, 179, 8, 0.7);
+    background: color-mix(in srgb, rgba(234, 179, 8, 0.18) 60%, transparent);
+    color: var(--text-light);
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    font-weight: 500;
+    border-radius: 0 4px 4px 0;
+}
+
+/* ===========================================================================
+ * Strategic mode scroll containment
+ *
+ * Symptom: at the bottom of the plan canvas, the user could pan horizontally
+ * and the whole page would drift sideways / upward off-screen.
+ *
+ * Causes:
+ *   • `.content-area { overflow-y: auto }` implicitly enables overflow-x: auto.
+ *   • `#strategic-workspace` reuses `.account-details-content`, so mobile
+ *     accounts rules set `overflow: visible !important` on the workspace.
+ *   • Wide section grids (influence board, white space rows) could exceed the
+ *     canvas track without `min-width: 0` clipping.
+ * ======================================================================== */
+
+body.strategic-mode-active.accounts-page .content-area {
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
+}
+
+body.strategic-mode-active .accounts-layout {
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* SAOS: hide left account picker — Path + full-width workspace only */
+body.strategic-mode-active .account-picker-panel {
+    display: none !important;
+}
+
+body.strategic-mode-active #strategic-workspace.account-details-content {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto;
+    min-width: 0 !important;
+    max-width: 100%;
+    overflow: hidden !important;
+    max-height: calc(100vh - 48px);
+}
+
+body.strategic-mode-active #strategic-workspace .strategic-workspace-body {
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+body.strategic-mode-active #strategic-document-canvas {
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-x: none;
+    -webkit-overflow-scrolling: touch;
+    background-color: #f1f5f9;
+}
+
+body.strategic-mode-active #strategic-document-canvas .strategic-document-inner {
+    max-width: min(1180px, 100%);
+    box-sizing: border-box;
+    overflow-x: hidden;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+body.strategic-mode-active #strategic-document-canvas .strategic-section,
+body.strategic-mode-active #strategic-document-canvas .influence-board,
+body.strategic-mode-active #strategic-document-canvas .white-space-row-grid,
+body.strategic-mode-active #strategic-document-canvas .psychology-gravity-grid,
+body.strategic-mode-active #strategic-document-canvas .strategic-composite-field-body,
+body.strategic-mode-active #strategic-document-canvas .entry-point-grid--attributes {
+    min-width: 0;
+    max-width: 100%;
+}
+
+@media (max-width: 1100px) {
+    body.strategic-mode-active #strategic-workspace.account-details-content {
+        display: flex !important;
+        grid-template-columns: unset !important;
+        grid-template-rows: unset !important;
+    }
+}
+
+/* ---------------------------------------------------------------------------
+ * Phase 1 — In-strategic account switcher (stay in flow; no Tactical detour)
+ * --------------------------------------------------------------------------- */
+
+.strategic-account-title-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.125rem;
+    min-width: 0;
+    position: relative;
+}
+
+/* Header title must not inherit panel chrome (border-b / mb) from .details-panel-title */
+.strategic-workspace-header .strategic-account-title.details-panel-title {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+    line-height: 1.25;
+}
+
+.strategic-account-title-group .strategic-account-title {
+    margin: 0;
+    min-width: 0;
+}
+
+.strategic-account-switcher-trigger {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 1.375rem;
+    height: 1.375rem;
+    padding: 0;
+    margin: 0;
+    border: 1px solid transparent;
+    border-radius: 0.375rem;
+    color: var(--text-muted);
+    background: transparent;
+    cursor: pointer;
+    transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease;
+    /* Optical centering with semibold title cap height */
+    transform: translateY(0.5px);
+}
+
+.strategic-account-switcher-trigger:hover,
+.strategic-account-switcher-trigger[aria-expanded="true"] {
+    color: var(--text-light);
+    background-color: color-mix(in srgb, var(--bg-medium) 70%, transparent);
+    border-color: var(--border-color);
+}
+
+.strategic-account-switcher-chevron {
+    display: block;
+    transition: transform 150ms ease;
+}
+
+.strategic-account-switcher-trigger[aria-expanded="true"] .strategic-account-switcher-chevron {
+    transform: rotate(180deg);
+}
+
+.strategic-account-switcher-menu {
+    position: absolute;
+    top: calc(100% + 0.35rem);
+    left: 0;
+    z-index: 40;
+    min-width: min(18rem, 70vw);
+    max-height: min(16rem, 50vh);
+    overflow-y: auto;
+    padding: 0.35rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    background: var(--bg-light);
+    box-shadow: 0 8px 24px color-mix(in srgb, #000 18%, transparent);
+}
+
+.strategic-account-switcher-item {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    border-radius: 0.375rem;
+    text-align: left;
+    font-size: 0.875rem;
+    line-height: 1.35;
+    color: var(--text-light);
+    background: transparent;
+    cursor: pointer;
+    transition: background-color 120ms ease;
+}
+
+.strategic-account-switcher-item:hover {
+    background: color-mix(in srgb, var(--primary-blue) 10%, var(--bg-medium));
+}
+
+.strategic-account-switcher-item--active {
+    font-weight: 600;
+    color: var(--primary-blue);
+    background: color-mix(in srgb, var(--primary-blue) 12%, transparent);
+}
+
+.strategic-account-switcher-empty {
+    margin: 0;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+}
+
+/* ---------------------------------------------------------------------------
+ * Phase 2 — Merged section blocks (pain → Big Play, moat → Battlefield, wedge → Expansion)
+ * --------------------------------------------------------------------------- */
+
+.strategic-operational-pain-block {
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px dashed var(--border-color);
+}
+
+.battlefield-moat-block {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.battlefield-moat-heading {
+    margin: 0 0 0.75rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.account-expansion-wedge {
+    margin-bottom: 1.25rem;
+}
+
+/* ---------------------------------------------------------------------------
+ * Phase 3 — MEDDPICC badges, bureaucracy bypass trap, momentum trendline
+ * --------------------------------------------------------------------------- */
+
+.influence-meddpicc-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin-top: 0.5rem;
+}
+
+.influence-meddpicc-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.625rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 9999px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: #64748b;
+    background: #f8fafc;
+    cursor: pointer;
+    transition: color 120ms ease, border-color 120ms ease, background-color 120ms ease, box-shadow 120ms ease;
+}
+
+.influence-meddpicc-badge:hover {
+    border-color: #94a3b8;
+    color: #334155;
+}
+
+.influence-meddpicc-badge--champion.influence-meddpicc-badge--active {
+    color: #ffffff;
+    border-color: #059669;
+    background: #059669;
+    box-shadow: 0 1px 3px rgb(5 150 105 / 0.35);
+}
+
+.influence-meddpicc-badge--economic-buyer.influence-meddpicc-badge--active {
+    color: #ffffff;
+    border-color: #4f46e5;
+    background: #4f46e5;
+    box-shadow: 0 1px 3px rgb(79 70 229 / 0.35);
+}
+
+.psychology-bypass-trap {
+    margin-top: 1.25rem;
+    padding: 1rem;
+    border: 1px solid color-mix(in srgb, #f59e0b 45%, var(--border-color));
+    border-radius: 0.5rem;
+    background: color-mix(in srgb, #f59e0b 8%, var(--bg-light));
+}
+
+.psychology-bypass-trap label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+/* ---------------------------------------------------------------------------
+ * Entry Points — clearer panel hierarchy (reduce "runs together" fatigue)
+ * --------------------------------------------------------------------------- */
+
+.strategic-section--entry-points .entry-point-card {
+    border-radius: 0.75rem;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    background: var(--bg-light);
+}
+
+.strategic-section--entry-points .entry-point-card-header {
+    padding: 0.875rem 1rem;
+    background: color-mix(in srgb, var(--bg-medium) 50%, transparent);
+}
+
+.strategic-section--entry-points .entry-point-panels {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.75rem;
+}
+
+.strategic-section--entry-points .entry-point-row-panel {
+    margin: 0;
+    padding: 1rem;
+    border: 1px solid color-mix(in srgb, var(--border-color) 85%, transparent);
+    border-radius: 0.625rem;
+    background: color-mix(in srgb, var(--bg-medium) 28%, transparent);
+}
+
+.strategic-section--entry-points .entry-point-row-panel-title {
+    margin-bottom: 0.875rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--border-color) 70%, transparent);
+    color: var(--text-light);
+    font-size: 0.6875rem;
+}
+
+.strategic-section--entry-points .entry-point-grid--attributes {
+    gap: 1rem 0.75rem;
+}
+
+.strategic-section--entry-points .entry-point-field--pills {
+    padding: 0.625rem 0.75rem;
+    border-radius: 0.5rem;
+    background: color-mix(in srgb, var(--bg-light) 70%, transparent);
+    border: 1px solid color-mix(in srgb, var(--border-color) 60%, transparent);
+}
+
+.strategic-section--entry-points .entry-point-field--textarea {
+    padding: 0.625rem 0.75rem;
+    border-radius: 0.5rem;
+    background: color-mix(in srgb, var(--bg-light) 75%, transparent);
+    border: 1px solid color-mix(in srgb, var(--border-color) 60%, transparent);
+}
+
+.strategic-section--entry-points .entry-point-textarea {
+    min-height: 5.5rem;
+}
+
+/* Strategic Judgments — three-column pill grid on desktop */
+.strategic-section--account-snapshot .account-snapshot-plan-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* ===========================================================================
+ * Visual hierarchy polish — canvas contrast, hit zones, methodology pills
+ * ======================================================================== */
+
+body.strategic-mode-active #strategic-document-canvas .strategic-textarea,
+body.strategic-mode-active #strategic-document-canvas .strategic-field,
+body.strategic-mode-active #strategic-document-canvas .blindspots-add-input,
+body.strategic-mode-active #strategic-document-canvas .influence-card-notes,
+body.strategic-mode-active #strategic-document-canvas .influence-card-field-textarea,
+body.strategic-mode-active #strategic-document-canvas .entry-point-select,
+body.strategic-mode-active #strategic-document-canvas .white-space-select,
+body.strategic-mode-active #strategic-document-canvas .white-space-textarea,
+body.strategic-mode-active #strategic-document-canvas .momentum-signal-input,
+body.strategic-mode-active #strategic-document-canvas .entry-point-textarea,
+body.strategic-mode-active #strategic-document-canvas .psychology-bypass-textarea,
+body.strategic-mode-active #strategic-document-canvas select.strategic-field,
+body.strategic-mode-active #strategic-document-canvas input.strategic-field[type="text"],
+body.strategic-mode-active #strategic-document-canvas input.strategic-field[type="email"],
+body.strategic-mode-active #strategic-document-canvas input.strategic-field[type="number"],
+body.strategic-mode-active #strategic-document-canvas input.strategic-field[type="date"] {
+    background-color: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.5rem;
+    transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+body.strategic-mode-active #strategic-document-canvas .strategic-textarea:focus,
+body.strategic-mode-active #strategic-document-canvas .strategic-field:focus,
+body.strategic-mode-active #strategic-document-canvas .blindspots-add-input:focus,
+body.strategic-mode-active #strategic-document-canvas .influence-card-notes:focus,
+body.strategic-mode-active #strategic-document-canvas .influence-card-field-textarea:focus,
+body.strategic-mode-active #strategic-document-canvas .entry-point-select:focus,
+body.strategic-mode-active #strategic-document-canvas .white-space-select:focus,
+body.strategic-mode-active #strategic-document-canvas .white-space-textarea:focus,
+body.strategic-mode-active #strategic-document-canvas .momentum-signal-input:focus,
+body.strategic-mode-active #strategic-document-canvas .entry-point-textarea:focus,
+body.strategic-mode-active #strategic-document-canvas .psychology-bypass-textarea:focus,
+body.strategic-mode-active #strategic-document-canvas select.strategic-field:focus,
+body.strategic-mode-active #strategic-document-canvas input.strategic-field[type="text"]:focus,
+body.strategic-mode-active #strategic-document-canvas input.strategic-field[type="email"]:focus,
+body.strategic-mode-active #strategic-document-canvas input.strategic-field[type="number"]:focus,
+body.strategic-mode-active #strategic-document-canvas input.strategic-field[type="date"]:focus {
+    outline: none;
+    background-color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 0 0 2px #2563eb;
+}
+
+body.strategic-mode-active #strategic-document-canvas .strategic-pill-active,
+body.strategic-mode-active #strategic-document-canvas .white-space-pill--active {
+    border-color: #2563eb;
+    background-color: #2563eb;
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgb(37 99 235 / 0.25);
+}
+
+body.strategic-mode-active #strategic-document-canvas .strategic-pill-active:hover,
+body.strategic-mode-active #strategic-document-canvas .white-space-pill--active:hover {
+    border-color: #1d4ed8;
+    background-color: #1d4ed8;
+    color: #ffffff;
+}
+
+/* Green easter-egg theme — keep elevation without hard-coded light palette */
+body.theme-green.strategic-mode-active #strategic-document-canvas {
+    background-color: color-mix(in srgb, var(--bg-dark) 88%, #000);
+}
+
+body.theme-green.strategic-mode-active #strategic-document-canvas .strategic-section-card {
+    background-color: var(--bg-light);
+    border-color: var(--border-color);
+    box-shadow: 0 4px 14px rgb(0 0 0 / 0.35);
+}
+
+body.theme-green.strategic-mode-active #strategic-document-canvas .strategic-textarea,
+body.theme-green.strategic-mode-active #strategic-document-canvas .strategic-field,
+body.theme-green.strategic-mode-active #strategic-document-canvas .blindspots-add-input,
+body.theme-green.strategic-mode-active #strategic-document-canvas .influence-card-notes,
+body.theme-green.strategic-mode-active #strategic-document-canvas .influence-card-field-textarea,
+body.theme-green.strategic-mode-active #strategic-document-canvas .entry-point-select,
+body.theme-green.strategic-mode-active #strategic-document-canvas .white-space-select,
+body.theme-green.strategic-mode-active #strategic-document-canvas .white-space-textarea,
+body.theme-green.strategic-mode-active #strategic-document-canvas .momentum-signal-input,
+body.theme-green.strategic-mode-active #strategic-document-canvas .entry-point-textarea,
+body.theme-green.strategic-mode-active #strategic-document-canvas .psychology-bypass-textarea,
+body.theme-green.strategic-mode-active #strategic-document-canvas select.strategic-field,
+body.theme-green.strategic-mode-active #strategic-document-canvas input.strategic-field {
+    background-color: color-mix(in srgb, var(--bg-medium) 70%, transparent);
+    border-color: var(--border-color);
+}
+
+body.theme-green.strategic-mode-active #strategic-document-canvas .strategic-textarea:focus,
+body.theme-green.strategic-mode-active #strategic-document-canvas .strategic-field:focus,
+body.theme-green.strategic-mode-active #strategic-document-canvas .blindspots-add-input:focus,
+body.theme-green.strategic-mode-active #strategic-document-canvas .influence-card-notes:focus,
+body.theme-green.strategic-mode-active #strategic-document-canvas .influence-card-field-textarea:focus,
+body.theme-green.strategic-mode-active #strategic-document-canvas .entry-point-select:focus,
+body.theme-green.strategic-mode-active #strategic-document-canvas .white-space-select:focus,
+body.theme-green.strategic-mode-active #strategic-document-canvas .white-space-textarea:focus,
+body.theme-green.strategic-mode-active #strategic-document-canvas .momentum-signal-input:focus,
+body.theme-green.strategic-mode-active #strategic-document-canvas .entry-point-textarea:focus,
+body.theme-green.strategic-mode-active #strategic-document-canvas .psychology-bypass-textarea:focus,
+body.theme-green.strategic-mode-active #strategic-document-canvas select.strategic-field:focus,
+body.theme-green.strategic-mode-active #strategic-document-canvas input.strategic-field:focus {
+    background-color: var(--bg-light);
+    box-shadow: 0 0 0 2px var(--primary-blue);
+}
+
+body.theme-green.strategic-mode-active #strategic-document-canvas .strategic-pill-active,
+body.theme-green.strategic-mode-active #strategic-document-canvas .white-space-pill--active {
+    border-color: var(--primary-blue);
+    background-color: var(--primary-blue);
+    color: #020c02;
+}
+
+body.theme-green .strategic-path-step {
+    color: var(--text-medium);
+}
+
+body.theme-green .influence-meddpicc-badge--champion.influence-meddpicc-badge--active {
+    color: #020c02;
+    border-color: var(--completed-color);
+    background: var(--completed-color);
+}
+
+body.theme-green .influence-meddpicc-badge--economic-buyer.influence-meddpicc-badge--active {
+    color: #020c02;
+    border-color: var(--meeting-purple);
+    background: var(--meeting-purple);
+}

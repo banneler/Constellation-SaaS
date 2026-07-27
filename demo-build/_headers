@@ -1,0 +1,2 @@
+/demo-build/*
+  Content-Security-Policy: frame-ancestors 'self' https://www.constellation-crm.com

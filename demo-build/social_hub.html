@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="description" content="Constellation CRM: A powerful and intuitive tool for managing your sales pipeline, contacts, and deals.">
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'self' https://www.constellation-crm.com;">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constellation CRM - Social Hub</title>
+    <link rel="stylesheet" href="output.css">
+    <link rel="stylesheet" href="css/global-loader.css">
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.5.2/dist/css/tom-select.css" rel="stylesheet">
+    <script src="js/demo-auth-guard.js?v=demo-foundation-2"></script>
+    <script src="js/demo-state.js?v=demo-fixtures-2"></script>
+    <script src="js/demo-supabase.js?v=demo-adapter-2"></script>
+    <script src="js/demo-api.js?v=demo-api-2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+</head>
+<body class="social-hub-page">
+    <div id="global-loader-overlay" class="global-loader-overlay active" aria-live="polite" aria-busy="true">
+        <div class="global-loader-content">
+            <div class="global-loader-spinner" aria-hidden="true">
+                <svg class="global-loader-svg global-loader-constellation" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path class="global-loader-constellation-line" pathLength="1" d="M24 8 L10 22 L18 38 L30 38 L38 22 L24 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle class="global-loader-star" cx="24" cy="8" r="2.2"/><circle class="global-loader-star" cx="10" cy="22" r="1.8"/><circle class="global-loader-star" cx="18" cy="38" r="2"/><circle class="global-loader-star" cx="30" cy="38" r="1.8"/><circle class="global-loader-star" cx="38" cy="22" r="2"/>
+                </svg>
+            </div>
+            <p class="global-loader-text">Loading…</p>
+        </div>
+    </div>
+    <div class="crm-container">
+        <nav class="nav-sidebar">
+            <script>(function(){try{if(localStorage.getItem('crm-nav-collapsed')==='1')document.currentScript.parentElement.classList.add('nav-sidebar-collapsed');}catch(e){}})();</script>
+            <div id="global-nav-container" class="flex flex-col flex-1 min-h-0"></div>
+        </nav>
+        
+        <main class="content-area">
+            <div id="social-hub-view" class="content-view active-view">
+                    <div class="section-card">
+                        <div class="section-card-header">
+                            <div id="social-content-toggle" class="social-content-toggle" role="tablist" aria-label="Social Hub content view">
+                                <button type="button" id="social-toggle-ai" class="social-toggle-btn active" data-social-view="ai" role="tab" aria-selected="true">AI Content</button>
+                                <button type="button" id="social-toggle-marketing" class="social-toggle-btn" data-social-view="marketing" role="tab" aria-selected="false">Marketing</button>
+                            </div>
+                        </div>
+                    </div>
+                <div id="social-ai-section" class="section-card social-content-section">
+                    <div class="section-card-header">
+                        <h2 class="page-title">Social Hub</h2>
+                    </div>
+                    <div class="px-5 pb-5">
+                        <p class="placeholder-text mb-6">Amplify our voice. Share relevant news and updates with your network.</p>
+                        <h3 class="section-title">AI-Curated Content</h3>
+                        <div id="ai-articles-container" class="alerts-container"></div>
+                    </div>
+                </div>
+                <div id="social-marketing-section" class="section-card social-content-section hidden">
+                    <div class="section-card-header flex justify-between items-center gap-3">
+                        <h2 class="section-title">From Our Marketing Team</h2>
+                        <a href="#" class="btn-primary" aria-disabled="true">
+                            View Content Image Library ↗
+                        </a>
+                    </div>
+                    <div class="px-5 pb-5">
+                        <div id="marketing-posts-container" class="alerts-container"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="modal-backdrop" class="modal-backdrop hidden">
+        <div class="modal-content" style="max-width: 650px;">
+            <h3 id="modal-title">Prepare Your Post</h3>
+            <div id="modal-body">
+                <p style="margin-bottom: 15px;"><strong>Sharing Link:</strong> <a id="modal-article-link" href="#" target="_blank" rel="noopener noreferrer">Article Title</a></p>
+                
+                <label for="post-text">Suggested Post Text:</label>
+                <textarea id="post-text" rows="8" placeholder="AI-generated text will appear here..."></textarea>
+
+                <div id="refine-prompt-section" style="margin-top: 20px;">
+                    <label for="custom-prompt-input">Refine with Custom Prompt:</label>
+                    <input type="text" id="custom-prompt-input" placeholder="e.g., 'Make it more casual' or 'Add a question at the end'">
+                    <button class="btn-primary" id="generate-custom-btn" style="width: 100%; margin-top: 10px;"><i class="fa-solid fa-wand-magic-sparkles"></i><span>Regenerate</span></button>
+                </div>
+                <div id="social-post-feedback-slot"></div>
+            </div>
+            <div id="modal-actions" class="modal-actions">
+                 <button id="copy-text-btn" class="btn-secondary icon-only-btn" title="Copy Text"><i class="fa-regular fa-copy"></i></button>
+                 <button id="post-to-linkedin-btn" class="btn-primary icon-only-btn" title="Post to LinkedIn"><i class="fa-regular fa-paper-plane"></i></button>
+                 <button id="modal-close-btn" class="btn-secondary icon-only-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+        </div>
+    </div>
+    <script>
+    // This script runs synchronously to apply the theme before the page renders
+    (function() {
+        const savedTheme = localStorage.getItem('crm-theme') || 'dark';
+        document.body.classList.forEach((cls) => {
+            if (cls.startsWith('theme-')) document.body.classList.remove(cls);
+        });
+        document.body.classList.add(`theme-${savedTheme}`);
+    })();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.5.2/dist/js/tom-select.complete.min.js"></script>
+    <script type="module" src="js/social_hub.js"></script>
+</body>
+</html>

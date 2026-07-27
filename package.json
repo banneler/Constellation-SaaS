@@ -10,5 +10,8 @@
   "devDependencies": {
     "@tailwindcss/cli": "^4.2.1",
     "tailwindcss": "^4.2.1"
+  },
+  "dependencies": {
+    "nodemailer": "^9.0.3"
   }
 }

@@ -45,6 +45,55 @@ html {
     box-shadow: 0 18px 45px rgba(2, 6, 23, 0.22);
 }
 
+.hero-visual {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 0;
+}
+
+.hero-visual::before {
+    content: "";
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    width: min(36rem, 82%);
+    height: 18rem;
+    transform: translateX(-50%);
+    border-radius: 999px;
+    background: rgba(59, 130, 246, 0.2);
+    filter: blur(54px);
+    z-index: -1;
+}
+
+.hero-people-layer {
+    position: relative;
+    width: min(47rem, 108%);
+    margin-bottom: -0.35rem;
+    z-index: 2;
+    pointer-events: none;
+    transform: translateY(0.6rem);
+    filter:
+        drop-shadow(0 0 10px rgba(219, 234, 254, 0.1))
+        drop-shadow(0 0 30px rgba(96, 165, 250, 0.08))
+        drop-shadow(0 26px 42px rgba(2, 6, 23, 0.38));
+}
+
+.hero-people-layer img {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+}
+
+.hero-visual .screenshot-frame {
+    z-index: 3;
+    transform: none;
+}
+
 .screenshot-frame {
     position: relative;
     overflow: hidden;
@@ -76,6 +125,18 @@ html {
 
 .screenshot-frame--hero img {
     min-height: 25rem;
+}
+
+@media (max-width: 1023px) {
+    .hero-people-layer {
+        width: min(42rem, 100%);
+    }
+}
+
+@media (max-width: 640px) {
+    .screenshot-frame--hero img {
+        min-height: 18rem;
+    }
 }
 
 .saos-carousel {

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="description" content="Constellation CRM: A powerful and intuitive tool for managing your sales pipeline, contacts, outreach, and deals.">
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'self' https://www.constellation-crm.com;">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constellation CRM - Accounts</title>
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.5.2/dist/css/tom-select.css" rel="stylesheet">
+    <link rel="stylesheet" href="output.css">
+    <!-- Cache-bust query string bumped whenever this file changes so users
+         don't end up with a stale dialog/spinner from a previous deploy. -->
+    <link rel="stylesheet" href="css/saos-strategic.css?v=2026-06-01-canvas-width">
+    <link rel="stylesheet" href="css/global-loader.css">
+    <script src="js/demo-auth-guard.js?v=demo-foundation-2"></script>
+    <script src="js/demo-state.js?v=demo-fixtures-2"></script>
+    <script src="js/demo-supabase.js?v=demo-adapter-2"></script>
+    <script src="js/demo-api.js?v=demo-api-2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://unpkg.com/@zumer/snapdom/dist/snapdom.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+</head>
+
+<body class="accounts-page">
+    <div id="global-loader-overlay" class="global-loader-overlay active" aria-live="polite" aria-busy="true">
+        <div class="global-loader-content">
+            <div class="global-loader-spinner" aria-hidden="true">
+                <svg class="global-loader-svg global-loader-constellation" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path class="global-loader-constellation-line" pathLength="1" d="M24 8 L10 22 L18 38 L30 38 L38 22 L24 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle class="global-loader-star" cx="24" cy="8" r="2.2"/><circle class="global-loader-star" cx="10" cy="22" r="1.8"/><circle class="global-loader-star" cx="18" cy="38" r="2"/><circle class="global-loader-star" cx="30" cy="38" r="1.8"/><circle class="global-loader-star" cx="38" cy="22" r="2"/>
+                </svg>
+            </div>
+            <p class="global-loader-text">Loading…</p>
+        </div>
+    </div>
+    <div class="crm-container">
+        <nav class="nav-sidebar">
+            <script>(function(){try{if(localStorage.getItem('crm-nav-collapsed')==='1')document.currentScript.parentElement.classList.add('nav-sidebar-collapsed');}catch(e){}})();</script>
+            <div id="global-nav-container" class="flex flex-col flex-1 min-h-0"></div>
+        </nav>
+        <main class="content-area">
+            <div id="accounts" class="content-view active-view accounts-layout">
+                <div class="account-picker-panel">
+                    <div class="account-picker-header">
+                        <h2 id="account-picker-title" class="section-title">Accounts</h2>
+                    </div>
+                    <input type="file" id="account-csv-input" accept=".csv" class="hidden">
+                    <div class="account-picker-body">
+                        <div class="accounts-mobile-picker-wrap">
+                            <label for="mobile-account-select" class="accounts-mobile-picker-label">Account</label>
+                            <div class="accounts-mobile-picker-row">
+                                <select id="mobile-account-select" class="accounts-mobile-picker-select">
+                                    <option value="">Select an account</option>
+                                </select>
+                                <button id="add-account-mobile-btn" class="btn-icon account-picker-icon" title="Add New Account" aria-label="Add New Account"><i class="fas fa-plus"></i></button>
+                            </div>
+                        </div>
+                        <input type="text" id="account-search" placeholder="Search Accounts..." class="item-search-input">
+                        <div id="account-tier-filters" class="account-tier-filters" role="group" aria-label="Filter by strategic tier">
+                            <button type="button" class="account-tier-filter active" data-tier-filter="all" title="All tiers">All</button>
+                            <button type="button" class="account-tier-filter account-tier-filter--tier-1" data-tier-filter="Tier 1" title="Tier 1 accounts" aria-label="Tier 1"><span class="account-tier-swatch" aria-hidden="true"></span></button>
+                            <button type="button" class="account-tier-filter account-tier-filter--tier-2" data-tier-filter="Tier 2" title="Tier 2 accounts" aria-label="Tier 2"><span class="account-tier-swatch" aria-hidden="true"></span></button>
+                            <button type="button" class="account-tier-filter account-tier-filter--tier-3" data-tier-filter="Tier 3" title="Tier 3 accounts" aria-label="Tier 3"><span class="account-tier-swatch" aria-hidden="true"></span></button>
+                            <button type="button" class="account-tier-filter account-tier-filter--unassigned" data-tier-filter="Unassigned" title="Unassigned tier" aria-label="Unassigned"><span class="account-tier-swatch" aria-hidden="true"></span></button>
+                        </div>
+                        <div id="account-filter-icons" class="account-filter-icons" role="group" aria-label="Filter accounts">
+                            <button type="button" class="account-filter-icon active" data-filter="all" title="All Accounts"><i class="fas fa-layer-group"></i></button>
+                            <button type="button" class="account-filter-icon" data-filter="hot" title="Hot Accounts"><i class="fas fa-fire"></i></button>
+                            <button type="button" class="account-filter-icon" data-filter="with_deals" title="With Open Deals"><i class="fas fa-dollar-sign"></i></button>
+                            <button type="button" class="account-filter-icon" data-filter="customer" title="Customers"><i class="fas fa-building"></i></button>
+                            <button type="button" class="account-filter-icon" data-filter="prospect" title="Prospects"><i class="fas fa-user-plus"></i></button>
+                        </div>
+                        <div id="account-list" class="item-list"></div>
+                    </div>
+                    <!-- Legacy left-rail TOC (superseded by the horizontal Path in
+                         #strategic-path). Kept in DOM for now but always hidden. -->
+                    <div id="strategic-toc-body" class="strategic-toc-body hidden" hidden>
+                        <nav id="strategic-toc-nav" class="strategic-toc-nav" aria-label="Plan table of contents"></nav>
+                    </div>
+                    <div class="account-picker-actions">
+                        <button id="add-account-btn" class="btn-icon account-picker-icon" title="Add New Account"><i class="fas fa-plus"></i></button>
+                        <button id="bulk-import-accounts-btn" class="btn-icon account-picker-icon" title="Bulk Import from CSV"><i class="fas fa-file-import"></i></button>
+                        <button id="bulk-export-accounts-btn" class="btn-icon account-picker-icon" title="Bulk Export to CSV"><i class="fas fa-file-export"></i></button>
+                    </div>
+                </div>
+                <div id="account-details" class="details-panel account-details-content">
+                        <div class="account-details-top-row">
+                            <div class="account-details-form-card">
+                                <div class="account-details-form-header">
+                                    <div class="account-details-form-header-row">
+                                        <h3 class="details-panel-title">Account Details</h3>
+                                        <div id="tactical-header-actions" class="flex items-center gap-2">
+                                            <div class="header-locators-stack">
+                                                <span class="sf-locator-inline" id="sf-locator-inline-wrap">
+                                                    <span class="sf-locator-text" id="sf-locator-display">Salesforce ID</span>
+                                                    <button type="button" class="sf-locator-edit-btn" id="sf-locator-edit-btn" title="Edit Salesforce ID" aria-label="Edit Salesforce ID"><i class="fas fa-pencil"></i></button>
+                                                    <input type="text" class="sf-locator-input" id="sf-locator-input" placeholder="e.g. 001XXXXXXXXXXXX" maxlength="18" />
+                                                </span>
+                                                <span class="sf-locator-inline zoominfo-locator-inline" id="zoominfo-locator-inline-wrap">
+                                                    <span class="sf-locator-text" id="zoominfo-locator-display">Zoom Info Company Id</span>
+                                                    <button type="button" class="sf-locator-edit-btn" id="zoominfo-locator-edit-btn" title="Edit Zoom Info Company Id" aria-label="Edit Zoom Info Company Id"><i class="fas fa-pencil"></i></button>
+                                                    <input type="text" class="sf-locator-input" id="zoominfo-locator-input" placeholder="e.g. 123456789" />
+                                                </span>
+                                            </div>
+                                            <button id="zoominfo-account-btn" class="btn-icon-header zoominfo-btn" title="Open in ZoomInfo" aria-label="Open in ZoomInfo"><img src="assets/zoominfo-logo-2024.svg" alt="ZoomInfo" class="zoominfo-logo" /></button>
+                                            <button id="salesforce-account-btn" class="btn-icon-header salesforce-btn" title="Open in Salesforce"><i class="fa-brands fa-salesforce"></i></button>
+                                            <div id="account-mode-controls" class="account-mode-controls flex items-center gap-2">
+                                                <span id="strategic-autosave-status" class="strategic-autosave-status hidden" data-status="idle" aria-live="polite"></span>
+                                                <button type="button" id="account-mode-toggle" class="btn-icon-header account-mode-toggle" title="Open Strategic Account OS" aria-pressed="false" aria-label="Toggle Strategic Account OS"><i class="fas fa-sitemap" aria-hidden="true"></i></button>
+                                            </div>
+                                            <button id="ai-briefing-btn" class="btn-icon-header" title="Generate AI Briefing"><i class="fas fa-bolt-lightning"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <form id="account-form">
+                            <input type="hidden" id="account-id">
+                            <div class="form-grid form-grid-account">
+                                <div><label for="account-name">Account Name</label><input type="text" id="account-name" required></div>
+                                <div>
+                                    <label for="account-website">Website</label>
+                                    <div class="input-with-icon">
+                                        <input type="text" id="account-website">
+                                        <a href="#" id="account-website-link" target="_blank" class="external-link-icon hidden" title="Open website in new tab">
+                                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="form-address-cell"><label for="account-address">Address</label><textarea id="account-address"></textarea></div>
+                                <div><label for="account-phone">Phone</label><input type="tel" id="account-phone"></div>
+                                <div><label for="account-sites">Quantity of Sites</label><input type="number" id="account-sites" min="0"></div>
+                                <div><label for="account-employees">Employee Count</label><input type="number" id="account-employees" min="0"></div>
+                                <div><label for="account-industry">Industry</label>
+                                    <select id="account-industry">
+                                        <option value="">-- Select Industry --</option>
+                                        <option value="General">General</option>
+                                        <option value="Healthcare">Healthcare</option>
+                                        <option value="Financial">Financial</option>
+                                        <option value="Retail">Retail</option>
+                                        <option value="Gaming &amp; Hospitality">Gaming &amp; Hospitality</option>
+                                        <option value="Manufacturing">Manufacturing</option>
+                                        <option value="K-12 Education">K-12 Education</option>
+                                        <option value="Technology">Technology</option>
+                                        <option value="Government">Government</option>
+                                        <option value="Nonprofit">Nonprofit</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="notes-section"><label for="account-notes">Notes</label><textarea id="account-notes"></textarea><small id="account-last-saved" class="last-saved-text"></small></div>
+                            <div class="form-buttons">
+                                <button type="submit" class="btn-icon btn-icon-save" title="Save Changes"><i class="fas fa-floppy-disk"></i></button>
+                                <button type="button" id="reassign-account-btn" class="btn-icon btn-icon-header hidden" title="Reassign account to another user (managers)"><i class="fas fa-arrow-right-arrow-left"></i></button>
+                                <button type="button" id="delete-account-btn" class="btn-icon btn-icon-danger" title="Delete Account"><i class="fas fa-trash"></i></button>
+                                <button type="button" id="draft-agenda-btn" class="btn-icon btn-icon-agenda" title="Draft meeting agenda"><i class="fas fa-calendar-days"></i></button>
+                                <div id="account-pending-task-reminder" class="pending-task-reminder pending-task-reminder-pill hidden"></div>
+                                <label class="customer-toggle" for="account-is-customer">
+                                    <input type="checkbox" id="account-is-customer" class="customer-toggle-input">
+                                    <span class="customer-toggle-slider"></span>
+                                    <span class="customer-toggle-label">Customer</span>
+                                </label>
+                            </div>
+                        </form>
+                            </div>
+                            <div class="account-deals-column flex flex-col min-h-0">
+                                <div class="section-card account-deals-card">
+                                    <div class="section-card-header flex justify-between items-center gap-3">
+                                        <h2 class="section-title">Current Deals</h2>
+                                        <div class="account-deals-header-actions">
+                                            <button id="add-deal-btn" class="btn-icon-header" title="New Deal"><i class="fas fa-plus"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="account-deals-body">
+                                        <div id="account-deals-cards" class="account-deals-cards"></div>
+                                    </div>
+                                </div>
+                                <div class="section-card account-proposals-card">
+                                    <div class="section-card-header flex justify-between items-center gap-3">
+                                        <h2 class="section-title">Proposals</h2>
+                                    </div>
+                                    <div class="account-proposals-body">
+                                        <div id="account-proposals-list" class="account-proposals-list"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="account-cards-row">
+                            <div class="section-card account-contacts-card">
+                                <div class="section-card-header flex justify-between items-center gap-3">
+                                    <h2 class="section-title">Associated Contacts</h2>
+                                    <div class="flex items-center gap-2">
+                                        <div class="view-mode-toggle">
+                                            <button id="contact-list-btn" class="view-mode-btn active" title="List View"><i class="fas fa-list"></i></button>
+                                            <button id="contact-org-chart-btn" class="view-mode-btn" title="Org Chart View"><i class="fas fa-sitemap"></i></button>
+                                        </div>
+                                        <button id="org-chart-maximize-btn" class="btn-icon-header hidden" title="Expand Org Chart"><i class="fas fa-expand"></i></button>
+                                    </div>
+                                </div>
+                                <div class="account-contacts-body">
+                                    <div id="contact-list-view">
+                                        <ul id="account-contacts-list"></ul>
+                                    </div>
+                                    <div id="contact-org-chart-view" class="hidden">
+                                        <!-- Filled by JS: chart + zoom controls -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="section-card account-activities-card">
+                                <div class="section-card-header flex justify-between items-center gap-3">
+                                    <h2 class="section-title">Related Activities</h2>
+                                    <button id="add-task-account-btn" class="btn-icon-header" title="Add Task"><i class="fas fa-square-plus"></i></button>
+                                </div>
+                                <div class="account-activities-body">
+                                    <div id="account-activities-list" class="recent-activities-list"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <div id="strategic-workspace" class="strategic-workspace details-panel account-details-content" aria-hidden="true">
+                    <div class="strategic-workspace-header">
+                        <div class="strategic-workspace-header-main">
+                            <div class="strategic-account-title-group">
+                                <h3 id="strategic-account-title" class="strategic-account-title details-panel-title">Strategic Account Plan</h3>
+                                <button
+                                    type="button"
+                                    id="strategic-account-switcher-trigger"
+                                    class="strategic-account-switcher-trigger"
+                                    title="Switch account"
+                                    aria-label="Switch strategic account"
+                                    aria-haspopup="listbox"
+                                    aria-expanded="false"
+                                    aria-controls="strategic-account-switcher-menu"
+                                >
+                                    <svg class="strategic-account-switcher-chevron" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+                                        <path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                                <div id="strategic-account-switcher-menu" class="strategic-account-switcher-menu hidden" role="listbox" aria-label="Your accounts"></div>
+                            </div>
+                            <div id="strategic-view-mode-host" class="strategic-view-mode-host"></div>
+                        </div>
+                        <div id="strategic-header-actions" class="strategic-header-actions flex items-center gap-2">
+                            <button type="button" id="plan-version-trigger" class="btn-icon-header plan-version-trigger hidden" title="Version history" aria-expanded="false" aria-controls="plan-version-popover">
+                                <i class="fas fa-clock-rotate-left" aria-hidden="true"></i>
+                                <span id="plan-version-trigger-label" class="plan-version-trigger-label"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Salesforce-style horizontal Path: sticky section nav above the
+                         scrollable canvas. Built from PLAN_SECTIONS by
+                         renderStrategicPath(); scroll-spy keeps the active step in sync. -->
+                    <nav id="strategic-path" class="strategic-path hidden" aria-label="Plan sections">
+                        <ol id="strategic-path-track" class="strategic-path-track"></ol>
+                    </nav>
+                    <div class="strategic-workspace-body">
+                        <div id="strategic-document-canvas" class="strategic-document-canvas"></div>
+                        <aside id="strategic-rail" class="strategic-rail"></aside>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <div id="account-plan-export-root" class="account-plan-export-root" aria-hidden="true">
+        <div id="export-dossier-template"></div>
+        <div id="export-exec-readout-template"></div>
+    </div>
+    <!-- Export progress overlay — lifted to <body> so `position: fixed` cannot be
+         trapped by any ancestor (`.strategic-workspace` is `position: relative`
+         and `.content-area` has `overflow-y: auto`; nesting a fixed overlay inside
+         that combo confined it to the workspace box on Chromium, leaving the
+         spinner off-center and behind other UI). -->
+    <div id="plan-export-generating-overlay" class="plan-export-generating-overlay hidden" aria-hidden="true" aria-live="polite">
+        <div class="plan-export-generating-state">
+            <div class="plan-export-generating-spinner" aria-hidden="true"></div>
+            <p id="plan-export-generating-title" class="plan-export-generating-title">Generating…</p>
+            <p id="plan-export-generating-subtitle" class="plan-export-generating-subtitle"></p>
+        </div>
+    </div>
+    <div id="plan-pdf-preview-modal" class="plan-pdf-preview-modal hidden" aria-hidden="true" role="dialog" aria-labelledby="plan-pdf-preview-title" aria-modal="true">
+        <div class="plan-pdf-preview-dialog">
+            <div class="plan-pdf-preview-header">
+                <h2 id="plan-pdf-preview-title" class="plan-pdf-preview-title">PDF Preview</h2>
+                <div class="plan-pdf-preview-actions">
+                    <button type="button" id="plan-pdf-preview-download-btn" class="btn-primary plan-pdf-preview-download-btn">
+                        <i class="fas fa-download" aria-hidden="true"></i> Download PDF
+                    </button>
+                    <button type="button" id="plan-pdf-preview-close-btn" class="plan-pdf-preview-close-btn" aria-label="Close preview">&times;</button>
+                </div>
+            </div>
+            <div class="plan-pdf-preview-frame-wrap">
+                <iframe id="plan-pdf-preview-iframe" class="plan-pdf-preview-iframe" title="Account plan PDF preview"></iframe>
+            </div>
+        </div>
+    </div>
+    <div id="plan-version-popover" class="plan-version-popover hidden" role="dialog" aria-labelledby="plan-version-popover-title" aria-modal="false">
+        <div class="plan-version-popover-header">
+            <h4 id="plan-version-popover-title">Version History</h4>
+            <button type="button" id="plan-version-popover-close" class="plan-version-popover-close" aria-label="Close version history">&times;</button>
+        </div>
+        <div id="plan-version-timeline" class="plan-version-timeline"></div>
+    </div>
+    <div id="modal-backdrop" class="modal-backdrop hidden">
+        <div class="modal-content">
+            <h3 id="modal-title"></h3>
+            <div id="modal-body"></div>
+            <div id="modal-actions" class="modal-actions">
+            </div>
+        </div>
+    </div>
+    <div id="email-view-modal-backdrop" class="modal-backdrop hidden">
+        <div class="email-view-modal">
+            <div class="email-view-header">
+                <h3 id="email-view-subject" class="email-view-subject"></h3>
+                <button id="email-view-close-btn" class="email-view-close">&times;</button>
+            </div>
+            <div class="email-view-meta">
+                <p><strong>From:</strong> <span id="email-view-from"></span></p>
+                <p><strong>To:</strong> <span id="email-view-to"></span></p>
+                <p><strong>Date:</strong> <span id="email-view-date"></span></p>
+            </div>
+            <div class="email-view-body">
+                <pre id="email-view-body-content"></pre>
+            </div>
+        </div>
+    </div>
+    <div id="org-chart-modal-backdrop" class="modal-backdrop hidden">
+        <div class="org-chart-modal">
+            <div class="org-chart-modal-header">
+                <h3 class="org-chart-modal-title">Organization Chart</h3>
+                <button id="org-chart-modal-close-btn" class="org-chart-modal-close" title="Close">&times;</button>
+            </div>
+            <div id="org-chart-modal-content" class="org-chart-modal-content"></div>
+        </div>
+    </div>
+    <div id="agenda-modal-backdrop" class="modal-backdrop agenda-modal-backdrop hidden">
+        <div class="agenda-modal">
+            <div class="agenda-modal-header">
+                <h3 class="agenda-modal-title"><i class="fas fa-calendar-days"></i> Draft agenda</h3>
+                <button type="button" id="agenda-modal-close" class="agenda-modal-close" title="Close">&times;</button>
+            </div>
+            <div class="agenda-modal-body">
+                <button type="button" id="agenda-edit-toggle" class="agenda-edit-toggle hidden">Edit agenda items</button>
+                <div id="agenda-create-section" class="agenda-create-section">
+                    <p class="agenda-create-intro">Select agenda items and drag to reorder. Add any custom items, then generate copy for your meeting invite.</p>
+                    <label class="agenda-label">Agenda Items</label>
+                    <div id="agenda-canned-list" class="agenda-canned-grid">
+                        <div class="agenda-canned-column">
+                            <div class="agenda-section-header">Discovery</div>
+                            <label class="agenda-canned-item"><input type="checkbox" class="agenda-canned-cb" value="Network Audit & Gaps"> <span>Network Audit &amp; Gaps</span></label>
+                            <label class="agenda-canned-item"><input type="checkbox" class="agenda-canned-cb" value="Redundancy & Resiliency"> <span>Redundancy &amp; Resiliency</span></label>
+                            <label class="agenda-canned-item"><input type="checkbox" class="agenda-canned-cb" value="Security & Compliance"> <span>Security &amp; Compliance</span></label>
+                            <div class="agenda-section-header">The Solution</div>
+                            <label class="agenda-canned-item"><input type="checkbox" class="agenda-canned-cb" value="Proposed Architecture"> <span>Proposed Architecture</span></label>
+                            <label class="agenda-canned-item"><input type="checkbox" class="agenda-canned-cb" value="Cloud & Connectivity"> <span>Cloud &amp; Connectivity</span></label>
+                            <label class="agenda-canned-item"><input type="checkbox" class="agenda-canned-cb" value="Scalability & Roadmap"> <span>Scalability &amp; Roadmap</span></label>
+                        </div>
+                        <div class="agenda-canned-column">
+                            <div class="agenda-section-header">Execution</div>
+                            <label class="agenda-canned-item"><input type="checkbox" class="agenda-canned-cb" value="Build & Engineering"> <span>Build &amp; Engineering</span></label>
+                            <label class="agenda-canned-item"><input type="checkbox" class="agenda-canned-cb" value="Migration & Support"> <span>Migration &amp; Support</span></label>
+                            <label class="agenda-canned-item"><input type="checkbox" class="agenda-canned-cb" value="SLAs & Guarantees"> <span>SLAs &amp; Guarantees</span></label>
+                            <div class="agenda-section-header">The Business</div>
+                            <label class="agenda-canned-item"><input type="checkbox" class="agenda-canned-cb" value="Investment & ROI"> <span>Investment &amp; ROI</span></label>
+                            <label class="agenda-canned-item"><input type="checkbox" class="agenda-canned-cb" value="The Partnership"> <span>The Partnership</span></label>
+                            <label class="agenda-canned-item"><input type="checkbox" class="agenda-canned-cb" value="Q&A & Next Steps"> <span>Q&amp;A &amp; Next Steps</span></label>
+                        </div>
+                    </div>
+                    <div class="agenda-order-row">
+                        <label class="agenda-label">Agenda order (drag to reorder)</label>
+                        <button type="button" id="agenda-add-custom-btn" class="agenda-add-custom-btn">+ Add custom item</button>
+                    </div>
+                    <ul id="agenda-order-list" class="agenda-order-list"></ul>
+                    <label class="agenda-label">Additional context for intro/outro (optional)</label>
+                    <textarea id="agenda-prompt" class="agenda-prompt" rows="2" placeholder="e.g. Mention we'll send a proposal follow-up, or keep it brief"></textarea>
+                    <div class="agenda-generate-row">
+                        <button type="button" id="agenda-generate-btn" class="agenda-generate-btn">Generate agenda</button>
+                    </div>
+                    <div id="agenda-loading" class="agenda-loading hidden">
+                        <span class="agenda-loading-spinner"></span>
+                        <span>Building agenda…</span>
+                    </div>
+                </div>
+                <div id="agenda-result-wrap" class="agenda-result-wrap hidden">
+                    <label class="agenda-label">Copy for invite body</label>
+                    <textarea id="agenda-result" class="agenda-result" rows="10" readonly></textarea>
+                    <button type="button" id="agenda-copy-btn" class="agenda-copy-btn"><i class="fas fa-copy"></i> Copy to clipboard</button>
+                    <div id="agenda-feedback-slot"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('crm-theme') || 'dark';
+            document.body.className = `theme-${savedTheme} accounts-page`;
+        })();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.5.2/dist/js/tom-select.complete.min.js"></script>
+    <script type="module" src="js/accounts.js?v=demo-adapter-1"></script>
+</body>
+</html>

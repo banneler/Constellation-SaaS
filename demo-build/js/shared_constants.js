@@ -1,0 +1,1464 @@
+// js/shared_constants.js
+
+// --- SHARED CONSTANTS AND FUNCTIONS ---
+import { initHUD, refreshHUDNodes, removeDealInsightsWireframe, addDealInsightsWireframe, reloadHUDWireframes } from './hud.js';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from './env.config.js';
+
+export { refreshHUDNodes, removeDealInsightsWireframe, addDealInsightsWireframe, reloadHUDWireframes };
+export { SUPABASE_URL, SUPABASE_ANON_KEY };
+
+export const themes = ["dark", "light", "green", "blue", "corporate"];
+
+let swRegistrationInitialized = false;
+
+export function registerServiceWorker() {
+    if (swRegistrationInitialized) return;
+    swRegistrationInitialized = true;
+
+    if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
+
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    // Local dev (Live Server) should not use SW; stale caches can break rapid edits/reloads.
+    if (isLocalhost) {
+        navigator.serviceWorker.getRegistrations()
+            .then((registrations) => Promise.all(registrations.map((reg) => reg.unregister())))
+            .catch(() => {});
+        if ('caches' in window) {
+            caches.keys()
+                .then((keys) => Promise.all(
+                    keys
+                        .filter((key) => key.startsWith('constellation-'))
+                        .map((key) => caches.delete(key))
+                ))
+                .catch(() => {});
+        }
+        return;
+    }
+
+    if (!window.isSecureContext) return;
+
+    window.addEventListener('load', async () => {
+        try {
+            await navigator.serviceWorker.register('./sw.js', { scope: './' });
+        } catch (error) {
+            console.warn('Service worker registration failed:', error);
+        }
+    });
+}
+
+registerServiceWorker();
+
+// --- NEW: GLOBAL STATE MANAGEMENT ---
+const appState = {
+    currentUser: null,          // The actual logged-in user object
+    effectiveUserId: null,      // The ID of the user whose data is being viewed
+    effectiveUserFullName: null,// The name of the user being viewed
+    isManager: false,           // Is the logged-in user a manager?
+    managedUsers: []            // Array of users the manager can view as
+};
+
+const EFFECTIVE_USER_STORAGE_KEY = 'crm-effective-user';
+
+function readStoredEffectiveUser() {
+    try {
+        const raw = localStorage.getItem(EFFECTIVE_USER_STORAGE_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed?.id) return null;
+        return {
+            id: String(parsed.id),
+            fullName: parsed.fullName ? String(parsed.fullName) : ''
+        };
+    } catch (_) {
+        return null;
+    }
+}
+
+function writeStoredEffectiveUser(userId, fullName) {
+    try {
+        localStorage.setItem(EFFECTIVE_USER_STORAGE_KEY, JSON.stringify({
+            id: String(userId || ''),
+            fullName: String(fullName || '')
+        }));
+    } catch (_) {}
+}
+
+function clearStoredEffectiveUser() {
+    try {
+        localStorage.removeItem(EFFECTIVE_USER_STORAGE_KEY);
+    } catch (_) {}
+}
+
+function updateManagerOnlyNavigation() {
+    const shouldShow = appState.isManager === true;
+    document.querySelectorAll('[data-manager-only-nav="true"]').forEach((el) => {
+        el.classList.toggle('hidden', !shouldShow);
+        el.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+    });
+}
+
+/**
+ * Returns the current application state.
+ */
+export function getState() {
+    return { ...appState };
+}
+
+/** Stable map key for Postgres bigint / numeric ids (avoid Number() precision loss). */
+export function entityMapKey(id) {
+    if (id == null || id === '') return null;
+    return String(id);
+}
+
+/** Map entity id → row (keys are strings). */
+export function buildNumericIdMap(rows) {
+    const m = new Map();
+    for (const r of rows || []) {
+        const k = entityMapKey(r?.id);
+        if (k != null) m.set(k, r);
+    }
+    return m;
+}
+
+/**
+ * Account id for an activity/deal/task row via account_id or contact → account.
+ */
+export function resolveCrmRowAccountId(row, contactsById) {
+    if (!row) return null;
+    if (row.account_id != null && row.account_id !== '') return entityMapKey(row.account_id);
+    const cid = row.contact_id;
+    if (cid == null || cid === '') return null;
+    const contact = contactsById.get(entityMapKey(cid));
+    if (!contact || contact.account_id == null || contact.account_id === '') return null;
+    return entityMapKey(contact.account_id);
+}
+
+/**
+ * True when the row's owner (user_id) does not match the account owner — e.g. account was
+ * reassigned but activities/deals/tasks were left on the prior user.
+ *
+ * Also treats contact-only rows as orphaned when `contact_id` is set but the contact is not in
+ * `contactsById` (common after reassignment when the contact moved off your roster).
+ */
+export function isOwnershipOrphanedCrmRow(row, accountsById, contactsById) {
+    if (!row || row.user_id == null || row.user_id === '') return false;
+    const rowUser = String(row.user_id);
+
+    let accountKey = null;
+    if (row.account_id != null && row.account_id !== '') {
+        accountKey = entityMapKey(row.account_id);
+    } else if (row.contact_id != null && row.contact_id !== '') {
+        const ck = entityMapKey(row.contact_id);
+        const contact = ck != null ? contactsById.get(ck) : undefined;
+        if (!contact) return true;
+        accountKey = entityMapKey(contact.account_id);
+        if (accountKey == null) return false;
+    } else {
+        return false;
+    }
+
+    const acct = accountsById.get(accountKey);
+    if (!acct) return true;
+    return String(acct.user_id) !== rowUser;
+}
+
+/** Drops ownership-orphaned CRM rows using already-loaded accounts + contacts. */
+export function filterOutOwnershipOrphanedCrmRows(rows, accounts, contacts) {
+    const accountsById = buildNumericIdMap(accounts);
+    const contactsById = buildNumericIdMap(contacts);
+    return (rows || []).filter(row => !isOwnershipOrphanedCrmRow(row, accountsById, contactsById));
+}
+
+/**
+ * Sets the effective user for impersonation view.
+ * @param {string} userId - The UUID of the user to view as.
+ * @param {string} fullName - The full name of the user to view as.
+ */
+export function setEffectiveUser(userId, fullName) {
+    appState.effectiveUserId = userId;
+    appState.effectiveUserFullName = fullName;
+    if (appState.isManager) {
+        writeStoredEffectiveUser(userId, fullName);
+    }
+    console.log(`Viewing as: ${fullName} (${userId})`);
+    
+    // This is the key part for triggering a UI refresh.
+    // We dispatch a custom event that other parts of the app can listen for.
+    window.dispatchEvent(new CustomEvent('effectiveUserChanged'));
+}
+
+/**
+ * Initializes the global state on application startup.
+ * @param {SupabaseClient} supabase The Supabase client.
+ * @returns {Promise<object>} The fully initialized state object.
+ */
+export async function initializeAppState(supabase) {
+    if (window.CONSTELLATION_DEMO_STATE?.user) {
+        appState.currentUser = window.CONSTELLATION_DEMO_STATE.user;
+        appState.effectiveUserId = window.CONSTELLATION_DEMO_STATE.user.id;
+        appState.effectiveUserFullName = window.CONSTELLATION_DEMO_STATE.user.user_metadata?.full_name || 'Demo User';
+        appState.isManager = false;
+        appState.managedUsers = [];
+        updateManagerOnlyNavigation();
+        return appState;
+    }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+        clearStoredEffectiveUser();
+        window.location.href = "index.html";
+        return; // Return early if no user
+    }
+
+    appState.currentUser = user;
+    appState.effectiveUserId = user.id;
+
+    // Fetch the current user's profile to check if they are a manager
+    const { data: currentUserProfile, error: profileError } = await supabase
+        .from('user_quotas')
+        .select('full_name, is_manager, deactivated_at')
+        .eq('user_id', user.id)
+        .single();
+
+    if (profileError && profileError.code !== 'PGRST116') { // PGRST116 means no row, which is a valid state
+        console.error("Error fetching current user profile:", profileError);
+        // Handle error case, maybe by setting default non-manager state
+        appState.isManager = false;
+        appState.effectiveUserFullName = 'User';
+        appState.managedUsers = [];
+        clearStoredEffectiveUser();
+        return appState;
+    }
+    
+    // Set the full name for the logged-in user from their profile
+    // Also, update the user metadata in auth if it's not set
+    if (currentUserProfile?.full_name) {
+        appState.effectiveUserFullName = currentUserProfile.full_name;
+        if (user.user_metadata?.full_name !== currentUserProfile.full_name) {
+             supabase.auth.updateUser({ data: { full_name: currentUserProfile.full_name } });
+        }
+    } else {
+        appState.effectiveUserFullName = 'User'; // Fallback name
+    }
+
+    if (currentUserProfile?.deactivated_at) {
+        clearStoredEffectiveUser();
+        await supabase.auth.signOut();
+        window.location.href = "index.html";
+        appState.currentUser = null;
+        return appState;
+    }
+
+
+    // Check if the user is a manager (user_quotas or user_metadata fallback - deals uses user_metadata)
+    const isManagerFromQuotas = currentUserProfile?.is_manager === true;
+    const isManagerFromMetadata = user.user_metadata?.is_manager === true;
+    if (isManagerFromQuotas || isManagerFromMetadata) {
+        appState.isManager = true;
+        
+        // If they are a manager, fetch all other users to populate the impersonation dropdown
+        const { data: allUsers, error: allUsersError } = await supabase
+            .from('user_quotas')
+            .select('user_id, full_name, deactivated_at, exclude_from_reporting')
+            .neq('user_id', user.id); // Exclude the manager themselves from the list of managed users
+
+        if (allUsersError) {
+            console.error("Error fetching managed users:", allUsersError);
+            appState.managedUsers = [];
+        } else {
+            appState.managedUsers = allUsers
+                .filter(u => !u.deactivated_at && !u.exclude_from_reporting)
+                .map(u => ({
+                    id: u.user_id,
+                    user_id: u.user_id,
+                    full_name: u.full_name
+                }));
+        }
+
+        const storedEffectiveUser = readStoredEffectiveUser();
+        if (storedEffectiveUser?.id) {
+            const managerView = {
+                id: user.id,
+                user_id: user.id,
+                full_name: appState.effectiveUserFullName || user.user_metadata?.full_name || 'Me'
+            };
+            const viewableUsers = [managerView, ...appState.managedUsers];
+            const matchedUser = viewableUsers.find((candidate) => String(candidate.id || candidate.user_id) === storedEffectiveUser.id);
+            if (matchedUser) {
+                appState.effectiveUserId = matchedUser.id || matchedUser.user_id;
+                appState.effectiveUserFullName = matchedUser.full_name || storedEffectiveUser.fullName || appState.effectiveUserFullName;
+                writeStoredEffectiveUser(appState.effectiveUserId, appState.effectiveUserFullName);
+            } else {
+                clearStoredEffectiveUser();
+            }
+        }
+    } else {
+        appState.isManager = false;
+        appState.managedUsers = [];
+        clearStoredEffectiveUser();
+    }
+
+    updateManagerOnlyNavigation();
+    
+    return appState;
+}
+// --- END NEW SECTION ---
+
+
+// --- THEME MANAGEMENT ---
+let currentThemeIndex = 0;
+
+function applyTheme(themeName) {
+    const themeNameSpan = document.getElementById("theme-name");
+    document.body.className = '';
+    document.body.classList.add(`theme-${themeName}`);
+    if (themeNameSpan) {
+        const capitalizedThemeName = themeName.charAt(0).toUpperCase() + themeName.slice(1);
+        themeNameSpan.textContent = capitalizedThemeName;
+    }
+}
+
+async function saveThemePreference(supabase, userId, themeName) {
+    const { error } = await supabase
+        .from('user_preferences')
+        .upsert({ user_id: userId, theme: themeName }, { onConflict: 'user_id' });
+    if (error) {
+        console.error("Error saving theme preference:", error);
+    }
+    localStorage.setItem('crm-theme', themeName);
+}
+
+export async function setupTheme(supabase, user) {
+    const themeToggleBtn = document.getElementById("theme-toggle-btn");
+    if (!themeToggleBtn) return;
+
+    const { data, error } = await supabase
+        .from('user_preferences')
+        .select('theme')
+        .eq('user_id', user.id)
+        .single();
+
+    let currentTheme = 'dark';
+    if (error && error.code !== 'PGRST116') {
+        console.error("Error fetching theme:", error);
+    } else if (data) {
+        currentTheme = data.theme;
+    } else {
+        await saveThemePreference(supabase, user.id, currentTheme);
+    }
+    
+    currentThemeIndex = themes.indexOf(currentTheme);
+    if (currentThemeIndex === -1) currentThemeIndex = 0;
+    applyTheme(themes[currentThemeIndex]);
+    localStorage.setItem('crm-theme', themes[currentThemeIndex]);
+
+    if (themeToggleBtn.dataset.listenerAttached !== 'true') {
+        themeToggleBtn.addEventListener("click", () => {
+            currentThemeIndex = (currentThemeIndex + 1) % themes.length;
+            const newTheme = themes[currentThemeIndex];
+            applyTheme(newTheme);
+            saveThemePreference(supabase, user.id, newTheme);
+        });
+        themeToggleBtn.dataset.listenerAttached = 'true';
+    }
+}
+
+// --- SHARED UTILITY FUNCTIONS ---
+
+export function formatDate(dateString) {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+export function formatMonthYear(dateString) {
+    if (!dateString) return "N/A";
+    const [year, month] = dateString.split('-');
+    const date = new Date(Date.UTC(year, month - 1, 2));  
+    return date.toLocaleDateString("en-US", { year: 'numeric', month: 'long', timeZone: 'UTC' });
+}
+
+export function formatSimpleDate(dateString) {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    const userTimezoneOffset = date.getTimezoneOffset() * 60000;
+    const adjustedDate = new Date(date.getTime() + userTimezoneOffset);
+    return adjustedDate.toLocaleDateString("en-US");
+}
+
+/**
+ * Returns notes status for deal cards: 'green' (≤7 days), 'yellow' (8–21 days), 'red' (no notes or >21 days).
+ * @param {{ notes?: string | null, notes_last_updated?: string | null }} deal
+ * @returns {{ status: 'green' | 'yellow' | 'red', label: string }}
+ */
+export function getDealNotesStatus(deal) {
+    const hasNotes = !!((deal?.notes || '').trim());
+    const updatedAt = deal?.notes_last_updated ? new Date(deal.notes_last_updated) : null;
+    if (!hasNotes || !updatedAt || Number.isNaN(updatedAt.getTime())) {
+        return { status: 'red', label: hasNotes ? 'Notes (date unknown)' : 'No notes' };
+    }
+    const now = new Date();
+    const daysAgo = (now.getTime() - updatedAt.getTime()) / (24 * 60 * 60 * 1000);
+    if (daysAgo <= 7) return { status: 'green', label: `Notes updated ${formatSimpleDate(deal.notes_last_updated)}` };
+    if (daysAgo <= 21) return { status: 'yellow', label: `Notes updated ${formatSimpleDate(deal.notes_last_updated)}` };
+    return { status: 'red', label: `Notes updated ${formatSimpleDate(deal.notes_last_updated)}` };
+}
+
+export function formatCurrency(value) {
+    if (typeof value !== 'number') return '$0';
+    return `$${value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+}
+
+export function formatCurrencyK(value) {
+    if (typeof value !== 'number') return '$0';
+    if (Math.abs(value) >= 1000) {
+        return `$${(value / 1000).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 1 })}K`;
+    }
+    return `$${value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+}
+
+export function parseCsvRow(row) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    for (let i = 0; i < row.length; i++) {
+        const char = row[i];
+        if (char === '"') {
+            inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+            result.push(current.trim());
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+    result.push(current.trim());
+    return result;
+}
+
+export function addDays(date, days) {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+}
+
+/**
+ * Opens a pre-filled Salesforce Task create page in a new tab (Single Exhaust / manual log).
+ * @param {object} activity - Activity object with subject, notes (or body), type, created_at (or date), and optional sf_account_locator (Salesforce Account Id for WhatId).
+ */
+export function logToSalesforce(activity) {
+    if (!activity) return;
+    if (window.CONSTELLATION_DEMO_STATE) {
+        showToast('Demo mode: Salesforce logging is simulated locally.', 'info');
+        return;
+    }
+    // TODO: should eventually come from user settings
+    const sfBaseUrl = "https://gpcom.lightning.force.com";
+    const subjectRaw = activity.subject || activity.description || activity.type || "Activity";
+    const typeLower = (activity.type || "").toLowerCase();
+    const subjectPrefix = typeLower.includes("email") ? "Email: " : "Call: ";
+    const subject = subjectPrefix + subjectRaw;
+    const description = activity.notes || activity.body || activity.description || "";
+    const status = "Completed";
+    const dateVal = activity.created_at || activity.date;
+    const d = dateVal ? new Date(dateVal) : new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    const activityDate = `${year}-${month}-${day}`;
+    let inner = "Subject=" + encodeURIComponent(subject) + ",Description=" + encodeURIComponent(description) + ",Status=" + encodeURIComponent(status) + ",ActivityDate=" + encodeURIComponent(activityDate);
+    const locator = (activity.sf_account_locator || "").trim();
+    if (locator) inner += ",WhatId=" + encodeURIComponent(locator);
+    const finalUrl = sfBaseUrl + "/lightning/o/Task/new?defaultFieldValues=" + encodeURIComponent(inner);
+    window.open(finalUrl, "_blank");
+}
+
+export function updateActiveNavLink() {
+    const currentPage = window.location.pathname.split("/").pop();
+    document.querySelectorAll(".nav-sidebar .nav-button").forEach(link => {
+        const linkPage = link.getAttribute("href");
+        if(linkPage) {
+            link.classList.toggle("active", linkPage === currentPage);
+        }
+    });
+}
+
+// --- MODAL FUNCTIONS ---
+const modalBackdrop = document.getElementById("modal-backdrop");
+const modalTitle = document.getElementById("modal-title");
+const modalBody = document.getElementById("modal-body");
+const modalActions = document.getElementById("modal-actions");
+let currentModalCallbacks = { onConfirm: null, onCancel: null };
+
+/** Dismiss policy for #modal-backdrop (backdrop click + Escape). showModal sets this; hideModal resets. */
+let modalDismissPolicy = { backdrop: true, escape: true };
+let actionSuccessConfirmOpen = false;
+let actionSuccessBackdropEl = null;
+let pendingActionSuccessOpts = null;
+
+export function getCurrentModalCallbacks() { return { ...currentModalCallbacks }; }
+export function setCurrentModalCallbacks(callbacks) { currentModalCallbacks = { ...callbacks }; }
+
+/**
+ * Override dismiss behavior while a non-standard modal is open (e.g. Social Hub custom markup on #modal-backdrop).
+ * hideModal() resets to defaults.
+ */
+export function setModalDismissPolicy({ closeOnBackdropClick = true, closeOnEscape = true } = {}) {
+    modalDismissPolicy = {
+        backdrop: closeOnBackdropClick !== false,
+        escape: closeOnEscape !== false
+    };
+}
+
+function resetModalDismissPolicy() {
+    modalDismissPolicy = { backdrop: true, escape: true };
+}
+
+function ensureActionSuccessBackdrop() {
+    if (actionSuccessBackdropEl) return actionSuccessBackdropEl;
+    actionSuccessBackdropEl = document.createElement("div");
+    actionSuccessBackdropEl.id = "action-success-confirm-backdrop";
+    actionSuccessBackdropEl.className = "action-success-confirm-backdrop hidden";
+    actionSuccessBackdropEl.setAttribute("role", "dialog");
+    actionSuccessBackdropEl.setAttribute("aria-modal", "true");
+    actionSuccessBackdropEl.innerHTML = `
+        <div class="modal-content action-success-confirm-dialog max-w-md w-[90%]">
+            <h3 class="text-lg font-semibold mb-2 action-success-confirm-title">Did it work?</h3>
+            <p class="action-success-confirm-message text-[var(--text-medium)] mb-4"></p>
+            <div class="modal-actions flex flex-wrap gap-2 justify-end">
+                <button type="button" class="btn-primary action-success-confirm-yes">Yes</button>
+                <button type="button" class="btn-secondary action-success-confirm-no">No</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(actionSuccessBackdropEl);
+    actionSuccessBackdropEl.addEventListener("click", (e) => {
+        if (e.target === actionSuccessBackdropEl) {
+            actionSuccessBackdropEl.querySelector(".action-success-confirm-no")?.click();
+        }
+    });
+    actionSuccessBackdropEl.querySelector(".action-success-confirm-yes").addEventListener("click", async () => {
+        const o = pendingActionSuccessOpts;
+        pendingActionSuccessOpts = null;
+        actionSuccessConfirmOpen = false;
+        actionSuccessBackdropEl.classList.add("hidden");
+        if (o && o.onYes) await Promise.resolve(o.onYes());
+    });
+    actionSuccessBackdropEl.querySelector(".action-success-confirm-no").addEventListener("click", () => {
+        const o = pendingActionSuccessOpts;
+        pendingActionSuccessOpts = null;
+        actionSuccessConfirmOpen = false;
+        actionSuccessBackdropEl.classList.add("hidden");
+        if (o && o.onNo) o.onNo();
+    });
+    return actionSuccessBackdropEl;
+}
+
+/**
+ * Stack above #modal-backdrop. "No" or backdrop click only closes this layer; compose modal stays open.
+ * Escape closes this layer (same as No) while it is open.
+ */
+export function showActionSuccessConfirm({ message, title = "Did it work?", yesLabel = "Yes", noLabel = "No", onYes, onNo }) {
+    const root = ensureActionSuccessBackdrop();
+    pendingActionSuccessOpts = { onYes, onNo };
+    root.querySelector(".action-success-confirm-title").textContent = title;
+    root.querySelector(".action-success-confirm-message").textContent = message;
+    root.querySelector(".action-success-confirm-yes").textContent = yesLabel;
+    root.querySelector(".action-success-confirm-no").textContent = noLabel;
+    actionSuccessConfirmOpen = true;
+    root.classList.remove("hidden");
+}
+
+export function showModal(title, bodyHtml, onConfirm = null, showCancel = true, customActionsHtml = null, onCancel = null, modalOptions = null) {
+    if (!modalBackdrop || !modalTitle || !modalBody || !modalActions) {
+        console.error("Modal elements are missing from the DOM.");
+        return;
+    }
+
+    const opts = modalOptions && typeof modalOptions === "object" && !Array.isArray(modalOptions) ? modalOptions : {};
+    modalDismissPolicy = {
+        backdrop: opts.closeOnBackdropClick !== false,
+        escape: opts.closeOnEscape !== false
+    };
+    
+    modalTitle.textContent = title;
+    modalBody.innerHTML = bodyHtml;
+    
+    if (customActionsHtml) {
+        modalActions.innerHTML = customActionsHtml;
+    } else {
+        modalActions.innerHTML = `
+            <button id="modal-confirm-btn" class="btn-primary">Confirm</button>
+            ${showCancel ? '<button id="modal-cancel-btn" class="btn-secondary">Cancel</button>' : ''}
+        `;
+    }
+
+    const confirmBtn = document.getElementById('modal-confirm-btn');
+    const cancelBtn = document.getElementById('modal-cancel-btn');
+    const okBtn = document.getElementById('modal-ok-btn');
+    
+    if (confirmBtn) {
+        confirmBtn.onclick = async () => {
+            if (onConfirm) {
+                const result = await Promise.resolve(onConfirm(modalBody)); // Pass modalBody reference
+                if (result !== false) hideModal();
+            } else {
+                hideModal();
+            }
+        };
+    }
+    if (cancelBtn) {
+        cancelBtn.onclick = () => {
+            if (onCancel) {
+                onCancel();
+            }
+            hideModal();
+        };
+    }
+    if (okBtn) {
+        okBtn.onclick = () => {
+            hideModal();
+        };
+    }
+
+    modalBackdrop.classList.remove("hidden");
+    return modalBody; // Return the modal body for use in contacts.js
+}
+
+export function hideModal() {
+    if (modalBackdrop) modalBackdrop.classList.add("hidden");
+    resetModalDismissPolicy();
+}
+
+function handleBackdropClick(e) {
+    if (actionSuccessConfirmOpen) return;
+    if (!modalDismissPolicy.backdrop) return;
+    if (e.target === modalBackdrop) hideModal();
+}
+
+function handleEscapeKey(e) {
+    if (e.key !== "Escape") return;
+    if (actionSuccessConfirmOpen && actionSuccessBackdropEl && !actionSuccessBackdropEl.classList.contains("hidden")) {
+        e.preventDefault();
+        actionSuccessBackdropEl.querySelector(".action-success-confirm-no")?.click();
+        return;
+    }
+    if (!modalDismissPolicy.escape) return;
+    if (modalBackdrop && !modalBackdrop.classList.contains("hidden")) hideModal();
+}
+
+export function setupModalListeners() {
+    if (!document.body.dataset.crmModalEscapeAttached) {
+        document.body.dataset.crmModalEscapeAttached = "1";
+        window.addEventListener("keydown", handleEscapeKey);
+    }
+    const backdrop = document.getElementById('modal-backdrop');
+    if (backdrop && backdrop.dataset.modalBackdropClickAttached !== "1") {
+        backdrop.dataset.modalBackdropClickAttached = "1";
+        backdrop.addEventListener("click", handleBackdropClick);
+    }
+}
+
+// --- GLOBAL LOADING OVERLAY ---
+const GLOBAL_LOADER_ID = 'global-loader-overlay';
+
+export function showGlobalLoader() {
+    const el = document.getElementById(GLOBAL_LOADER_ID);
+    if (el) {
+        el.classList.add('active');
+        el.setAttribute('aria-busy', 'true');
+    }
+}
+
+export function hideGlobalLoader() {
+    const el = document.getElementById(GLOBAL_LOADER_ID);
+    if (el) {
+        el.classList.remove('active');
+        el.setAttribute('aria-busy', 'false');
+    }
+}
+
+// --- TOAST NOTIFICATIONS ---
+const TOAST_CONTAINER_ID = 'toast-container';
+/** Positioned over the left rail; width capped so copy wraps inside the column. */
+const TOAST_CONTAINER_CLASSES = 'toast-container pointer-events-none';
+
+function getOrCreateToastContainer() {
+    let toastContainer = document.getElementById(TOAST_CONTAINER_ID);
+    if (!toastContainer) {
+        toastContainer = document.createElement('div');
+        toastContainer.id = TOAST_CONTAINER_ID;
+        toastContainer.className = TOAST_CONTAINER_CLASSES;
+        toastContainer.setAttribute('aria-live', 'polite');
+        document.body.appendChild(toastContainer);
+    }
+    return toastContainer;
+}
+
+/**
+ * @param {string} message
+ * @param {string} [type]
+ * @returns {HTMLDivElement}
+ */
+export function createToastElement(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type} pointer-events-auto`;
+    const span = document.createElement('span');
+    span.className = 'toast-message';
+    span.textContent = String(message ?? '');
+    toast.appendChild(span);
+    return toast;
+}
+
+/** durationMs 0 = stay until returned dismiss() is called (cancels auto-hide). */
+export function showToast(message, type = 'success', durationMs = 4000) {
+    const toastContainer = getOrCreateToastContainer();
+
+    const toast = createToastElement(message, type);
+    toastContainer.appendChild(toast);
+
+    const dismiss = () => {
+        if (!toast.isConnected) return;
+        toast.classList.add('hide');
+        toast.addEventListener('transitionend', () => toast.remove(), { once: true });
+    };
+
+    let timeoutId;
+    if (durationMs > 0) {
+        timeoutId = setTimeout(dismiss, durationMs);
+    }
+
+    return () => {
+        if (timeoutId) clearTimeout(timeoutId);
+        dismiss();
+    };
+}
+
+
+// js/shared_constants.js
+
+// ... (keep all other functions like SUPABASE_URL, formatDate, initializeAppState, etc., the same)
+
+/**
+ * Returns first name only from a full name (e.g. "John Doe" -> "John").
+ * @param {string} fullName - Full name
+ * @returns {string}
+ */
+function getFirstName(fullName) {
+    if (!fullName || typeof fullName !== 'string') return 'User';
+    const trimmed = fullName.trim();
+    if (!trimmed) return 'User';
+    const first = trimmed.split(/\s+/)[0];
+    return first || 'User';
+}
+
+/**
+ * Scales the user name font size down until it fits within its container.
+ * @param {HTMLElement} el - The #user-name-display element
+ */
+function fitUserNameToContainer(el) {
+    if (!el || !el.parentElement) return;
+    const MIN_FONT_PX = 12;
+    const MAX_FONT_PX = 18;
+    el.style.fontSize = '';
+    el.style.fontSize = `${MAX_FONT_PX}px`;
+    const parent = el.parentElement;
+    const icon = parent.querySelector('.user-icon, [data-svg-loader]');
+    const iconWidth = icon ? icon.offsetWidth : 80;
+    const gap = 10;
+    const maxWidth = parent.clientWidth - iconWidth - gap;
+    if (maxWidth <= 0) return;
+    while (el.scrollWidth > maxWidth && parseInt(getComputedStyle(el).fontSize) > MIN_FONT_PX) {
+        const current = parseInt(getComputedStyle(el).fontSize);
+        el.style.fontSize = `${Math.max(MIN_FONT_PX, current - 1)}px`;
+    }
+}
+
+// --- USER MENU & AUTH LOGIC (UPDATED FOR IMPERSONATION) ---
+/**
+ * @param {object} supabase - Supabase client
+ * @param {object} appState - App state (use getState() for full manager/impersonation support)
+ * @param {{ skipImpersonation?: boolean }} options - skipImpersonation: true to hide the View As dropdown (e.g. on Deals which has its own team toggle)
+ */
+export async function setupUserMenuAndAuth(supabase, appState, options = {}) {
+    if (window.CONSTELLATION_DEMO_STATE?.user) {
+        appState.currentUser = appState.currentUser || window.CONSTELLATION_DEMO_STATE.user;
+        const userNameDisplay = document.getElementById('user-name-display');
+        if (userNameDisplay) userNameDisplay.textContent = 'Demo User';
+        return;
+    }
+    const userMenuPopup = document.getElementById('user-menu-popup');
+    const logoutBtn = document.getElementById("logout-btn");
+
+    if (!userMenuPopup || !logoutBtn) {
+        console.error("One or more user menu elements are missing.");
+        return;
+    }
+
+    // --- Manager Impersonation Dropdown Logic ---
+    // Use getState() when passed state lacks manager fields (ensures dropdown shows if any page initialized it)
+    const stateForMenu = appState?.isManager !== undefined ? appState : getState();
+    const debugOverride = typeof URLSearchParams !== 'undefined' && new URLSearchParams(window.location.search).get('impersonation') === '1';
+    const showImpersonation = !options.skipImpersonation && (stateForMenu.isManager || debugOverride);
+    if (stateForMenu.currentUser && !options.skipImpersonation) {
+        console.log('[Impersonation] isManager:', stateForMenu.isManager, 'managedUsers:', stateForMenu.managedUsers?.length ?? 0, 'showDropdown:', showImpersonation);
+    }
+
+    const existingWrap = document.getElementById('manager-view-select-wrap');
+    const existingDropdown = document.getElementById('manager-view-select');
+    if (existingWrap) existingWrap.remove();
+    else if (existingDropdown) existingDropdown.parentElement?.removeChild(existingDropdown);
+
+    if (showImpersonation) {
+        const wrap = document.createElement('div');
+        wrap.id = 'manager-view-select-wrap';
+        wrap.className = 'impersonation-dropdown-wrap';
+        wrap.style.marginBottom = '8px';
+        const label = document.createElement('label');
+        label.textContent = 'View as:';
+        label.style.display = 'block';
+        label.style.fontSize = '0.75rem';
+        label.style.color = 'var(--text-medium)';
+        label.style.marginBottom = '4px';
+        const viewSelect = document.createElement('select');
+        viewSelect.id = 'manager-view-select';
+        viewSelect.className = 'nav-button';
+        viewSelect.setAttribute('aria-label', 'View as user');
+
+        const managerName = stateForMenu.currentUser.user_metadata?.full_name || 'Me';
+        let options = `<option value="${stateForMenu.currentUser.id}">${managerName}</option>`;
+        options += (stateForMenu.managedUsers || []).map(user =>
+            `<option value="${user.id}">${user.full_name}</option>`
+        ).join('');
+
+        viewSelect.innerHTML = options;
+        viewSelect.value = stateForMenu.effectiveUserId || stateForMenu.currentUser.id;
+
+        wrap.appendChild(label);
+        wrap.appendChild(viewSelect);
+        userMenuPopup.insertBefore(wrap, userMenuPopup.firstChild);
+
+        const handleChange = (selectedUserId) => {
+            const selectedUser = (stateForMenu.managedUsers || []).find(u => u.id === selectedUserId) || {
+                id: stateForMenu.currentUser.id,
+                full_name: managerName
+            };
+            setEffectiveUser(selectedUserId, selectedUser.full_name);
+        };
+
+        if (typeof window.TomSelect !== 'undefined') {
+            try {
+                const ts = viewSelect.tomselect;
+                if (ts) ts.destroy();
+                const tom = new window.TomSelect(viewSelect, {
+                    create: false,
+                    placeholder: 'View as...',
+                    dropdownParent: 'body',
+                    controlInput: null,
+                    searchField: [],
+                    plugins: ['input_autogrow'],
+                    onDropdownOpen() {
+                        const d = this.dropdown;
+                        if (d) d.className = 'ts-dropdown tom-select-no-search';
+                    },
+                    render: {
+                        dropdown: () => {
+                            const d = document.createElement('div');
+                            d.className = 'ts-dropdown tom-select-no-search';
+                            return d;
+                        }
+                    },
+                    onChange: (val) => handleChange(val)
+                });
+                tom.setValue(stateForMenu.effectiveUserId || stateForMenu.currentUser.id, true);
+            } catch (err) {
+                console.warn('[Impersonation] Tom Select init failed, using native select:', err);
+                viewSelect.addEventListener('change', (e) => handleChange(e.target.value));
+            }
+        } else {
+            viewSelect.addEventListener('change', (e) => handleChange(e.target.value));
+        }
+    }
+    // --- END NEW LOGIC ---
+
+    const { data: userData, error: userError } = await supabase
+        .from('user_quotas')
+        .select('full_name, monthly_quota')
+        .eq('user_id', appState.currentUser.id) // Use the actual logged-in user
+        .single();
+
+    if (userError && userError.code !== 'PGRST116') {
+        console.error('Error fetching user data:', userError);
+        return;
+    }
+    
+    if (!userData || !userData.full_name) {
+        const modalBodyHtml = `
+            <p>Welcome to Constellation! Please enter your details to get started.</p>
+            <div>
+                <label for="modal-full-name">Full Name</label>
+                <input type="text" id="modal-full-name" required>
+            </div>
+            <div>
+                <label for="modal-monthly-quota">Monthly Quota ($)</label>
+                <input type="number" id="modal-monthly-quota" required placeholder="e.g., 50000">
+            </div>
+        `;
+        showModal("Welcome!", modalBodyHtml, async () => {
+            const fullName = document.getElementById('modal-full-name')?.value.trim();
+            const monthlyQuota = document.getElementById('modal-monthly-quota')?.value;
+
+            if (!fullName || !monthlyQuota) {
+                alert("Please fill out all fields.");
+                return false;
+            }
+
+            const { error: upsertError } = await supabase
+                .from('user_quotas')
+                .upsert({
+                    user_id: appState.currentUser.id,
+                    full_name: fullName,
+                    monthly_quota: Number(monthlyQuota)
+                }, { onConflict: 'user_id' });
+
+            if (upsertError) {
+                console.error("Error saving user details to user_quotas:", upsertError);
+                alert("Could not save your profile details. Please try again: " + upsertError.message);
+                return false;
+            }
+
+            const { error: updateUserError } = await supabase.auth.updateUser({
+                data: { full_name: fullName }
+            });
+
+            if (updateUserError) {
+                console.warn("Could not save full_name to user metadata:", updateUserError);
+            }
+            
+            await initializeAppState(supabase);
+            await setupUserMenuAndAuth(supabase, getState());
+
+            return true;
+
+        }, false, `<button id="modal-confirm-btn" class="btn-primary">Get Started</button>`);
+    
+    } else {
+        await setupTheme(supabase, appState.currentUser);
+        attachUserMenuListeners();
+    }
+
+    function attachUserMenuListeners() {
+        const userMenu = document.querySelector('.user-menu');
+        if (userMenu?.dataset.listenerAttached === 'true') return;
+
+        logoutBtn.addEventListener("click", async () => {
+            sessionStorage.removeItem('crm-briefing-generated');
+            sessionStorage.removeItem('crm-briefing-html');
+            clearStoredEffectiveUser();
+            await supabase.auth.signOut();
+            window.location.href = "index.html";
+        });
+
+        if (userMenu) userMenu.dataset.listenerAttached = 'true';
+    }
+}
+export async function loadSVGs() {
+    const svgPlaceholders = document.querySelectorAll('[data-svg-loader]');
+    
+    for (const placeholder of svgPlaceholders) {
+        const svgUrl = placeholder.dataset.svgLoader;
+        if (svgUrl) {
+            try {
+                const response = await fetch(svgUrl);
+                if (!response.ok) throw new Error(`Failed to load SVG: ${response.statusText}`);
+                
+                const svgText = await response.text();
+                const parser = new DOMParser();
+                const svgDoc = parser.parseFromString(svgText, "image/svg+xml");
+                const svgElement = svgDoc.documentElement;
+
+                if (svgElement.querySelector('parsererror')) {
+                    console.error(`Error parsing SVG from ${svgUrl}`);
+                    continue;
+                }
+                
+                if (svgUrl.includes('logo.svg') || svgUrl.includes('c-logo.svg') || svgUrl.includes('constellation-logo')) {
+                    svgElement.classList.add(placeholder.closest('#auth-container') ? 'auth-logo' : 'nav-logo');
+                    if (placeholder.classList.contains('nav-logo-expanded')) svgElement.classList.add('nav-logo-expanded');
+                    if (placeholder.classList.contains('nav-logo-collapsed')) svgElement.classList.add('nav-logo-collapsed');
+                    if (placeholder.classList.contains('constellation-main-logo') || svgUrl.includes('constellation-logo-full')) svgElement.classList.add('constellation-main-logo');
+                } else if (svgUrl.includes('user-icon.svg')) {
+                    svgElement.classList.add('user-icon');
+                }
+
+                placeholder.replaceWith(svgElement);
+
+            } catch (error) {
+                console.error(`Could not load SVG from ${svgUrl}`, error);
+                placeholder.innerHTML = '';
+            }
+        }
+    }
+}
+
+let matrixProtocolActive = false;
+
+// --- GLOBAL NAVIGATION (central template, no theme picker) ---
+const GLOBAL_NAV_TEMPLATE = `
+<div class="nav-mobile-bar">
+    <a href="command-center.html" class="nav-mobile-logo" aria-label="Home"><div data-svg-loader="assets/constellation-logo-full.svg" class="constellation-main-logo"></div></a>
+    <button type="button" id="nav-mobile-menu-btn" class="nav-mobile-menu-btn" aria-label="Open menu" title="Menu">
+        <i class="fa-solid fa-bars"></i>
+    </button>
+</div>
+<div class="nav-mobile-overlay hidden" id="nav-mobile-overlay" aria-hidden="true"></div>
+<div id="nav-search-fanout" class="nav-search-fanout hidden" aria-hidden="true">
+    <div class="nav-search-fanout-inner">
+        <i class="fa-solid fa-search nav-search-fanout-icon"></i>
+        <input type="text" id="global-search-fanout-input" placeholder="Search..." class="nav-search-fanout-input" aria-label="Search">
+        <button type="button" id="nav-search-fanout-close" class="nav-search-fanout-close" aria-label="Close"><i class="fa-solid fa-times"></i></button>
+    </div>
+    <div id="global-search-fanout-results" class="global-search-results hidden"></div>
+</div>
+<div class="nav-drawer-content" id="nav-drawer-content">
+<div class="nav-top-section">
+    <button type="button" id="nav-collapse-toggle" class="nav-collapse-toggle" title="Collapse sidebar" aria-label="Collapse sidebar">
+        <i class="fa-solid fa-chevron-left nav-collapse-icon"></i>
+    </button>
+    <div class="nav-logo-wrap">
+        <div class="nav-logo-expanded constellation-main-logo" data-svg-loader="assets/constellation-logo-full.svg"></div>
+        <div class="nav-logo-collapsed constellation-main-logo" data-svg-loader="assets/constellation-logo-c.svg"></div>
+    </div>
+    <div class="global-search-container">
+        <button type="button" id="nav-search-trigger" class="nav-search-trigger" title="Search" aria-label="Search"><i class="fa-solid fa-search global-search-trigger-icon"></i></button>
+        <div class="global-search-input-wrapper">
+            <i class="fa-solid fa-search global-search-icon"></i>
+            <input type="text" id="global-search-input" placeholder="Search..." class="nav-search-input">
+        </div>
+        <div id="global-search-results" class="global-search-results hidden"></div>
+    </div>
+</div>
+<div class="nav-links-section">
+    <a href="command-center.html" class="nav-button"><i class="fa-solid fa-gauge-high nav-icon"></i><span class="nav-label-text">Command Center</span></a>
+    <a href="deals.html" class="nav-button"><i class="fa-solid fa-handshake nav-icon"></i><span class="nav-label-text">Deals</span></a>
+    <a href="contacts.html" class="nav-button"><i class="fa-solid fa-address-book nav-icon"></i><span class="nav-label-text">Contacts</span></a>
+    <a href="accounts.html" class="nav-button"><i class="fa-solid fa-building nav-icon"></i><span class="nav-label-text">Accounts</span></a>
+    <a href="proposals.html" class="nav-button"><i class="fa-solid fa-file-lines nav-icon"></i><span class="nav-label-text">Proposals</span></a>
+    <a href="irr.html" class="nav-button"><i class="fa-solid fa-calculator nav-icon"></i><span class="nav-label-text">IRR</span></a>
+    <a href="campaigns.html" class="nav-button"><i class="fa-solid fa-bullhorn nav-icon"></i><span class="nav-label-text">Campaigns</span></a>
+    <a href="sequences.html" class="nav-button"><i class="fa-solid fa-arrows-rotate nav-icon"></i><span class="nav-label-text">Sequences</span></a>
+    <a href="social_hub.html" class="nav-button"><i class="fa-solid fa-share-nodes nav-icon"></i><span class="nav-label-text">Social Hub</span> <i class="fa-solid fa-bell nav-notification-dot hidden" id="social_hub-notification"></i></a>
+</div>
+<div class="nav-cognito-wrap">
+    <a href="cognito.html" class="nav-button cognito-nav-btn" title="Cognito">
+        <span class="cognito-icon-collapsed"><i class="fa-solid fa-magnifying-glass nav-icon"></i></span>
+        <span class="nav-label-text cognito-text"><h1>C<svg class="cognito-logo-magnifying-glass" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="glassGradient" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#60a5fa;"></stop><stop offset="100%" style="stop-color:#3b82f6;"></stop></linearGradient></defs><g fill="none" stroke="url(#glassGradient)" stroke-width="5" stroke-linecap="round"><path d="M32.2,32.2 L45,45"></path><circle cx="20" cy="20" r="15"></circle></g></svg>gnito</h1></span>
+    </a>
+    <i class="fa-solid fa-bell nav-notification-dot hidden" id="cognito-notification"></i>
+</div>
+<div class="nav-bottom-section">
+    <div class="user-menu">
+        <button type="button" id="nav-menu-toggle" class="nav-button nav-menu-toggle" title="Menu" aria-label="Menu" aria-expanded="false">
+            <i class="fa-solid fa-bars nav-icon"></i>
+            <span class="nav-label-text">Menu</span>
+            <i class="fa-solid fa-chevron-down nav-menu-chevron"></i>
+        </button>
+        <div id="user-menu-popup" class="user-menu-content user-menu-collapsed">
+            <div class="user-menu-downloads">
+                <span class="user-menu-downloads-label">CSV Templates</span>
+                <a href="contacts_template.csv" class="user-menu-download-link" download>Contacts</a>
+                <a href="accounts_template.csv" class="user-menu-download-link" download>Accounts</a>
+                <a href="sequence_steps_template.csv" class="user-menu-download-link" download>Sequence Steps</a>
+            </div>
+            <a href="index.html" class="nav-button nav-button-logout"><i class="fa-solid fa-right-from-bracket nav-icon"></i><span class="nav-label-text">Exit Demo</span></a>
+        </div>
+    </div>
+</div>
+</div>
+`;
+
+const NAV_COLLAPSED_KEY = 'crm-nav-collapsed';
+
+export function injectGlobalNavigation() {
+    const container = document.getElementById('global-nav-container');
+    if (!container) return;
+
+    container.innerHTML = GLOBAL_NAV_TEMPLATE;
+
+    initHUD();
+    updateManagerOnlyNavigation();
+
+    const navSidebar = container.closest('.nav-sidebar');
+    const toggleBtn = document.getElementById('nav-collapse-toggle');
+
+    const setCollapsed = (collapsed) => {
+        if (!navSidebar) return;
+        if (collapsed) {
+            navSidebar.classList.add('nav-sidebar-collapsed');
+            try { localStorage.setItem(NAV_COLLAPSED_KEY, '1'); } catch (_) {}
+        } else {
+            navSidebar.classList.remove('nav-sidebar-collapsed');
+            try { localStorage.removeItem(NAV_COLLAPSED_KEY); } catch (_) {}
+        }
+        if (toggleBtn) {
+            const icon = toggleBtn.querySelector('.nav-collapse-icon');
+            if (icon) icon.className = `fa-solid ${collapsed ? 'fa-chevron-right' : 'fa-chevron-left'} nav-collapse-icon`;
+            toggleBtn.setAttribute('title', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
+            toggleBtn.setAttribute('aria-label', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
+        }
+    };
+
+    const isCollapsed = () => {
+        try { return localStorage.getItem(NAV_COLLAPSED_KEY) === '1'; } catch (_) { return false; }
+    };
+
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => setCollapsed(!navSidebar?.classList.contains('nav-sidebar-collapsed')));
+    }
+
+    if (navSidebar && isCollapsed()) {
+        setCollapsed(true);
+    }
+
+    const searchTrigger = document.getElementById('nav-search-trigger');
+    const searchFanout = document.getElementById('nav-search-fanout');
+    const searchFanoutInput = document.getElementById('global-search-fanout-input');
+    const searchFanoutClose = document.getElementById('nav-search-fanout-close');
+    const openSearchFanout = () => {
+        if (searchFanout) { searchFanout.classList.remove('hidden'); searchFanout.setAttribute('aria-hidden', 'false'); }
+        if (searchFanoutInput) { searchFanoutInput.value = ''; searchFanoutInput.focus(); }
+        if (navSidebar?.classList.contains('nav-sidebar-collapsed')) {
+            navSidebar.classList.add('search-fanout-open');
+            if (searchTrigger && searchFanout) {
+                const rect = searchTrigger.getBoundingClientRect();
+                searchFanout.style.top = `${rect.top}px`;
+                searchFanout.style.bottom = 'auto';
+            }
+        }
+    };
+    const closeSearchFanout = () => {
+        if (searchFanout) {
+            searchFanout.classList.add('hidden');
+            searchFanout.setAttribute('aria-hidden', 'true');
+            searchFanout.style.top = '';
+            searchFanout.style.bottom = '';
+        }
+        if (searchFanoutInput) searchFanoutInput.value = '';
+        const fanoutResults = document.getElementById('global-search-fanout-results');
+        if (fanoutResults) fanoutResults.classList.add('hidden');
+        navSidebar?.classList.remove('search-fanout-open');
+    };
+    const menuToggle = document.getElementById('nav-menu-toggle');
+    const userMenuContent = document.getElementById('user-menu-popup');
+    const userMenu = document.querySelector('.user-menu');
+    const isMobileViewport = () => window.matchMedia('(max-width: 768px)').matches;
+    const closeUserMenu = () => {
+        if (userMenuContent && !userMenuContent.classList.contains('user-menu-collapsed')) {
+            userMenuContent.classList.add('user-menu-collapsed');
+            menuToggle?.setAttribute('aria-expanded', 'false');
+            const chevron = menuToggle?.querySelector('.nav-menu-chevron');
+            if (chevron) chevron.className = 'fa-solid fa-chevron-down nav-menu-chevron';
+            navSidebar?.classList.remove('user-menu-open');
+        }
+    };
+    if (menuToggle && userMenuContent) {
+        if (isMobileViewport()) {
+            const label = menuToggle.querySelector('.nav-label-text');
+            if (label) label.textContent = 'Logout';
+            const icon = menuToggle.querySelector('.nav-icon');
+            if (icon) icon.className = 'fa-solid fa-right-from-bracket nav-icon';
+            const chevron = menuToggle.querySelector('.nav-menu-chevron');
+            if (chevron) chevron.style.display = 'none';
+            menuToggle.setAttribute('title', 'Logout');
+            menuToggle.setAttribute('aria-label', 'Logout');
+            menuToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeUserMenu();
+                closeMobileMenu();
+                const logoutBtn = navDrawer?.querySelector('#logout-btn');
+                if (logoutBtn) logoutBtn.click();
+            });
+        } else {
+            menuToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userMenuContent.classList.toggle('user-menu-collapsed');
+                const isOpen = !userMenuContent.classList.contains('user-menu-collapsed');
+                menuToggle.setAttribute('aria-expanded', isOpen);
+                const chevron = menuToggle.querySelector('.nav-menu-chevron');
+                if (chevron) chevron.className = `fa-solid fa-chevron-${isOpen ? 'up' : 'down'} nav-menu-chevron`;
+                navSidebar?.classList.toggle('user-menu-open', isOpen);
+            });
+            document.addEventListener('click', (e) => {
+                if (userMenu && !userMenu.contains(e.target)) closeUserMenu();
+            });
+        }
+    }
+
+    if (searchTrigger) searchTrigger.addEventListener('click', (e) => { e.stopPropagation(); openSearchFanout(); });
+    if (searchFanoutClose) searchFanoutClose.addEventListener('click', closeSearchFanout);
+    if (searchFanout) {
+        searchFanout.addEventListener('click', (e) => { if (e.target === searchFanout) closeSearchFanout(); });
+        document.addEventListener('click', (e) => {
+            if (navSidebar?.classList.contains('search-fanout-open') && !searchFanout?.contains(e.target) && !searchTrigger?.contains(e.target)) closeSearchFanout();
+        });
+        const fanoutResultsEl = document.getElementById('global-search-fanout-results');
+        if (fanoutResultsEl) fanoutResultsEl.addEventListener('click', (e) => { if (e.target.closest('a')) closeSearchFanout(); });
+        searchFanoutInput?.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSearchFanout(); });
+    }
+
+    const mobileMenuBtn = document.getElementById('nav-mobile-menu-btn');
+    const mobileOverlay = document.getElementById('nav-mobile-overlay');
+    const navDrawer = document.getElementById('nav-drawer-content');
+    const openMobileMenu = () => {
+        navSidebar?.classList.add('nav-mobile-open');
+        if (mobileOverlay) { mobileOverlay.classList.remove('hidden'); mobileOverlay.setAttribute('aria-hidden', 'false'); }
+        if (mobileMenuBtn) {
+            const icon = mobileMenuBtn.querySelector('i');
+            if (icon) icon.className = 'fa-solid fa-times';
+            mobileMenuBtn.setAttribute('aria-label', 'Close menu');
+        }
+    };
+    const closeMobileMenu = () => {
+        navSidebar?.classList.remove('nav-mobile-open');
+        if (mobileOverlay) { mobileOverlay.classList.add('hidden'); mobileOverlay.setAttribute('aria-hidden', 'true'); }
+        if (mobileMenuBtn) {
+            const icon = mobileMenuBtn.querySelector('i');
+            if (icon) icon.className = 'fa-solid fa-bars';
+            mobileMenuBtn.setAttribute('aria-label', 'Open menu');
+        }
+    };
+    if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', () => navSidebar?.classList.contains('nav-mobile-open') ? closeMobileMenu() : openMobileMenu());
+    if (mobileOverlay) mobileOverlay.addEventListener('click', closeMobileMenu);
+    if (navDrawer) {
+        navDrawer.querySelectorAll('a.nav-button[href]').forEach((a) => a.addEventListener('click', closeMobileMenu));
+        const logoutBtn = navDrawer.querySelector('#logout-btn');
+        if (logoutBtn) logoutBtn.addEventListener('click', closeMobileMenu);
+    }
+
+    const currentPage = (window.location.pathname || '').split('/').pop() || window.location.href;
+    container.querySelectorAll('a.nav-button[href]').forEach((a) => {
+        const href = a.getAttribute('href') || '';
+        const linkPage = href.split('/').pop();
+        if (linkPage && (currentPage === linkPage || currentPage.endsWith(linkPage))) {
+            a.classList.add('active');
+        }
+    });
+}
+
+// --- GLOBAL SEARCH FUNCTION ---
+export async function setupGlobalSearch(supabase) {
+    if (window.CONSTELLATION_DEMO_STATE?.user) return;
+    const searchInput = document.getElementById('global-search-input');
+    const searchResultsContainer = document.getElementById('global-search-results');
+    const fanoutInput = document.getElementById('global-search-fanout-input');
+    const fanoutResults = document.getElementById('global-search-fanout-results');
+    let searchTimeout;
+
+    const inputs = [searchInput, fanoutInput].filter(Boolean);
+    const resultContainers = [searchResultsContainer, fanoutResults].filter(Boolean);
+
+    if (inputs.length === 0 || !searchResultsContainer) {
+        console.warn("Global search elements not found on this page.");
+        return;
+    }
+
+    function attachSearchListeners(inputEl, resultsEl) {
+        if (!inputEl || !resultsEl) return;
+        inputEl.addEventListener('input', (event) => {
+            const value = event.target.value.trim().toLowerCase();
+            if (value === 'matrix' && !matrixProtocolActive) {
+                event.target.value = '';
+                event.target.blur();
+                triggerMatrixProtocol();
+            }
+        });
+        inputEl.addEventListener('keyup', (e) => {
+            clearTimeout(searchTimeout);
+            const searchTerm = e.target.value.trim();
+            if (searchTerm.length < 2) {
+                resultsEl.classList.add('hidden');
+                return;
+            }
+            searchTimeout = setTimeout(() => performSearch(searchTerm, resultsEl), 300);
+        });
+    }
+
+    async function performSearch(term, resultsContainer) {
+        const target = resultsContainer || searchResultsContainer;
+        target.innerHTML = '<div class="search-result-item">Searching...</div>';
+        target.classList.remove('hidden');
+        try {
+            const { data: results, error } = await supabase.functions.invoke('global-search', { body: { searchTerm: term } });
+            if (error) throw error;
+            if (results.length === 0) {
+                target.innerHTML = '<div class="search-result-item">No results found.</div>';
+            } else {
+                target.innerHTML = results.map(r => `<a href="${r.url}" class="search-result-item"><span class="result-type">${r.type}</span><span class="result-name">${r.name}</span></a>`).join('');
+            }
+        } catch (error) {
+            console.error("Error invoking global-search function:", error);
+            target.innerHTML = `<div class="search-result-item">Error: ${error.message}</div>`;
+        }
+    }
+
+    attachSearchListeners(searchInput, searchResultsContainer);
+    if (fanoutInput && fanoutResults) attachSearchListeners(fanoutInput, fanoutResults);
+
+    document.addEventListener('click', (e) => {
+        const searchContainer = document.querySelector('.global-search-container');
+        const fanout = document.getElementById('nav-search-fanout');
+        if (searchContainer && !searchContainer.contains(e.target) && !fanout?.contains(e.target)) {
+            resultContainers.forEach(rc => rc?.classList.add('hidden'));
+        }
+    });
+}
+
+// --- MATRIX PROTOCOL (Easter Egg) ---
+function triggerMatrixProtocol() {
+    matrixProtocolActive = true;
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.style.position = 'fixed';
+    canvas.style.inset = '0';
+    canvas.style.zIndex = '9999';
+    canvas.style.backgroundColor = 'black';
+    canvas.style.pointerEvents = 'none';
+
+    document.body.appendChild(canvas);
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+
+    resizeCanvas();
+
+    // Simple Matrix rain setup
+    const fontSize = 16;
+    const letters = 'アァカサタナハマヤャラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let columns = Math.floor(canvas.width / fontSize);
+    let drops = Array.from({ length: columns }, () => 0);
+
+    window.addEventListener('resize', () => {
+        resizeCanvas();
+        columns = Math.floor(canvas.width / fontSize);
+        drops = Array.from({ length: columns }, () => 0);
+    }, { once: true });
+
+    function drawFrame() {
+        // Fading trail
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#0F0';
+        ctx.font = `${fontSize}px monospace`;
+
+        for (let i = 0; i < drops.length; i++) {
+            const text = letters.charAt(Math.floor(Math.random() * letters.length));
+            const x = i * fontSize;
+            const y = drops[i] * fontSize;
+            ctx.fillText(text, x, y);
+
+            if (y > canvas.height && Math.random() > 0.975) {
+                drops[i] = 0;
+            } else {
+                drops[i]++;
+            }
+        }
+    }
+
+    let animationFrameId;
+    function loop() {
+        drawFrame();
+        animationFrameId = requestAnimationFrame(loop);
+    }
+
+    loop();
+
+    // After 3 seconds, switch to theme-green and fade out
+    setTimeout(() => {
+        cancelAnimationFrame(animationFrameId);
+        document.body.classList.add('theme-green');
+
+        canvas.style.transition = 'opacity 0.5s ease';
+        canvas.style.opacity = '0';
+
+        setTimeout(() => {
+            if (canvas.parentNode) {
+                canvas.parentNode.removeChild(canvas);
+            }
+            matrixProtocolActive = false;
+        }, 550);
+    }, 3000);
+}
+
+// --- NOTIFICATION FUNCTIONS (FINAL) ---
+
+/**
+ * Updates the visit timestamp for a page in the background.
+ * This is a "fire and forget" operation.
+ * @param {SupabaseClient} supabase The Supabase client instance.
+ * @param {string} pageName The name of the page being visited.
+ */
+export function updateLastVisited(supabase, pageName) {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+        if (!user) return;
+        supabase.from('user_page_visits')
+            .upsert({
+                user_id: user.id,
+                page_name: pageName,
+                last_visited_at: new Date().toISOString()
+            }, { onConflict: 'user_id, page_name' })
+            .then(({ error }) => {
+                if (error) console.error(`Error updating visit for ${pageName}:`, error);
+            });
+    });
+}
+
+
+/**
+ * Checks for new content on all pages and updates the bells.
+ * This is now an async function that can be awaited for predictable execution.
+ * @param {SupabaseClient} supabase The Supabase client instance.
+ */
+export async function checkAndSetNotifications(supabase) {
+    if (window.CONSTELLATION_DEMO_STATE?.user) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const pagesToCheck = [
+        { name: 'social_hub', table: 'social_hub_posts' },
+        { name: 'cognito', table: 'cognito_alerts' }
+    ];
+
+    const { data: visits } = await supabase
+        .from('user_page_visits')
+        .select('page_name, last_visited_at')
+        .eq('user_id', user.id);
+
+    const lastVisits = new Map(visits ? visits.map(v => [v.page_name, new Date(v.last_visited_at).getTime()]) : []);
+
+    for (const page of pagesToCheck) {
+        const { data: latestItem } = await supabase
+            .from(page.table)
+            .select('created_at')
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+        
+        const notificationDot = document.getElementById(`${page.name}-notification`);
+        if (notificationDot && latestItem) {
+            const lastVisitTime = lastVisits.get(page.name) || 0;
+            const lastContentTime = new Date(latestItem.created_at).getTime();
+            const hasNewContent = lastContentTime > lastVisitTime;
+            
+            notificationDot.classList.toggle('hidden', !hasNewContent);
+
+        } else if (notificationDot) {
+            notificationDot.classList.add('hidden');
+        }
+    }
+}
+
+
+

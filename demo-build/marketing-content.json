@@ -1,0 +1,38 @@
+{
+  "coverSnippets": [
+    {
+      "label": "Constellation partnership",
+      "text": "Constellation is designed for enterprise teams that need network decisions to move with account strategy. Our team aligns technical design, commercial planning, and implementation execution around the business outcomes that matter most to {BIZ}."
+    },
+    {
+      "label": "Strategic operating model",
+      "text": "This proposal brings together the operating model, technology roadmap, and financial plan required to support {BIZ} with resilient, scalable connectivity across critical locations."
+    },
+    {
+      "label": "Reliability and execution",
+      "text": "From discovery through deployment, Constellation emphasizes clear success criteria, visible milestones, and proactive communication so every stakeholder understands the path from proposal to production."
+    }
+  ],
+  "customPageSnippets": [
+    {
+      "label": "Network modernization thesis",
+      "text": "The strongest enterprise network programs connect technical resilience to business continuity, customer experience, and operating leverage. Constellation helps teams make those links explicit so every investment has a measurable role in the broader account plan."
+    },
+    {
+      "label": "Implementation approach",
+      "text": "The recommended approach phases design, site readiness, carrier coordination, testing, and acceptance into a transparent operating plan. This reduces surprises while giving executive and technical teams a shared view of progress."
+    },
+    {
+      "label": "Why now",
+      "text": "Expansion, digital operations, and growing dependency on cloud applications create a narrow window to improve reliability before complexity compounds. Acting now helps the organization reduce risk while preserving rollout flexibility."
+    }
+  ],
+  "productSuggestions": [
+    "Dedicated Internet Access",
+    "Managed SD-WAN",
+    "Cloud Connect",
+    "Managed Router",
+    "Ethernet",
+    "Voice"
+  ]
+}

@@ -1,0 +1,851 @@
+// js/cognito.js
+import {
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY,
+    formatDate,
+    setupModalListeners,
+    showModal,
+    hideModal,
+    updateActiveNavLink,
+    setupUserMenuAndAuth,
+    initializeAppState,
+    getState,
+    loadSVGs,
+    showGlobalLoader,
+    hideGlobalLoader,
+    setupGlobalSearch,
+    updateLastVisited,
+    checkAndSetNotifications,
+    injectGlobalNavigation,
+    showToast
+} from './shared_constants.js';
+import {
+    AI_FUNCTION_IDS,
+    attachAIFeedbackHandler,
+    callAiApi,
+    createPersonalContext,
+    renderAIFeedback
+} from './ai-memory.js';
+
+document.addEventListener("DOMContentLoaded", async () => {
+    injectGlobalNavigation();
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let tomSelectTriggerType = null;
+    let tomSelectRelevance = null;
+    let tomSelectAccount = null;
+    let tomSelectModalContact = null;
+
+    let state = {
+        currentUser: null,
+        accounts: [],
+        contacts: [],
+        activities: [],
+        alerts: [],
+        selectedAlert: null,
+        viewMode: 'dashboard',
+        initialSuggestionSubject: null,
+        initialSuggestionBody: null,
+        initialSuggestionContextId: null,
+        filterTriggerType: '',
+        filterRelevance: '',
+        filterAccountId: ''
+    };
+
+    const ORIGINAL_PROMPT_BASE_TEXT = `
+        You are an expert enterprise connectivity and strategic account executive working in Constellation CRM. 
+        Based on the account intelligence, CRM context, and network modernization themes, write a concise, 
+        professional outreach email based on this intelligence. Let's leave out bracketed sections 
+        that require user input or selection in your final response. Read through your response twice 
+        and modify before providing your final suggested text. Finally, we want to be careful to not sound 
+        robotic or AI generated. You got this! Oh, and the code that receives this is looking for [FirstName] 
+        to lookup the associated contacts name and do not include anything past the valediction. 
+        My email client populates my signature.
+    `.trim();
+
+    // --- DOM SELECTORS ---
+    const viewModeToggleBtn = document.getElementById('view-mode-toggle-btn');
+    const alertsContainer = document.getElementById('alerts-container');
+    const pageTitle = document.querySelector('#cognito-view h2');
+    const filterTriggerTypeSelect = document.getElementById('filter-trigger-type');
+    const filterRelevanceSelect = document.getElementById('filter-relevance');
+    const filterAccountSelect = document.getElementById('filter-account');
+    const clearFiltersBtn = document.getElementById('clear-filters-btn');
+
+    // --- MODAL ELEMENTS (Dynamic) ---
+    let initialAiSuggestionSection, refineSuggestionBtn, outreachSubjectInput, outreachBodyTextarea;
+    let customPromptSection, customPromptInput, generateCustomBtn, cancelCustomBtn;
+    let customSuggestionOutput, customOutreachSubjectInput, customOutreachBodyTextarea, customFeedbackSlot;
+    let copyCustomBtn, sendEmailCustomBtn;
+    let contactSelector, logInteractionNotes, logInteractionBtn, createTaskDesc, createTaskDueDate, createTaskBtn, noContactMessage;
+    let alertRelevanceDisplay, alertRelevanceEmoji;
+
+    function initTomSelect(el, opts = {}) {
+        if (!el || typeof window.TomSelect === 'undefined') return null;
+        if (el.tomselect) return el.tomselect;
+        try {
+            return new window.TomSelect(el, {
+                create: false,
+                allowEmptyOption: true,
+                ...opts
+            });
+        } catch {
+            return null;
+        }
+    }
+
+    function initCognitoTomSelects() {
+        const commonOpts = {
+            maxItems: 1,
+            plugins: {
+                dropdown_input: {
+                    className: 'tom-select-no-search'
+                }
+            },
+            onDropdownOpen: function () {
+                const d = this.dropdown;
+                if (d) d.className = 'ts-dropdown tom-select-no-search';
+            },
+            onChange: function (value) {
+                this.setValue(value || '', true);
+            }
+        };
+
+        tomSelectTriggerType = initTomSelect(filterTriggerTypeSelect, commonOpts);
+        tomSelectRelevance = initTomSelect(filterRelevanceSelect, commonOpts);
+        tomSelectAccount = initTomSelect(filterAccountSelect, commonOpts);
+    }
+
+    function renderViewModeToggle() {
+        if (!viewModeToggleBtn) return;
+        if (state.viewMode === 'dashboard') {
+            viewModeToggleBtn.dataset.targetMode = 'archive';
+            viewModeToggleBtn.innerHTML = '<i class="fa-solid fa-box-archive"></i><span>View Archive</span>';
+        } else {
+            viewModeToggleBtn.dataset.targetMode = 'dashboard';
+            viewModeToggleBtn.innerHTML = '<i class="fa-solid fa-bell"></i><span>View New Alerts</span>';
+        }
+    }
+
+    // --- DATA FETCHING ---
+    async function loadAllData() {
+        if (!state.currentUser) return;
+        showGlobalLoader();
+        try {
+        const [
+            { data: alerts, error: alertsError },
+            { data: accounts, error: accountsError },
+            { data: contacts, error: contactsError },
+            { data: activities, error: activitiesError }
+        ] = await Promise.all([
+            supabase.from("cognito_alerts").select("*").eq("user_id", getState().effectiveUserId),
+            supabase.from("accounts").select("*").eq("user_id", getState().effectiveUserId),
+            supabase.from("contacts").select("*").eq("user_id", getState().effectiveUserId),
+            supabase.from("activities").select("*").eq("user_id", getState().effectiveUserId)
+        ]);
+        
+        if (alertsError) console.error("Error fetching Cognito alerts:", alertsError);
+        if (accountsError) console.error("Error fetching accounts:", accountsError);
+        if (contactsError) console.error("Error fetching contacts:", contactsError);
+        if (activitiesError) console.error("Error fetching activities:", activitiesError);
+
+        state.alerts = alerts || [];
+        state.accounts = accounts || [];
+        state.contacts = contacts || [];
+        state.activities = activities || [];
+
+        populateAccountFilter();
+        renderAlerts();
+        } finally {
+            hideGlobalLoader();
+        }
+    }
+
+    function populateAccountFilter() {
+        filterAccountSelect.innerHTML = '<option value="">All Accounts</option>';
+        state.accounts.forEach(account => {
+            const option = document.createElement('option');
+            option.value = account.id;
+            option.textContent = account.name;
+            filterAccountSelect.appendChild(option);
+        });
+        const currentValue = state.filterAccountId || '';
+        if (tomSelectAccount) {
+            tomSelectAccount.clearOptions();
+            tomSelectAccount.addOption({ value: '', text: 'All Accounts' });
+            state.accounts.forEach(account => {
+                tomSelectAccount.addOption({ value: String(account.id), text: account.name });
+            });
+            tomSelectAccount.refreshOptions(false);
+            tomSelectAccount.setValue(currentValue, true);
+        } else if (currentValue) {
+            filterAccountSelect.value = currentValue;
+        }
+    }
+
+    // --- RENDER FUNCTIONS ---
+    function renderAlerts() {
+        alertsContainer.innerHTML = '';
+        
+        let alertsToRender = state.viewMode === 'dashboard'
+            ? state.alerts.filter(a => a.status === 'New')
+            : state.alerts.filter(a => a.status !== 'New');
+
+        if (state.filterTriggerType) {
+            alertsToRender = alertsToRender.filter(alert => alert.trigger_type === state.filterTriggerType);
+        }
+        if (state.filterRelevance) {
+            alertsToRender = alertsToRender.filter(alert => alert.relevance_score === parseInt(state.filterRelevance));
+        }
+        if (state.filterAccountId) {
+            alertsToRender = alertsToRender.filter(alert => alert.account_id === parseInt(state.filterAccountId));
+        }
+
+        alertsToRender.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+        if (alertsToRender.length === 0 && state.viewMode === 'dashboard') {
+            alertsContainer.innerHTML = `<p class="placeholder-text">No new intelligence alerts today. The archive is available if you need to review past items.</p>`;
+        } else if (alertsToRender.length === 0) {
+            alertsContainer.innerHTML = `<p class="placeholder-text">The Intelligence Archive is empty or no alerts match your filters.</p>`;
+        } else {
+            alertsToRender.forEach(alert => {
+                const account = state.accounts.find(acc => acc.id === alert.account_id);
+                const card = document.createElement('div');
+                card.className = 'alert-card';
+                card.dataset.alertId = alert.id;
+
+                const actionButtonsHTML = alert.status === 'New' ? `
+                    <div class="alert-actions">
+                        <button class="btn-primary action-btn" data-action="action">Action</button>
+                        <button class="btn-secondary action-btn" data-action="dismiss">Dismiss</button>
+                    </div>` : '';
+                
+                const relevanceScore = alert.relevance_score || 0;
+                const relevanceEmoji = relevanceScore >= 4 ? ' 🔥' : '';
+                const relevanceDisplay = `<span class="alert-relevance-pill">Score: ${relevanceScore}/5${relevanceEmoji}</span>`;
+                const statusBadge = alert.status && alert.status !== 'New'
+                    ? `<span class="alert-status" data-status="${alert.status}">${alert.status}</span>`
+                    : '';
+
+                card.innerHTML = `
+                    <div class="alert-header">
+                        ${statusBadge}
+                    </div>
+                    <div class="alert-account-row">
+                        <h4 class="alert-account-name">${account ? account.name : `Account ID #${alert.account_id} (Not Found)`}</h4>
+                        <span class="alert-trigger-type" data-type="${alert.trigger_type}">${alert.trigger_type}</span>
+                    </div>
+                    <h5 class="alert-headline">${alert.headline}</h5>
+                    <p class="alert-summary">${alert.summary}</p>
+                    <div class="alert-footer">
+                        <span class="alert-source">Source: <a href="${alert.source_url}" target="_blank">${alert.source_name || 'N/A'}</a></span>
+                        <span class="alert-date">${formatDate(alert.created_at)}</span>
+                        ${relevanceDisplay}
+                    </div>
+                    ${actionButtonsHTML}
+                `;
+                alertsContainer.appendChild(card);
+            });
+        }
+    }
+
+    function setCardLoadingState(card, isLoading) {
+        if (!card) return;
+        if (isLoading) {
+            card.dataset.originalHtml = card.innerHTML;
+            const accountName = card.querySelector('.alert-account-name')?.textContent?.trim() || 'this account';
+            card.classList.add('cognito-card-loading');
+            card.innerHTML = `
+                <div class="cognito-card-loading-state">
+                    <div class="cognito-card-loading-spinner" aria-hidden="true"></div>
+                    <p class="cognito-card-loading-title">Preparing Action Center</p>
+                    <p class="cognito-card-loading-subtitle">Generating AI suggestion for ${accountName}...</p>
+                </div>
+            `;
+            return;
+        }
+        if (card.dataset.originalHtml) {
+            card.innerHTML = card.dataset.originalHtml;
+            delete card.dataset.originalHtml;
+        }
+        card.classList.remove('cognito-card-loading');
+    }
+
+    // --- ACTION CENTER LOGIC (GEMINI INTEGRATED) ---
+    async function showActionCenter(alertId, sourceCard = null) {
+        state.selectedAlert = state.alerts.find(a => a.id === alertId);
+        if (!state.selectedAlert) return;
+        setCardLoadingState(sourceCard, true);
+        try {
+            const account = state.accounts.find(acc => acc.id === state.selectedAlert.account_id);
+            if (!account) {
+                alert(`Error: Could not find the corresponding account (ID: ${state.selectedAlert.account_id}) in your Constellation database.`);
+                return;
+            }
+    
+            const relevantContacts = state.contacts.filter(c => c.account_id === state.selectedAlert.account_id && c.email);
+            const initialOutreachCopy = await generateOutreachCopy(state.selectedAlert, account, relevantContacts);
+            if (!initialOutreachCopy) {
+                showToast('AI Generation Failed', 'error');
+                return;
+            }
+
+            state.initialSuggestionSubject = initialOutreachCopy.subject;
+            state.initialSuggestionBody = initialOutreachCopy.body;
+            state.initialSuggestionContextId = await createPersonalContext(supabase, {
+                userId: state.currentUser.id,
+                prompt: buildCognitoPrompt('get-gemini-suggestion', {
+                    alertData: state.selectedAlert,
+                    accountData: account
+                }),
+                response: formatOutreachResponse(initialOutreachCopy),
+                functionId: AI_FUNCTION_IDS.COGNITO_OUTREACH
+            });
+        const contactOptions = relevantContacts.map(c => `<option value="${c.id}">${c.first_name} ${c.last_name} (${c.title || 'No Title'})</option>`).join('');
+    
+        let suggestedContactId = null;
+        if(relevantContacts.length > 0) {
+            if(state.selectedAlert.trigger_type === 'C-Suite Change') {
+                const cLevelContact = relevantContacts.find(c => c.title && (c.title.includes('CIO') || c.title.includes('CTO') || c.title.includes('Chief')));
+                suggestedContactId = cLevelContact ? cLevelContact.id : relevantContacts[0].id;
+            } else {
+                suggestedContactId = relevantContacts[0].id;
+            }
+        }
+        
+        const currentRelevanceScore = state.selectedAlert.relevance_score || 0;
+        const modalRelevanceEmoji = currentRelevanceScore >= 4 ? ' 🔥' : '';
+        const relevanceSectionHTML = `<p class="alert-relevance">Relevance: <span id="relevance-score-display">${currentRelevanceScore}/5</span><span id="relevance-fire-emoji">${modalRelevanceEmoji}</span></p>`;
+    
+            const modalBodyContent = `
+            <div class="action-center-content">
+                <div class="action-center-section">
+                    <h5>Suggested Outreach</h5>
+                    ${relevanceSectionHTML}
+                    <label for="contact-selector">Suggested Contact:</label>
+                    <select id="contact-selector" ${relevantContacts.length === 0 ? 'disabled' : ''}>
+                        <option value="">-- Select a Contact --</option>
+                        ${contactOptions}
+                    </select>
+                    <div id="initial-ai-suggestion-section">
+                        <label for="outreach-subject">Suggested Subject:</label>
+                        <input type="text" id="outreach-subject" value="${initialOutreachCopy.subject}" readonly>
+                        <label for="outreach-body">Suggested Body:</label>
+                        <textarea id="outreach-body" rows="8" readonly>${initialOutreachCopy.body}</textarea>
+                        <div class="action-buttons">
+                            <button class="btn-secondary icon-only-btn" id="copy-btn" title="Copy"><i class="fa-regular fa-copy"></i></button>
+                            <button class="btn-primary icon-only-btn" id="send-email-btn" title="Open Email Client"><i class="fa-regular fa-paper-plane"></i></button>
+                        </div>
+                        <button class="btn-tertiary" id="refine-suggestion-btn" style="margin-top: 15px;"><i class="fa-solid fa-sliders"></i><span>Refine with Custom Prompt</span></button>
+                        ${renderAIFeedback(state.initialSuggestionContextId, 'Was this suggested outreach useful?')}
+                    </div>
+                    <div id="custom-prompt-section" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                        <h5>Custom Suggestion Generator</h5>
+                        <p class="placeholder-text">Enter your specific instructions to refine or get a new email suggestion based on the alert.</p>
+                        <label for="custom-prompt-input">Your Custom Prompt:</label>
+                        <textarea id="custom-prompt-input" rows="4" placeholder="e.g., 'Make the email more urgent and focus on a direct call to action for a meeting.'"></textarea>
+                        <button class="btn-primary" id="generate-custom-btn" style="width: 100%; margin-top: 10px;"><i class="fa-solid fa-wand-magic-sparkles"></i><span>Generate Custom Suggestion</span></button>
+                        <button class="btn-secondary" id="cancel-custom-btn" style="width: 100%; margin-top: 10px;"><i class="fa-solid fa-arrow-left"></i><span>Back to Initial Suggestion</span></button>
+                        <div id="custom-suggestion-output" style="display: none; margin-top: 20px; padding-top: 15px; border-top: 1px dashed var(--border-color);">
+                            <h6>Custom AI Suggestion:</h6>
+                            <label for="custom-outreach-subject">Subject:</label>
+                            <input type="text" id="custom-outreach-subject" value="" readonly>
+                            <label for="custom-outreach-body">Body:</label>
+                            <textarea id="custom-outreach-body" rows="8" readonly></textarea>
+                            <div class="action-buttons">
+                                <button class="btn-secondary" id="copy-custom-btn"><i class="fa-regular fa-copy"></i><span>Copy Custom</span></button>
+                                <button class="btn-primary" id="send-email-custom-btn"><i class="fa-regular fa-paper-plane"></i><span>Open Email Client (Custom)</span></button>
+                            </div>
+                            <div id="custom-ai-feedback-slot"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="action-center-section">
+                    <h5>Log Actions in Constellation</h5>
+                    <label for="log-interaction-notes">Log an Interaction:</label>
+                    <textarea id="log-interaction-notes" rows="4" placeholder="e.g., Emailed the new CIO..." ${relevantContacts.length === 0 ? 'disabled' : ''}></textarea>
+                    <button class="btn-secondary" id="log-interaction-btn" style="width: 100%; margin-bottom: 15px;" ${relevantContacts.length === 0 ? 'disabled' : ''}><i class="fa-solid fa-note-sticky"></i><span>Log</span></button>
+                    <label for="create-task-desc">Create a Task:</label>
+                    <input type="text" id="create-task-desc" placeholder="e.g., Follow up with new CIO in 1 week" ${relevantContacts.length === 0 ? 'disabled' : ''}>
+                    <label for="create-task-due-date">Due Date:</label>
+                    <input type="date" id="create-task-due-date" ${relevantContacts.length === 0 ? 'disabled' : ''}>
+                    <button class="btn-primary" id="create-task-btn" style="width: 100%;" ${relevantContacts.length === 0 ? 'disabled' : ''}><i class="fa-solid fa-list-check"></i><span>Create a Task</span></button>
+                    <p class="placeholder-text" style="color: var(--warning-yellow); margin-top: 10px; ${relevantContacts.length === 0 ? '' : 'display: none;'}" id="no-contact-message">
+                        Add a contact to this account in Constellation to enable logging and task creation.
+                    </p>
+                </div>
+            </div>`;
+            
+            showModal('Action Center', modalBodyContent, null, false, `
+                <button id="modal-mark-completed-btn" class="btn-primary icon-only-btn" title="Mark Completed"><i class="fa-solid fa-circle-check"></i></button>
+                <button id="modal-close-btn" class="btn-secondary icon-only-btn" title="Close"><i class="fa-solid fa-xmark"></i></button>
+            `);
+
+            document.getElementById('modal-close-btn').addEventListener('click', hideModal);
+            document.getElementById('modal-mark-completed-btn').addEventListener('click', handleMarkCompleted);
+    
+        // Re-select all elements now that they are in the DOM
+        contactSelector = document.getElementById('contact-selector');
+        initialAiSuggestionSection = document.getElementById('initial-ai-suggestion-section');
+        refineSuggestionBtn = document.getElementById('refine-suggestion-btn');
+        outreachSubjectInput = document.getElementById('outreach-subject');
+        outreachBodyTextarea = document.getElementById('outreach-body');
+        customPromptSection = document.getElementById('custom-prompt-section');
+        customPromptInput = document.getElementById('custom-prompt-input');
+        generateCustomBtn = document.getElementById('generate-custom-btn');
+        cancelCustomBtn = document.getElementById('cancel-custom-btn');
+        customSuggestionOutput = document.getElementById('custom-suggestion-output');
+        customOutreachSubjectInput = document.getElementById('custom-outreach-subject');
+        customOutreachBodyTextarea = document.getElementById('custom-outreach-body');
+        customFeedbackSlot = document.getElementById('custom-ai-feedback-slot');
+        copyCustomBtn = document.getElementById('copy-custom-btn');
+        sendEmailCustomBtn = document.getElementById('send-email-custom-btn');
+        logInteractionNotes = document.getElementById('log-interaction-notes');
+        logInteractionBtn = document.getElementById('log-interaction-btn');
+        createTaskDesc = document.getElementById('create-task-desc');
+        createTaskDueDate = document.getElementById('create-task-due-date');
+        createTaskBtn = document.getElementById('create-task-btn');
+        noContactMessage = document.getElementById('no-contact-message');
+        alertRelevanceDisplay = document.getElementById('relevance-score-display');
+        alertRelevanceEmoji = document.getElementById('relevance-fire-emoji');
+        attachAIFeedbackHandler(document.getElementById('initial-ai-suggestion-section'), supabase);
+        tomSelectModalContact = initTomSelect(contactSelector, {
+            maxItems: 1,
+            create: false,
+            allowEmptyOption: true,
+            onDropdownOpen: function () {
+                const d = this.dropdown;
+                if (d) d.className = 'ts-dropdown tom-select-no-search';
+            },
+            onChange: function (value) {
+                this.setValue(value || '', true);
+            }
+        });
+    
+        initialAiSuggestionSection.style.display = 'block';
+        customPromptSection.style.display = 'none';
+    
+        contactSelector.addEventListener('change', handleContactChange);
+        document.getElementById('send-email-btn').addEventListener('click', () => handleEmailAction(false));
+        document.getElementById('copy-btn').addEventListener('click', () => handleCopyAction(false));
+        document.getElementById('log-interaction-btn').addEventListener('click', handleLogInteraction);
+        document.getElementById('create-task-btn').addEventListener('click', handleCreateTask);
+    
+        refineSuggestionBtn.addEventListener('click', () => {
+            initialAiSuggestionSection.style.display = 'none';
+            customPromptSection.style.display = 'block';
+            customSuggestionOutput.style.display = 'none';
+            customPromptInput.value = '';
+            customOutreachSubjectInput.value = '';
+            customOutreachBodyTextarea.value = '';
+        });
+    
+        cancelCustomBtn.addEventListener('click', () => {
+            customPromptSection.style.display = 'none';
+            initialAiSuggestionSection.style.display = 'block';
+        });
+    
+        generateCustomBtn.addEventListener('click', async () => {
+            const customPrompt = customPromptInput.value.trim();
+            if (!customPrompt) {
+                alert("Please enter a prompt to generate a custom suggestion.");
+                return;
+            }
+    
+            generateCustomBtn.disabled = true;
+            generateCustomBtn.textContent = 'Generating...';
+            customOutreachSubjectInput.value = 'Generating...';
+            customOutreachBodyTextarea.value = 'Generating...';
+    
+            const relevantContacts = state.contacts.filter(c => c.account_id === state.selectedAlert.account_id && c.email);
+            const customOutreachCopy = await generateCustomOutreachCopy(
+                state.selectedAlert, account, relevantContacts, customPrompt,
+                state.initialSuggestionSubject, state.initialSuggestionBody,
+                ORIGINAL_PROMPT_BASE_TEXT
+            );
+    
+            generateCustomBtn.disabled = false;
+            generateCustomBtn.textContent = 'Generate Custom Suggestion';
+    
+            if (customOutreachCopy) {
+                customOutreachSubjectInput.value = customOutreachCopy.subject;
+                customOutreachBodyTextarea.value = customOutreachCopy.body;
+                customSuggestionOutput.style.display = 'block';
+                handlePersonalizeOutreach({ subject: customOutreachCopy.subject, body: customOutreachCopy.body }, contactSelector.value, true);
+                const customContextId = await createPersonalContext(supabase, {
+                    userId: state.currentUser.id,
+                    prompt: buildCognitoPrompt('generate-custom-suggestion', {
+                        originalSuggestion: {
+                            subject: state.initialSuggestionSubject,
+                            body: state.initialSuggestionBody
+                        },
+                        userInstruction: customPrompt,
+                        alertData: state.selectedAlert,
+                        accountData: account,
+                        originalBasePrompt: ORIGINAL_PROMPT_BASE_TEXT
+                    }),
+                    response: formatOutreachResponse(customOutreachCopy),
+                    functionId: AI_FUNCTION_IDS.COGNITO_OUTREACH
+                });
+                if (customFeedbackSlot) {
+                    customFeedbackSlot.innerHTML = renderAIFeedback(customContextId, 'Was this refined outreach useful?');
+                    attachAIFeedbackHandler(customFeedbackSlot, supabase);
+                }
+            } else {
+                showToast('AI Generation Failed', 'error');
+                customOutreachSubjectInput.value = '';
+                customOutreachBodyTextarea.value = '';
+                customSuggestionOutput.style.display = 'none';
+            }
+        });
+    
+        copyCustomBtn.addEventListener('click', () => handleCopyAction(true));
+        sendEmailCustomBtn.addEventListener('click', () => handleEmailAction(true));
+    
+        if (suggestedContactId) {
+            contactSelector.value = suggestedContactId;
+            contactSelector.dispatchEvent(new Event('change'));
+        }
+    
+            if (relevantContacts.length === 0) {
+            logInteractionNotes.disabled = true;
+            logInteractionBtn.disabled = true;
+            createTaskDesc.disabled = true;
+            createTaskDueDate.disabled = true;
+            createTaskBtn.disabled = true;
+            noContactMessage.style.display = 'block';
+            } else {
+            logInteractionNotes.disabled = false;
+            logInteractionBtn.disabled = false;
+            createTaskDesc.disabled = false;
+            createTaskDueDate.disabled = false;
+            createTaskBtn.disabled = false;
+            noContactMessage.style.display = 'none';
+            }
+        } finally {
+            setCardLoadingState(sourceCard, false);
+        }
+    }
+
+    function handlePersonalizeOutreach(outreachCopy, selectedContactId, isCustomTarget = false) {
+        const targetBodyTextarea = isCustomTarget ? customOutreachBodyTextarea : outreachBodyTextarea;
+        if (!targetBodyTextarea) return;
+
+        if (selectedContactId) {
+            const contact = state.contacts.find(c => c.id === Number(selectedContactId));
+            if (contact) {
+                targetBodyTextarea.value = outreachCopy.body.replace(/\[FirstName\]/g, `${contact.first_name}`);
+            } else {
+                targetBodyTextarea.value = outreachCopy.body;
+            }
+        } else {
+            targetBodyTextarea.value = outreachCopy.body;
+        }
+    }
+
+    function buildCognitoPrompt(functionId, payload) {
+        return JSON.stringify({
+            function_id: functionId,
+            captured_at: new Date().toISOString(),
+            payload
+        }, null, 2);
+    }
+
+    function formatOutreachResponse(outreachCopy) {
+        return [
+            `Subject: ${outreachCopy?.subject || ''}`,
+            '',
+            outreachCopy?.body || ''
+        ].join('\n').trim();
+    }
+
+    function truncateForAI(value, maxLength = 700) {
+        const text = value == null ? '' : String(value).trim();
+        return text.length <= maxLength ? text : `${text.slice(0, maxLength - 1)}...`;
+    }
+
+    function buildCognitoOutreachContext(alert, account, contacts = []) {
+        const contactIds = new Set(contacts.map(contact => contact.id));
+        const recentActivities = state.activities
+            .filter(activity => activity.account_id === account?.id || contactIds.has(activity.contact_id))
+            .sort((a, b) => new Date(b.date) - new Date(a.date))
+            .slice(0, 12)
+            .map(activity => {
+                const contact = contacts.find(item => item.id === activity.contact_id);
+                return {
+                    date: activity.date,
+                    type: activity.type,
+                    contact: contact ? `${contact.first_name || ''} ${contact.last_name || ''}`.trim() : 'Account-Level',
+                    description: truncateForAI(activity.description || activity.subject, 500)
+                };
+            });
+
+        return {
+            alert: {
+                headline: alert?.headline,
+                summary: alert?.summary,
+                trigger_type: alert?.trigger_type,
+                relevance_score: alert?.relevance_score,
+                created_at: alert?.created_at
+            },
+            account: account ? {
+                name: account.name,
+                tier: account.tier,
+                industry: account.industry,
+                city: account.city,
+                state: account.state,
+                website: account.website
+            } : null,
+            available_contacts: contacts.slice(0, 12).map(contact => ({
+                name: `${contact.first_name || ''} ${contact.last_name || ''}`.trim(),
+                title: contact.title,
+                email: contact.email
+            })),
+            recent_activity: recentActivities
+        };
+    }
+
+    async function generateOutreachCopy(alert, account, contacts = []) {
+        try {
+            return await callAiApi(supabase, 'get-gemini-suggestion', {
+                alertData: alert,
+                accountData: account,
+                context: buildCognitoOutreachContext(alert, account, contacts)
+            });
+        } catch (error) {
+            console.error("Error invoking get-gemini-suggestion Edge Function:", error);
+            return null;
+        }
+    }
+
+async function generateCustomOutreachCopy(alert, account, contacts, customPrompt, previousSubject, previousBody, originalBasePrompt) {
+    try {
+        // 1. Map your frontend variables to the backend's expected format
+        const payload = {
+            originalSuggestion: {
+                subject: previousSubject,
+                body: previousBody
+            },
+            userInstruction: customPrompt,
+            
+            // Note: The backend code you shared earlier doesn't actually use these three variables 
+            // in the AI prompt right now, but it's totally fine to keep sending them in case 
+            // you want to add them to the Edge Function prompt later!
+            alertData: alert, 
+            accountData: account, 
+            context: buildCognitoOutreachContext(alert, account, contacts),
+            originalBasePrompt: originalBasePrompt
+        };
+
+        // 2. Send the newly formatted payload
+        return await callAiApi(supabase, 'generate-custom-suggestion', payload);
+        
+    } catch (error) {
+        console.error("Error invoking generate-custom-suggestion Edge Function:", error);
+        return null;
+    }
+}
+
+    // --- ACTION HANDLERS (Integration with Constellation) ---
+    async function handleContactChange(e) {
+        const selectedContactId = e.target.value;
+        const initialAiCopyForPersonalization = {
+            subject: state.initialSuggestionSubject,
+            body: state.initialSuggestionBody
+        };
+        outreachSubjectInput.value = initialAiCopyForPersonalization.subject;
+        handlePersonalizeOutreach(initialAiCopyForPersonalization, selectedContactId, false);
+
+        if (customSuggestionOutput && customSuggestionOutput.style.display === 'block') {
+            const currentCustomSubject = customOutreachSubjectInput.value;
+            const currentCustomBody = customOutreachBodyTextarea.value;
+            if (currentCustomSubject && currentCustomBody) {
+                handlePersonalizeOutreach({subject: currentCustomSubject, body: currentCustomBody}, selectedContactId, true);
+            }
+        }
+    }
+
+    function handleEmailAction(isCustom = false) { 
+        const contactId = contactSelector.value;
+        if (!contactId) {
+            alert('Please select a contact to email.');
+            return;
+        }
+        const contact = state.contacts.find(c => c.id === Number(contactId));
+        if (!contact || !contact.email) {
+            alert('Selected contact does not have an email address.');
+            return;
+        }
+
+        const subject = isCustom ? customOutreachSubjectInput.value : outreachSubjectInput.value;
+        const body = isCustom ? customOutreachBodyTextarea.value : outreachBodyTextarea.value;
+        window.location.href = `mailto:${contact.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }
+
+    function handleCopyAction(isCustom = false) { 
+        const body = isCustom ? customOutreachBodyTextarea.value : outreachBodyTextarea.value;
+        navigator.clipboard.writeText(body).then(() => {
+            alert('Email body copied to clipboard!');
+        });
+    }
+    
+    async function handleMarkCompleted() {
+        if (!state.selectedAlert) return;
+        console.log(`Marking alert ${state.selectedAlert.id} as completed.`);
+        await updateAlertStatus(state.selectedAlert.id, 'Actioned');
+        hideModal();
+    }
+
+    async function handleLogInteraction() {
+        const selectedContactId = contactSelector.value;
+        if (!selectedContactId) {
+            alert('Please select a contact to log this interaction against.');
+            return;
+        }
+
+        const notes = logInteractionNotes.value.trim();
+        if (!notes) {
+            alert('Please enter notes for the interaction.');
+            return;
+        }
+
+        const { error } = await supabase.from('activities').insert({
+            account_id: state.selectedAlert.account_id,
+            contact_id: Number(selectedContactId),
+            type: 'Cognito Intelligence',
+            description: `[${state.selectedAlert.trigger_type}] ${state.selectedAlert.headline} - Notes: ${notes}`,
+            user_id: getState().effectiveUserId,
+            date: new Date().toISOString()
+        });
+
+        if (error) {
+            alert('Error logging interaction: ' + error.message);
+        } else {
+            alert('Interaction logged to Constellation!');
+            logInteractionNotes.value = '';
+        }
+    }
+
+    async function handleCreateTask() {
+        const selectedContactId = contactSelector.value;
+        if (!selectedContactId) {
+            alert('Please select a contact to associate with this task.');
+            return;
+        }
+        
+        const description = createTaskDesc.value.trim();
+        const dueDate = createTaskDueDate.value;
+        if (!description) {
+            alert('Please enter a description for the task.');
+            return;
+        }
+
+        const { error } = await supabase.from('tasks').insert({
+            account_id: state.selectedAlert.account_id,
+            contact_id: Number(selectedContactId),
+            description: `Cognito: ${description}`,
+            due_date: dueDate || null,
+            status: 'Pending',
+            user_id: getState().effectiveUserId
+        });
+
+        if (error) {
+            alert('Error creating task: ' + error.message);
+        } else {
+            alert('Task created in Constellation!');
+            createTaskDesc.value = '';
+            createTaskDueDate.value = '';
+        }
+    }
+
+    async function updateAlertStatus(alertId, newStatus) {
+        console.log(`Updating alert ${alertId} status to ${newStatus}.`);
+        const { error } = await supabase.from('cognito_alerts').update({ status: newStatus }).eq('id', alertId);
+        if (error) {
+            alert('Error updating alert status: ' + error.message);
+        }
+        await loadAllData();
+    }
+
+    // --- EVENT LISTENER SETUP ---
+    function setupPageEventListeners() {
+        setupModalListeners();
+        
+        viewModeToggleBtn.addEventListener('click', () => {
+            const target = viewModeToggleBtn.dataset.targetMode === 'dashboard' ? 'dashboard' : 'archive';
+            state.viewMode = target;
+            pageTitle.textContent = target === 'dashboard' ? 'New Alerts' : 'Intelligence Archive';
+            renderViewModeToggle();
+            renderAlerts();
+        });
+
+        alertsContainer.addEventListener('click', (e) => {
+            const button = e.target.closest('.action-btn');
+            if (!button) return;
+
+            const card = e.target.closest('.alert-card');
+            if (!card) return;
+
+            const alertId = Number(card.dataset.alertId);
+            const action = button.dataset.action;
+
+            if (action === 'action') {
+                showActionCenter(alertId, card);
+            } else if (action === 'dismiss') {
+                showModal("Confirm Dismissal", "Are you sure you want to dismiss this alert?", () => {
+                    updateAlertStatus(alertId, 'Dismissed');
+                    hideModal();
+                });
+            }
+        });
+
+        filterTriggerTypeSelect.addEventListener('change', (e) => {
+            state.filterTriggerType = e.target.value;
+            renderAlerts();
+        });
+
+        filterRelevanceSelect.addEventListener('change', (e) => {
+            state.filterRelevance = e.target.value;
+            renderAlerts();
+        });
+
+        filterAccountSelect.addEventListener('change', (e) => {
+            state.filterAccountId = e.target.value;
+            renderAlerts();
+        });
+
+        clearFiltersBtn.addEventListener('click', () => {
+            state.filterTriggerType = '';
+            state.filterRelevance = '';
+            state.filterAccountId = '';
+            filterTriggerTypeSelect.value = '';
+            filterRelevanceSelect.value = '';
+            filterAccountSelect.value = '';
+            tomSelectTriggerType?.setValue('', true);
+            tomSelectRelevance?.setValue('', true);
+            tomSelectAccount?.setValue('', true);
+            renderAlerts();
+        });
+    }
+
+ // --- INITIALIZATION ---
+async function initializePage() {
+    await loadSVGs();
+    const appState = await initializeAppState(supabase);
+    if (!appState.currentUser) {
+        hideGlobalLoader();
+        return;
+    }
+    state.currentUser = appState.currentUser;
+    await setupUserMenuAndAuth(supabase, getState());
+    updateActiveNavLink();
+    renderViewModeToggle();
+    initCognitoTomSelects();
+    setupPageEventListeners();
+    await setupGlobalSearch(supabase, state.currentUser);
+    await loadAllData();
+    window.addEventListener('effectiveUserChanged', loadAllData);
+    await checkAndSetNotifications(supabase);
+    updateLastVisited(supabase, 'cognito');
+}
+initializePage();
+});

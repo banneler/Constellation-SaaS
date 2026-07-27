@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'self' https://www.constellation-crm.com;">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+    <title>Constellation Demo Access</title>
+    <link rel="stylesheet" href="output.css">
+</head>
+<body class="theme-light">
+    <main class="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+        <section class="bg-white border border-slate-200 shadow-xl rounded-2xl p-8 w-full max-w-md flex flex-col items-center text-slate-800">
+            <img src="assets/constellation-logo-full.svg" alt="Constellation CRM" class="w-64 max-w-full h-auto mb-6">
+            <p class="text-sm font-semibold text-blue-600 uppercase tracking-[0.22em] mb-2">Demo Access</p>
+            <h1 class="text-2xl font-bold text-slate-900 mb-2 text-center">Verify your email to enter Constellation.</h1>
+            <p class="text-sm text-slate-500 text-center mb-6">We will send a one-time demo code so we can confirm a real email address before opening the interactive demo.</p>
+
+            <form id="email-form" class="w-full">
+                <label for="demo-email" class="block text-sm font-semibold text-slate-700 mb-2">Work email</label>
+                <input type="email" id="demo-email" required placeholder="you@company.com" class="w-full text-base bg-white border border-slate-300 text-slate-900 placeholder-slate-400 px-4 py-3 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-slate-50 transition-all">
+                <button type="submit" id="send-code-btn" class="btn-primary w-full text-base">Send One-Time Code</button>
+            </form>
+
+            <form id="code-form" class="hidden w-full">
+                <label for="demo-code" class="block text-sm font-semibold text-slate-700 mb-2">One-time code</label>
+                <input type="text" id="demo-code" required placeholder="Enter code" class="w-full text-base bg-white border border-slate-300 text-slate-900 placeholder-slate-400 px-4 py-3 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-slate-50 transition-all">
+                <button type="submit" class="btn-primary w-full text-base">Enter Demo</button>
+                <button type="button" id="back-to-email-btn" class="btn-secondary w-full text-base mt-3">Use a different email</button>
+            </form>
+
+            <p id="demo-auth-message" class="min-h-[1.25rem] mt-4 text-sm text-center text-slate-500"></p>
+        </section>
+    </main>
+
+    <script>
+        const fixedCode = 'C0nste11ation';
+        const emailForm = document.getElementById('email-form');
+        const codeForm = document.getElementById('code-form');
+        const emailInput = document.getElementById('demo-email');
+        const codeInput = document.getElementById('demo-code');
+        const message = document.getElementById('demo-auth-message');
+        const sendButton = document.getElementById('send-code-btn');
+
+        emailForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const email = emailInput.value.trim();
+            if (!email) return;
+            sendButton.disabled = true;
+            sendButton.textContent = 'Sending...';
+            message.textContent = '';
+            try {
+                const response = await fetch('/api/send-demo-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                if (!response.ok) throw new Error('Email could not be sent.');
+                sessionStorage.setItem('constellation-demo-email', email);
+                emailForm.classList.add('hidden');
+                codeForm.classList.remove('hidden');
+                codeInput.focus();
+                message.textContent = `We sent a demo code to ${email}.`;
+            } catch (error) {
+                message.textContent = 'We could not send the email. Please try again.';
+            } finally {
+                sendButton.disabled = false;
+                sendButton.textContent = 'Send One-Time Code';
+            }
+        });
+
+        codeForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            if (codeInput.value.trim() !== fixedCode) {
+                message.textContent = 'That code is not correct. Check the verification email and try again.';
+                return;
+            }
+            sessionStorage.setItem('constellation-demo-verified', 'true');
+            window.location.href = 'command-center.html';
+        });
+
+        document.getElementById('back-to-email-btn').addEventListener('click', () => {
+            codeForm.classList.add('hidden');
+            emailForm.classList.remove('hidden');
+            message.textContent = '';
+            emailInput.focus();
+        });
+    </script>
+</body>
+</html>
