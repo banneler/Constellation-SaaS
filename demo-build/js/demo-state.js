@@ -256,6 +256,218 @@
     }
   ];
 
+  const expansionAccounts = [
+    ['Meridian Retail Group', 'Retail', 'Tier 1', 'Denver', 'CO', 42, 12600, true],
+    ['Atlas Manufacturing', 'Manufacturing', 'Tier 1', 'Cleveland', 'OH', 18, 5400, false],
+    ['Summit Financial Partners', 'Financial', 'Tier 1', 'Charlotte', 'NC', 24, 9200, true],
+    ['BluePeak Energy', 'General', 'Tier 2', 'Houston', 'TX', 31, 6800, false],
+    ['HarborPoint Hotels', 'Gaming & Hospitality', 'Tier 2', 'Miami', 'FL', 16, 4100, true],
+    ['Apex Distribution', 'Transportation & Logistics', 'Tier 2', 'Columbus', 'OH', 22, 3200, false],
+    ['Northstar University', 'K-12 Education', 'Tier 3', 'Madison', 'WI', 9, 2400, true],
+    ['CivicWorks County', 'Government', 'Tier 2', 'Sacramento', 'CA', 11, 5100, false],
+    ['Quantum Software', 'Technology', 'Tier 1', 'Austin', 'TX', 7, 1850, false],
+    ['Evergreen Clinics', 'Healthcare', 'Tier 2', 'Portland', 'OR', 15, 3600, true],
+    ['Prairie Foods', 'Manufacturing', 'Tier 3', 'Omaha', 'NE', 12, 2100, false],
+    ['Metro Transit Authority', 'Government', 'Tier 1', 'Minneapolis', 'MN', 33, 11400, true],
+    ['BrightPath Nonprofit', 'Nonprofit', 'Tier 3', 'Nashville', 'TN', 6, 750, false]
+  ];
+
+  const firstNames = ['Avery', 'Jordan', 'Taylor', 'Morgan', 'Riley', 'Casey', 'Jamie', 'Quinn', 'Rowan', 'Parker', 'Reese', 'Cameron', 'Drew'];
+  const lastNames = ['Stone', 'Rivera', 'Bennett', 'Cole', 'Hayes', 'Brooks', 'Reed', 'Sullivan', 'Bishop', 'Lane', 'Porter', 'Ellis', 'Morris'];
+  const stages = ['Discovery', 'Qualification', 'Proposal', 'Negotiation'];
+  const products = ['DIA, Managed SD-WAN', 'Ethernet, Cloud Connect', 'DIA, Voice', 'Managed Router, SD-WAN', 'Dark Fiber, Cloud Connect'];
+
+  expansionAccounts.forEach(([name, industry, tier, city, region, sites, employees, customer], index) => {
+    const accountId = 1010 + index;
+    const contactId = 2010 + index;
+    const dealId = 3010 + index;
+    const seqId = 6010 + index;
+    const campaignId = 9010 + index;
+    const safeDomain = name.toLowerCase().replace(/[^a-z0-9]+/g, '').replace(/^$/, 'demo');
+    const contactName = `${firstNames[index]} ${lastNames[index]}`;
+    const mrc = 8200 + (index * 2750);
+    const stage = stages[index % stages.length];
+    const closeMonth = `2026-${String((index % 6) + 7).padStart(2, '0')}`;
+
+    accounts.push({
+      id: accountId,
+      user_id: userId,
+      name,
+      website: `https://${safeDomain}.example.com`,
+      industry,
+      phone: `555-${String(2400 + index).padStart(4, '0')}`,
+      address: `${100 + index} Market Street, ${city}, ${region}`,
+      city,
+      state: region,
+      tier,
+      notes: `${industry} account with multi-location modernization potential.`,
+      is_customer: customer,
+      quantity_of_sites: sites,
+      employee_count: employees,
+      sf_account_locator: `SF-DEMO-${accountId}`,
+      starred: index % 3 === 0
+    });
+
+    contacts.push({
+      id: contactId,
+      user_id: userId,
+      account_id: accountId,
+      first_name: firstNames[index],
+      last_name: lastNames[index],
+      name: contactName,
+      title: index % 2 === 0 ? 'VP Infrastructure' : 'Director of IT Operations',
+      email: `${firstNames[index].toLowerCase()}.${lastNames[index].toLowerCase()}@${safeDomain}.example.com`,
+      phone: `555-${String(6400 + index).padStart(4, '0')}`,
+      reports_to: null,
+      notes: 'Primary stakeholder for connectivity, site readiness, and rollout planning.'
+    });
+
+    deals.push({
+      id: dealId,
+      user_id: userId,
+      account_id: accountId,
+      name: `${name} Network Modernization`,
+      stage,
+      term: index % 3 === 0 ? 36 : 60,
+      mrc,
+      close_month: closeMonth,
+      products: products[index % products.length],
+      notes: 'Demo opportunity seeded for pipeline depth and forecasting.',
+      is_committed: index % 2 === 0,
+      notes_last_updated: now
+    });
+
+    tasks.push({
+      id: 4010 + index,
+      user_id: userId,
+      account_id: accountId,
+      contact_id: contactId,
+      description: `Follow up with ${contactName} on ${name} rollout priorities`,
+      due_date: `2026-08-${String((index % 18) + 2).padStart(2, '0')}`,
+      status: 'Pending',
+      priority: index % 2 === 0 ? 'High' : 'Medium'
+    });
+
+    activities.push({
+      id: 5010 + index,
+      user_id: userId,
+      account_id: accountId,
+      contact_id: contactId,
+      type: index % 2 === 0 ? 'Call' : 'Email',
+      description: `Discussed ${industry.toLowerCase()} network priorities and next-step criteria.`,
+      date: `2026-07-${String((index % 20) + 5).padStart(2, '0')}`,
+      logged_to_sf: index % 4 === 0
+    });
+
+    sequences.push({
+      id: seqId,
+      user_id: userId,
+      name: `${industry} Modernization Sequence`,
+      description: `Demo outreach sequence for ${industry.toLowerCase()} account triggers.`,
+      source: index % 2 === 0 ? 'Personal' : 'AI'
+    });
+
+    [0, 1, 2].forEach((stepOffset) => {
+      sequence_steps.push({
+        id: 6110 + (index * 3) + stepOffset,
+        sequence_id: seqId,
+        user_id: userId,
+        step_number: stepOffset + 1,
+        type: ['Email', 'LinkedIn', 'Call'][stepOffset],
+        assigned_to: 'Sales',
+        subject: ['Business trigger', 'Relevant proof point', 'Discovery follow-up'][stepOffset],
+        message: ['Reference the account trigger and ask for a short review.', 'Share a relevant operating insight.', 'Confirm timing, stakeholders, and success criteria.'][stepOffset],
+        content: ['Reference the account trigger and ask for a short review.', 'Share a relevant operating insight.', 'Confirm timing, stakeholders, and success criteria.'][stepOffset],
+        delay_days: stepOffset * 2
+      });
+    });
+
+    contact_sequences.push({
+      id: 6210 + index,
+      user_id: userId,
+      contact_id: contactId,
+      sequence_id: seqId,
+      current_step_number: (index % 3) + 1,
+      status: 'Active',
+      next_step_due_date: `2026-08-${String((index % 14) + 1).padStart(2, '0')}`
+    });
+
+    campaigns.push({
+      id: campaignId,
+      user_id: userId,
+      name: `${name} ${index % 2 === 0 ? 'Call Blitz' : 'Guided Email'}`,
+      type: index % 2 === 0 ? 'Call' : 'Guided Email',
+      filter_criteria: { selection_mode: 'abm_cart', contact_ids: [contactId], tier, industry },
+      email_subject: `Network readiness at ${name}`,
+      email_body: `Hi {FirstName}, I noticed ${name} is a strong fit for a network modernization review. Worth comparing notes on site readiness and resiliency priorities?`,
+      created_at: `2026-07-${String((index % 20) + 1).padStart(2, '0')}T12:00:00.000Z`,
+      completed_at: index > 9 ? `2026-07-${String((index % 20) + 2).padStart(2, '0')}T12:00:00.000Z` : null
+    });
+
+    campaign_members.push({
+      id: 9120 + index,
+      campaign_id: campaignId,
+      contact_id: contactId,
+      user_id: userId,
+      status: index > 9 ? 'Completed' : 'Pending',
+      completed_at: index > 9 ? `2026-07-${String((index % 20) + 2).padStart(2, '0')}T14:00:00.000Z` : null
+    });
+
+    cognito_alerts.push({
+      id: 7010 + index,
+      user_id: userId,
+      account_id: accountId,
+      headline: `${name} signals ${index % 2 === 0 ? 'expansion' : 'technology refresh'} opportunity`,
+      trigger_type: index % 2 === 0 ? 'Expansion' : 'Technology Partnership',
+      summary: `New ${industry.toLowerCase()} activity creates a timely opening for a Constellation conversation.`,
+      source_url: `https://example.com/${safeDomain}-signal`,
+      source_name: 'Demo Market Signals',
+      relevance_score: (index % 2) + 4,
+      status: 'New',
+      created_at: now
+    });
+
+    proposal_specs.push({
+      id: `proposal-${accountId}`,
+      account_id: accountId,
+      name: `${name} Connectivity Proposal`,
+      updated_at: now,
+      spec: {
+        globalRfp: `${safeDomain.toUpperCase().slice(0, 8)}-2026`,
+        globalBiz: name,
+        globalRep: 'Alex Rivera',
+        globalDate: '2026-07-27',
+        coverText: `Thank you for the opportunity to support ${name} with a more resilient network operating model.`,
+        pricingOptions: [{ term: '60', solutionId: `DEMO-${accountId}`, locations: [{ name: `${city} Primary Site`, promotions: [], items: [{ prod: products[index % products.length], price: String(mrc), qty: '1', nrcEnabled: true, nrcDescription: 'Implementation', nrcAmount: String(24000 + index * 3000) }] }] }],
+        readiness: { rfpBiz: true, cover: true, pricing: true, ready: true },
+        references: []
+      }
+    });
+  });
+
+  for (let i = 0; i < 10; i += 1) {
+    social_hub_posts.push({
+      id: 8010 + i,
+      type: i % 3 === 0 ? 'marketing_post' : 'ai_article',
+      title: i % 3 === 0 ? `Constellation field insight ${i + 1}` : `Enterprise network signal ${i + 1}`,
+      link: `https://example.com/social-demo-${i + 1}`,
+      source_name: i % 3 === 0 ? 'Constellation Marketing' : 'Industry Signals',
+      summary: `Demo social content item ${i + 1} for sharing timely market and account insights.`,
+      approved_copy: `Enterprise account teams win when insight, timing, and execution live in one operating system. Constellation helps make that practical.`,
+      created_at: now
+    });
+  }
+
+  for (let i = 0; i < 9; i += 1) {
+    irr_projects[0].sites.push({
+      id: 10 + i,
+      name: `Expansion Site ${i + 1}`,
+      inputs: { constructionCost: 28000 + i * 6500, engineeringCost: 7000 + i * 1200, productCost: 16000 + i * 2800, monthlyCost: 950 + i * 210, nrr: 42000 + i * 6500, mrr: 6200 + i * 900, term: i % 2 === 0 ? 60 : 48, freeMonths: (i % 3) + 1 },
+      timeline: { constructionStartMonth: i % 6, billingStartMonth: (i % 4) + 2, constructionDurationMonths: 2 + (i % 2), constructionStartMonthISO: `2026-${String((i % 6) + 7).padStart(2, '0')}`, billingStartMonthISO: `2026-${String((i % 4) + 9).padStart(2, '0')}` },
+      result: {}
+    });
+  }
+
   window.CONSTELLATION_DEMO_STATE = {
     user: { id: userId, email: 'demo@constellation-crm.com', user_metadata: { full_name: 'Demo User' } },
     tables: {
