@@ -1,6 +1,32 @@
 (() => {
   const userId = 'demo-user-001';
-  const now = '2026-07-27T12:00:00.000Z';
+  const today = new Date();
+  today.setHours(12, 0, 0, 0);
+  const now = today.toISOString();
+
+  function dateFromToday(offsetDays) {
+    const date = new Date(today);
+    date.setDate(date.getDate() + offsetDays);
+    return date;
+  }
+
+  function dateOnlyFromToday(offsetDays) {
+    const date = dateFromToday(offsetDays);
+    return [
+      date.getFullYear(),
+      String(date.getMonth() + 1).padStart(2, '0'),
+      String(date.getDate()).padStart(2, '0')
+    ].join('-');
+  }
+
+  function timestampFromToday(offsetDays) {
+    return dateFromToday(offsetDays).toISOString();
+  }
+
+  function monthFromToday(offsetDays) {
+    const date = dateFromToday(offsetDays);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+  }
 
   const accounts = [
     {
@@ -77,21 +103,21 @@
   ];
 
   const deals = [
-    { id: 3001, user_id: userId, account_id: 1001, name: 'Caesars Multi-Property Fiber Expansion', stage: 'Proposal', term: 60, mrc: 42800, close_month: '2026-09', products: 'DIA, Managed SD-WAN, Cloud Connect', notes: 'Executive business case pending finance review.', is_committed: true, notes_last_updated: now },
-    { id: 3002, user_id: userId, account_id: 1002, name: 'Stark Logistics SD-WAN Refresh', stage: 'Negotiation', term: 60, mrc: 34400, close_month: '2026-07', products: 'DIA, SD-WAN, Managed Router', notes: 'Waiting on redline feedback from procurement.', is_committed: true, notes_last_updated: now },
-    { id: 3003, user_id: userId, account_id: 1003, name: 'Nexus Regional Resiliency Upgrade', stage: 'Discovery', term: 48, mrc: 18600, close_month: '2026-10', products: 'DIA, Ethernet, Voice', notes: 'Technical discovery scheduled.', is_committed: false, notes_last_updated: now }
+    { id: 3001, user_id: userId, account_id: 1001, name: 'Caesars Multi-Property Fiber Expansion', stage: 'Proposal', term: 60, mrc: 42800, close_month: monthFromToday(60), products: 'DIA, Managed SD-WAN, Cloud Connect', notes: 'Executive business case pending finance review.', is_committed: true, notes_last_updated: now },
+    { id: 3002, user_id: userId, account_id: 1002, name: 'Stark Logistics SD-WAN Refresh', stage: 'Negotiation', term: 60, mrc: 34400, close_month: monthFromToday(15), products: 'DIA, SD-WAN, Managed Router', notes: 'Waiting on redline feedback from procurement.', is_committed: true, notes_last_updated: now },
+    { id: 3003, user_id: userId, account_id: 1001, name: 'Caesars Regional Resiliency Upgrade', stage: 'Discovery', term: 48, mrc: 18600, close_month: monthFromToday(90), products: 'DIA, Ethernet, Voice', notes: 'Technical discovery scheduled.', is_committed: false, notes_last_updated: now }
   ];
 
   const tasks = [
-    { id: 4001, user_id: userId, account_id: 1002, contact_id: 2003, description: 'Send preliminary SD-WAN pricing deck', due_date: '2026-07-29', status: 'Pending', priority: 'High' },
-    { id: 4002, user_id: userId, account_id: 1001, contact_id: 2002, description: 'Confirm Caesars pilot-property success criteria', due_date: '2026-07-30', status: 'Pending', priority: 'High' },
-    { id: 4003, user_id: userId, account_id: 1003, contact_id: 2005, description: 'Prepare healthcare resiliency case study', due_date: '2026-08-01', status: 'Pending', priority: 'Medium' }
+    { id: 4001, user_id: userId, account_id: 1002, contact_id: 2003, description: 'Send preliminary SD-WAN pricing deck', due_date: dateOnlyFromToday(2), status: 'Pending', priority: 'High' },
+    { id: 4002, user_id: userId, account_id: 1001, contact_id: 2002, description: 'Confirm Caesars pilot-property success criteria', due_date: dateOnlyFromToday(3), status: 'Pending', priority: 'High' },
+    { id: 4003, user_id: userId, account_id: 1003, contact_id: 2005, description: 'Prepare healthcare resiliency case study', due_date: dateOnlyFromToday(5), status: 'Pending', priority: 'Medium' }
   ];
 
   const activities = [
-    { id: 5001, user_id: userId, account_id: 1002, contact_id: 2003, type: 'Email', description: 'Sent SD-WAN pricing matrix and implementation assumptions.', date: '2026-07-24', logged_to_sf: false },
-    { id: 5002, user_id: userId, account_id: 1001, contact_id: 2002, type: 'Call', description: 'Discussed Caesars Las Vegas pilot scope and operational pain.', date: '2026-07-23', logged_to_sf: true },
-    { id: 5003, user_id: userId, account_id: 1003, contact_id: 2005, type: 'Meeting', description: 'Discovery session on outage risk and network redundancy.', date: '2026-07-22', logged_to_sf: false }
+    { id: 5001, user_id: userId, account_id: 1002, contact_id: 2003, type: 'Email', description: 'Sent SD-WAN pricing matrix and implementation assumptions.', date: dateOnlyFromToday(-3), logged_to_sf: false },
+    { id: 5002, user_id: userId, account_id: 1001, contact_id: 2002, type: 'Call', description: 'Discussed Caesars Las Vegas pilot scope and operational pain.', date: dateOnlyFromToday(-4), logged_to_sf: true },
+    { id: 5003, user_id: userId, account_id: 1001, contact_id: 2001, type: 'Meeting', description: 'Discovery session on outage risk and network redundancy.', date: dateOnlyFromToday(-7), logged_to_sf: false }
   ];
 
   const sequences = [
@@ -109,19 +135,19 @@
   ];
 
   const contact_sequences = [
-    { id: 6201, user_id: userId, contact_id: 2003, sequence_id: 6001, current_step_number: 2, status: 'Active', next_step_due_date: '2026-07-24' },
-    { id: 6202, user_id: userId, contact_id: 2005, sequence_id: 6002, current_step_number: 1, status: 'Active', next_step_due_date: '2026-07-25' }
+    { id: 6201, user_id: userId, contact_id: 2003, sequence_id: 6001, current_step_number: 2, status: 'Active', next_step_due_date: dateOnlyFromToday(-2) },
+    { id: 6202, user_id: userId, contact_id: 2001, sequence_id: 6002, current_step_number: 1, status: 'Active', next_step_due_date: dateOnlyFromToday(0) }
   ];
 
   const contact_sequence_steps = [
-    { id: 6301, contact_sequence_id: 6201, sequence_step_id: 6101, status: 'completed', completed_at: '2026-07-24T12:00:00.000Z' },
+    { id: 6301, contact_sequence_id: 6201, sequence_step_id: 6101, status: 'completed', completed_at: timestampFromToday(-2) },
     { id: 6302, contact_sequence_id: 6201, sequence_step_id: 6102, status: 'pending', completed_at: null },
     { id: 6303, contact_sequence_id: 6202, sequence_step_id: 6104, status: 'pending', completed_at: null }
   ];
 
   const campaigns = [
-    { id: 9001, user_id: userId, name: 'Stark Cold-Chain Call Blitz', type: 'Call', filter_criteria: { selection_mode: 'abm_cart', contact_ids: [2003, 2004] }, email_subject: null, email_body: null, created_at: '2026-07-20T12:00:00.000Z', completed_at: null },
-    { id: 9002, user_id: userId, name: 'Caesars Guided Email Pilot', type: 'Guided Email', filter_criteria: { selection_mode: 'abm_cart', contact_ids: [2002] }, email_subject: 'Guest experience uptime at {AccountName}', email_body: 'Hi {FirstName}, I saw Caesars is investing in digital guest operations. Worth comparing notes on how network uptime and provider consolidation support that rollout?', created_at: '2026-07-15T12:00:00.000Z', completed_at: null }
+    { id: 9001, user_id: userId, name: 'Stark Cold-Chain Call Blitz', type: 'Call', filter_criteria: { selection_mode: 'abm_cart', contact_ids: [2003, 2004] }, email_subject: null, email_body: null, created_at: timestampFromToday(-7), completed_at: null },
+    { id: 9002, user_id: userId, name: 'Caesars Guided Email Pilot', type: 'Guided Email', filter_criteria: { selection_mode: 'abm_cart', contact_ids: [2002] }, email_subject: 'Guest experience uptime at {AccountName}', email_body: 'Hi {FirstName}, I saw Caesars is investing in digital guest operations. Worth comparing notes on how network uptime and provider consolidation support that rollout?', created_at: timestampFromToday(-12), completed_at: null }
   ];
 
   const campaign_members = [
@@ -171,7 +197,7 @@
             critical_unknowns: ['Final decision committee for regional rollout', 'Incumbent carrier termination windows'],
             psychology: { account_energy: 'Positive but evidence-driven', seller_posture: 'Lead with operational proof, not product breadth' },
             plan_30_60_90: { days_30: 'Validate pilot property and metrics', days_60: 'Deliver business case and design', days_90: 'Finalize phased rollout' },
-            interaction_log: [{ date: '2026-07-23', text: 'Pilot scoping call completed.', source: 'activity' }]
+            interaction_log: [{ date: dateOnlyFromToday(-4), text: 'Pilot scoping call completed.', source: 'activity' }]
           }
         },
         history: []
@@ -189,7 +215,7 @@
         globalRfp: 'STARK-WAN-2026',
         globalBiz: 'Stark Logistics',
         globalRep: 'Alex Rivera',
-        globalDate: '2026-07-27',
+        globalDate: dateOnlyFromToday(0),
         coverText: 'Thank you for the opportunity to support Stark Logistics with a resilient, scalable SD-WAN refresh.',
         customPages: {
           '0': {
@@ -248,13 +274,13 @@
       id: 'irr-stark-demo',
       project_name: 'Stark Logistics SD-WAN Refresh',
       global_discount_rate: 15,
-      business_case_start: '2026-07',
+      business_case_start: monthFromToday(0),
       user_id: userId,
       last_saved: now,
       sites: [
-        { id: 1, name: 'Chicago Distribution HQ', inputs: { constructionCost: 48500, engineeringCost: 12500, productCost: 32000, monthlyCost: 1850, nrr: 78000, mrr: 11250, term: 60, freeMonths: 1 }, timeline: { constructionStartMonth: 0, billingStartMonth: 2, constructionDurationMonths: 2, constructionStartMonthISO: '2026-07', billingStartMonthISO: '2026-09' }, result: {} },
-        { id: 2, name: 'Dallas Regional Warehouse', inputs: { constructionCost: 72000, engineeringCost: 18000, productCost: 41500, monthlyCost: 2400, nrr: 96000, mrr: 14800, term: 60, freeMonths: 2 }, timeline: { constructionStartMonth: 1, billingStartMonth: 4, constructionDurationMonths: 3, constructionStartMonthISO: '2026-08', billingStartMonthISO: '2026-11' }, result: {} },
-        { id: 3, name: 'Phoenix Cold Chain Site', inputs: { constructionCost: 36500, engineeringCost: 9500, productCost: 22500, monthlyCost: 1225, nrr: 54000, mrr: 8350, term: 48, freeMonths: 3 }, timeline: { constructionStartMonth: 2, billingStartMonth: 5, constructionDurationMonths: 3, constructionStartMonthISO: '2026-09', billingStartMonthISO: '2026-12' }, result: {} }
+        { id: 1, name: 'Chicago Distribution HQ', inputs: { constructionCost: 48500, engineeringCost: 12500, productCost: 32000, monthlyCost: 1850, nrr: 78000, mrr: 11250, term: 60, freeMonths: 1 }, timeline: { constructionStartMonth: 0, billingStartMonth: 2, constructionDurationMonths: 2, constructionStartMonthISO: monthFromToday(0), billingStartMonthISO: monthFromToday(60) }, result: {} },
+        { id: 2, name: 'Dallas Regional Warehouse', inputs: { constructionCost: 72000, engineeringCost: 18000, productCost: 41500, monthlyCost: 2400, nrr: 96000, mrr: 14800, term: 60, freeMonths: 2 }, timeline: { constructionStartMonth: 1, billingStartMonth: 4, constructionDurationMonths: 3, constructionStartMonthISO: monthFromToday(30), billingStartMonthISO: monthFromToday(120) }, result: {} },
+        { id: 3, name: 'Phoenix Cold Chain Site', inputs: { constructionCost: 36500, engineeringCost: 9500, productCost: 22500, monthlyCost: 1225, nrr: 54000, mrr: 8350, term: 48, freeMonths: 3 }, timeline: { constructionStartMonth: 2, billingStartMonth: 5, constructionDurationMonths: 3, constructionStartMonthISO: monthFromToday(60), billingStartMonthISO: monthFromToday(150) }, result: {} }
       ]
     }
   ];
@@ -279,6 +305,24 @@
   const lastNames = ['Stone', 'Rivera', 'Bennett', 'Cole', 'Hayes', 'Brooks', 'Reed', 'Sullivan', 'Bishop', 'Lane', 'Porter', 'Ellis', 'Morris'];
   const stages = ['Discovery', 'Qualification', 'Proposal', 'Negotiation'];
   const products = ['DIA, Managed SD-WAN', 'Ethernet, Cloud Connect', 'DIA, Voice', 'Managed Router, SD-WAN', 'Dark Fiber, Cloud Connect'];
+  const expansionAccountNamesById = new Map(expansionAccounts.map(([name], index) => [1010 + index, name]));
+  const baseAccountNamesById = new Map(accounts.map(account => [account.id, account.name]));
+  const baseContactAccountIds = new Map(contacts.map(contact => [contact.id, contact.account_id]));
+  const sequenceContactTargets = [2010, 2002, 2010, 2013, 2003, 2016, 2016, 2018, 2018, 2019, 2010, 2021, 2001];
+  const sequenceDueOffsets = [-6, -5, -4, -3, -2, -1, 0, 0, 0, 1, 2, 4, 6];
+  const activityContactTargets = [2010, 2002, 2012, 2010, 2014, 2014, 2016, 2018, 2018, 2019, 2003, 2021, 2001];
+  const activityDateOffsets = [-2, -3, -4, -5, -6, -8, -10, -12, -13, -15, -18, -21, -25];
+  const dealAccountTargets = [1010, 1001, 1012, 1013, 1002, 1010, 1016, 1018, 1018, 1019, 1001, 1021, 1012];
+
+  function accountIdForContact(contactId) {
+    if (baseContactAccountIds.has(contactId)) return baseContactAccountIds.get(contactId);
+    if (contactId >= 2010 && contactId <= 2022) return 1010 + (contactId - 2010);
+    return null;
+  }
+
+  function accountNameForId(accountId) {
+    return baseAccountNamesById.get(accountId) || expansionAccountNamesById.get(accountId) || 'Demo Account';
+  }
 
   expansionAccounts.forEach(([name, industry, tier, city, region, sites, employees, customer], index) => {
     const accountId = 1010 + index;
@@ -290,7 +334,12 @@
     const contactName = `${firstNames[index]} ${lastNames[index]}`;
     const mrc = 8200 + (index * 2750);
     const stage = stages[index % stages.length];
-    const closeMonth = `2026-${String((index % 6) + 7).padStart(2, '0')}`;
+    const closeMonth = monthFromToday(30 * ((index % 6) + 1));
+    const dealAccountId = dealAccountTargets[index] || accountId;
+    const dealAccountName = accountNameForId(dealAccountId);
+    const activityContactId = activityContactTargets[index] || contactId;
+    const activityAccountId = accountIdForContact(activityContactId) || accountId;
+    const sequenceContactId = sequenceContactTargets[index] || contactId;
 
     accounts.push({
       id: accountId,
@@ -328,8 +377,8 @@
     deals.push({
       id: dealId,
       user_id: userId,
-      account_id: accountId,
-      name: `${name} Network Modernization`,
+      account_id: dealAccountId,
+      name: `${dealAccountName} Network Modernization`,
       stage,
       term: index % 3 === 0 ? 36 : 60,
       mrc,
@@ -346,7 +395,7 @@
       account_id: accountId,
       contact_id: contactId,
       description: `Follow up with ${contactName} on ${name} rollout priorities`,
-      due_date: `2026-08-${String((index % 18) + 2).padStart(2, '0')}`,
+      due_date: dateOnlyFromToday(2 + (index % 18)),
       status: 'Pending',
       priority: index % 2 === 0 ? 'High' : 'Medium'
     });
@@ -354,11 +403,11 @@
     activities.push({
       id: 5010 + index,
       user_id: userId,
-      account_id: accountId,
-      contact_id: contactId,
+      account_id: activityAccountId,
+      contact_id: activityContactId,
       type: index % 2 === 0 ? 'Call' : 'Email',
       description: `Discussed ${industry.toLowerCase()} network priorities and next-step criteria.`,
-      date: `2026-07-${String((index % 20) + 5).padStart(2, '0')}`,
+      date: dateOnlyFromToday(activityDateOffsets[index]),
       logged_to_sf: index % 4 === 0
     });
 
@@ -388,13 +437,11 @@
     contact_sequences.push({
       id: 6210 + index,
       user_id: userId,
-      contact_id: contactId,
+      contact_id: sequenceContactId,
       sequence_id: seqId,
       current_step_number: (index % 3) + 1,
       status: 'Active',
-      next_step_due_date: index < 9
-        ? `2026-07-${String(17 + index).padStart(2, '0')}`
-        : `2026-08-${String((index % 14) + 1).padStart(2, '0')}`
+      next_step_due_date: dateOnlyFromToday(sequenceDueOffsets[index])
     });
 
     campaigns.push({
@@ -405,8 +452,8 @@
       filter_criteria: { selection_mode: 'abm_cart', contact_ids: [contactId], tier, industry },
       email_subject: `Network readiness at ${name}`,
       email_body: `Hi {FirstName}, I noticed ${name} is a strong fit for a network modernization review. Worth comparing notes on site readiness and resiliency priorities?`,
-      created_at: `2026-07-${String((index % 20) + 1).padStart(2, '0')}T12:00:00.000Z`,
-      completed_at: index > 9 ? `2026-07-${String((index % 20) + 2).padStart(2, '0')}T12:00:00.000Z` : null
+      created_at: timestampFromToday(-20 + index),
+      completed_at: index > 9 ? timestampFromToday(-18 + index) : null
     });
 
     campaign_members.push({
@@ -415,7 +462,7 @@
       contact_id: contactId,
       user_id: userId,
       status: index > 9 ? 'Completed' : 'Pending',
-      completed_at: index > 9 ? `2026-07-${String((index % 20) + 2).padStart(2, '0')}T14:00:00.000Z` : null
+      completed_at: index > 9 ? timestampFromToday(-18 + index) : null
     });
 
     cognito_alerts.push({
@@ -441,7 +488,7 @@
         globalRfp: `${safeDomain.toUpperCase().slice(0, 8)}-2026`,
         globalBiz: name,
         globalRep: 'Alex Rivera',
-        globalDate: '2026-07-27',
+        globalDate: dateOnlyFromToday(0),
         coverText: `Thank you for the opportunity to support ${name} with a more resilient network operating model.`,
         pricingOptions: [{ term: '60', solutionId: `DEMO-${accountId}`, locations: [{ name: `${city} Primary Site`, promotions: [], items: [{ prod: products[index % products.length], price: String(mrc), qty: '1', nrcEnabled: true, nrcDescription: 'Implementation', nrcAmount: String(24000 + index * 3000) }] }] }],
         readiness: { rfpBiz: true, cover: true, pricing: true, ready: true },
@@ -468,7 +515,7 @@
       id: 10 + i,
       name: `Expansion Site ${i + 1}`,
       inputs: { constructionCost: 28000 + i * 6500, engineeringCost: 7000 + i * 1200, productCost: 16000 + i * 2800, monthlyCost: 950 + i * 210, nrr: 42000 + i * 6500, mrr: 6200 + i * 900, term: i % 2 === 0 ? 60 : 48, freeMonths: (i % 3) + 1 },
-      timeline: { constructionStartMonth: i % 6, billingStartMonth: (i % 4) + 2, constructionDurationMonths: 2 + (i % 2), constructionStartMonthISO: `2026-${String((i % 6) + 7).padStart(2, '0')}`, billingStartMonthISO: `2026-${String((i % 4) + 9).padStart(2, '0')}` },
+      timeline: { constructionStartMonth: i % 6, billingStartMonth: (i % 4) + 2, constructionDurationMonths: 2 + (i % 2), constructionStartMonthISO: monthFromToday(30 * (i % 6)), billingStartMonthISO: monthFromToday(30 * ((i % 4) + 2)) },
       result: {}
     });
   }
