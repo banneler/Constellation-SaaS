@@ -8,9 +8,7 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <link rel="preload" as="image" href="assets/hero-sales-professionals-cutout.png">
-    <link rel="preload" as="image" href="assets/feature-dashboard.png">
-    <link rel="stylesheet" href="css/style.css?v=asset-reveal-1">
+    <link rel="stylesheet" href="css/style.css?v=photo-social-shrink-2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="theme-dark min-h-screen flex flex-col bg-slate-950 text-slate-100">
@@ -442,23 +440,6 @@
             render(0);
         });
 
-        document.querySelectorAll('.screenshot-frame img, .saos-carousel-viewport img, .hero-people-layer img, .sales-cutout-layer img').forEach((image) => {
-            const frame = image.closest('.screenshot-frame, .saos-carousel-viewport, .hero-people-layer, .sales-cutout-layer');
-            if (!frame) return;
-
-            const markLoaded = () => {
-                frame.classList.add('asset-loaded');
-                frame.classList.remove('asset-loading');
-            };
-
-            frame.classList.add('asset-loading');
-            if (image.complete && image.naturalWidth > 0) {
-                requestAnimationFrame(markLoaded);
-            } else {
-                image.addEventListener('load', markLoaded, { once: true });
-                image.addEventListener('error', markLoaded, { once: true });
-            }
-        });
     </script>
 </body>
 </html>
