@@ -1083,7 +1083,8 @@ const GLOBAL_NAV_TEMPLATE = `
 const NAV_COLLAPSED_KEY = 'crm-nav-collapsed';
 const MOBILE_PREVIEW_PARAM = 'mobilePreview';
 const MOBILE_PREVIEW_VERSION_PARAM = 'mobilePreviewVersion';
-const MOBILE_PREVIEW_VERSION = 'iphone-frame-1';
+const MOBILE_PREVIEW_VERSION = 'iphone-frame-2';
+const MOBILE_PREVIEW_LOGICAL_WIDTH = 390;
 
 function isMobilePreviewFrame() {
     try {
@@ -1116,13 +1117,42 @@ function ensureMobilePreviewOverlay() {
                 <i class="fa-solid fa-times"></i>
             </button>
             <div class="mobile-preview-screen">
-                <iframe id="mobile-preview-frame" class="mobile-preview-frame" title="Mobile preview of this demo page"></iframe>
+                <div class="mobile-preview-status-bar" aria-hidden="true">
+                    <span class="mobile-preview-time" id="mobile-preview-time">9:41</span>
+                </div>
+                <div class="mobile-preview-viewport">
+                    <iframe id="mobile-preview-frame" class="mobile-preview-frame" title="Mobile preview of this demo page"></iframe>
+                </div>
             </div>
             <img class="mobile-preview-bezel" src="assets/iphone-frame.png" alt="" width="2314" height="4502" aria-hidden="true" draggable="false">
         </section>
     `;
     document.body.appendChild(overlay);
     return overlay;
+}
+
+function formatMobilePreviewTime(date = new Date()) {
+    return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+}
+
+function syncMobilePreviewClock(overlay) {
+    const timeEl = overlay.querySelector('#mobile-preview-time');
+    if (!timeEl) return;
+    timeEl.textContent = formatMobilePreviewTime();
+}
+
+function syncMobilePreviewScale(overlay) {
+    const viewport = overlay.querySelector('.mobile-preview-viewport');
+    const frame = overlay.querySelector('#mobile-preview-frame');
+    if (!viewport || !frame) return;
+
+    const rect = viewport.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+
+    const scale = rect.width / MOBILE_PREVIEW_LOGICAL_WIDTH;
+    frame.style.width = `${MOBILE_PREVIEW_LOGICAL_WIDTH}px`;
+    frame.style.height = `${Math.ceil(rect.height / scale)}px`;
+    frame.style.transform = `scale(${scale})`;
 }
 
 function setupMobilePreviewToggle() {
@@ -1137,6 +1167,13 @@ function setupMobilePreviewToggle() {
 
     const overlay = ensureMobilePreviewOverlay();
     const frame = overlay.querySelector('#mobile-preview-frame');
+    let clockTimer = null;
+    let resizeObserver = null;
+
+    const refreshPreviewChrome = () => {
+        syncMobilePreviewClock(overlay);
+        syncMobilePreviewScale(overlay);
+    };
 
     const setOpen = (open) => {
         overlay.classList.toggle('hidden', !open);
@@ -1144,8 +1181,23 @@ function setupMobilePreviewToggle() {
         toggleBtn.classList.toggle('active', open);
         toggleBtn.setAttribute('aria-pressed', open ? 'true' : 'false');
         document.body.classList.toggle('mobile-preview-open', open);
-        if (open && frame && frame.getAttribute('src') !== getMobilePreviewUrl()) {
-            frame.setAttribute('src', getMobilePreviewUrl());
+        if (open) {
+            if (frame && frame.getAttribute('src') !== getMobilePreviewUrl()) {
+                frame.setAttribute('src', getMobilePreviewUrl());
+            }
+            refreshPreviewChrome();
+            requestAnimationFrame(refreshPreviewChrome);
+            if (!clockTimer) {
+                clockTimer = window.setInterval(() => syncMobilePreviewClock(overlay), 30000);
+            }
+            if (!resizeObserver && typeof ResizeObserver !== 'undefined') {
+                const viewport = overlay.querySelector('.mobile-preview-viewport');
+                resizeObserver = new ResizeObserver(() => syncMobilePreviewScale(overlay));
+                if (viewport) resizeObserver.observe(viewport);
+            }
+        } else if (clockTimer) {
+            window.clearInterval(clockTimer);
+            clockTimer = null;
         }
     };
 
@@ -1160,6 +1212,9 @@ function setupMobilePreviewToggle() {
 
     window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && !overlay.classList.contains('hidden')) setOpen(false);
+    });
+    window.addEventListener('resize', () => {
+        if (!overlay.classList.contains('hidden')) syncMobilePreviewScale(overlay);
     });
 }
 

@@ -14246,7 +14246,7 @@ body.theme-green ::-webkit-scrollbar-track {
 }
 .mobile-preview-phone {
   position: relative;
-  width: min(360px, calc(100vw - 2.5rem), calc((86vh - 1rem) * 2314 / 4502));
+  width: min(460px, calc(100vw - 1.5rem), calc((94vh - 1rem) * 2314 / 4502));
   aspect-ratio: 2314 / 4502;
   height: auto;
   padding: 0;
@@ -14255,20 +14255,30 @@ body.theme-green ::-webkit-scrollbar-track {
   background: transparent;
   box-shadow: none;
 }
+.mobile-preview-phone::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 1.4% 4.8%;
+  border-radius: 18% / 9.2%;
+  background: transparent;
+  box-shadow:
+    0 0 18px rgba(147, 197, 253, 0.42),
+    0 0 42px rgba(59, 130, 246, 0.36),
+    0 0 78px rgba(37, 99, 235, 0.26),
+    0 28px 48px rgba(2, 6, 23, 0.55);
+  pointer-events: none;
+}
 .mobile-preview-bezel {
   position: absolute;
   inset: 0;
-  z-index: 2;
+  z-index: 3;
   width: 100%;
   height: 100%;
   object-fit: contain;
   pointer-events: none;
   user-select: none;
-  filter:
-    drop-shadow(0 0 14px rgba(147, 197, 253, 0.45))
-    drop-shadow(0 0 34px rgba(59, 130, 246, 0.4))
-    drop-shadow(0 0 70px rgba(37, 99, 235, 0.3))
-    drop-shadow(0 28px 48px rgba(2, 6, 23, 0.55));
+  filter: none;
 }
 .mobile-preview-screen {
   position: absolute;
@@ -14276,16 +14286,49 @@ body.theme-green ::-webkit-scrollbar-track {
   right: 8.9%;
   bottom: 5.13%;
   left: 9.42%;
-  z-index: 1;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
   border-radius: 12.5% / 6.2%;
+  background: #ffffff;
+}
+.mobile-preview-status-bar {
+  position: relative;
+  z-index: 2;
+  flex: 0 0 11.8%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 1.6% 22% 0 6.2%;
+  box-sizing: border-box;
+  background: #ffffff;
+  color: #111827;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+  font-size: clamp(0.72rem, 3.4vw, 0.95rem);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+.mobile-preview-time {
+  display: inline-block;
+  min-width: 3.2em;
+}
+.mobile-preview-viewport {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
   background: #020617;
 }
 .mobile-preview-frame {
-  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 390px;
   height: 100%;
   border: 0;
-  border-radius: inherit;
+  transform-origin: top left;
   background: #020617;
 }
 body.mobile-preview-open {
