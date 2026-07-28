@@ -16887,26 +16887,43 @@ body:not(.theme-green) .list-item.selected {
 }
 @media (max-width: 700px) {
   body.deals-page .deals-pipeline-card .section-card-header {
+    flex-direction: column;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
     gap: 1rem;
+  }
+  body.deals-page .deals-pipeline-card .section-card-header > .flex {
+    width: 100%;
   }
   body.deals-page .deals-pipeline-card .deals-filters {
     display: flex !important;
     flex-direction: column;
     align-items: stretch;
+    flex: 0 0 auto;
+    flex-basis: auto;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     gap: 0.75rem;
+    box-sizing: border-box;
   }
   body.deals-page .deals-filters .deals-filter-group {
+    display: flex !important;
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
     flex-direction: column;
     align-items: flex-start;
     gap: 0.35rem;
     justify-self: stretch;
+    box-sizing: border-box;
   }
   body.deals-page .deals-filters .deals-filter-group > span {
     white-space: nowrap;
   }
   body.deals-page .deals-filters .deals-filter-pills {
     width: 100%;
+    max-width: 100%;
     justify-content: flex-start;
   }
   body.deals-page .deals-filters #filter-stage-pills,
@@ -16915,7 +16932,9 @@ body:not(.theme-green) .list-item.selected {
   }
   body.deals-page .deals-filters .deals-close-month-filter {
     width: 100%;
+    max-width: 100%;
     min-width: 0;
+    box-sizing: border-box;
   }
   body.deals-page .deals-filters .deals-close-month-scroll {
     flex: 1 1 auto;
