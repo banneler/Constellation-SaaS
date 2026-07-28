@@ -26,7 +26,7 @@ import {
     reloadHUDWireframes,
     getState,
     filterOutOwnershipOrphanedCrmRows
-} from './shared_constants.js?v=iphone-frame-3';
+} from './shared_constants.js?v=iphone-frame-4';
 
 document.addEventListener("DOMContentLoaded", async () => {
     injectGlobalNavigation();

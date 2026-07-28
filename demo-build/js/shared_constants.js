@@ -1083,7 +1083,7 @@ const GLOBAL_NAV_TEMPLATE = `
 const NAV_COLLAPSED_KEY = 'crm-nav-collapsed';
 const MOBILE_PREVIEW_PARAM = 'mobilePreview';
 const MOBILE_PREVIEW_VERSION_PARAM = 'mobilePreviewVersion';
-const MOBILE_PREVIEW_VERSION = 'iphone-frame-3';
+const MOBILE_PREVIEW_VERSION = 'iphone-frame-4';
 const MOBILE_PREVIEW_LOGICAL_WIDTH = 390;
 
 function isMobilePreviewFrame() {

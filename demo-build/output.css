@@ -14291,19 +14291,19 @@ body.theme-green ::-webkit-scrollbar-track {
   flex-direction: column;
   overflow: hidden;
   border-radius: 12.5% / 6.2%;
-  background: #ffffff;
+  background: var(--bg-dark, #f1f5f9);
 }
 .mobile-preview-status-bar {
   position: relative;
   z-index: 2;
-  flex: 0 0 3.9%;
+  flex: 0 0 5%;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   padding: 0 22% 0 6.2%;
   box-sizing: border-box;
-  background: #ffffff;
-  color: #111827;
+  background: var(--bg-dark, #f1f5f9);
+  color: var(--text-light, #0f172a);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
   font-size: clamp(0.62rem, 2.6vw, 0.78rem);
   font-weight: 600;
