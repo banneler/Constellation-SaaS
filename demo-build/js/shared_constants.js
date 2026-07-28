@@ -1056,6 +1056,10 @@ const GLOBAL_NAV_TEMPLATE = `
     <i class="fa-solid fa-bell nav-notification-dot" id="cognito-notification"></i>
 </div>
 <div class="nav-bottom-section">
+    <button type="button" id="nav-mobile-preview-toggle" class="nav-button nav-mobile-preview-btn" title="Preview mobile view" aria-label="Preview mobile view" aria-pressed="false">
+        <i class="fa-solid fa-mobile-screen-button nav-icon"></i>
+        <span class="nav-label-text">Mobile View</span>
+    </button>
     <div class="user-menu">
         <button type="button" id="nav-menu-toggle" class="nav-button nav-menu-toggle" title="Menu" aria-label="Menu" aria-expanded="false">
             <i class="fa-solid fa-bars nav-icon"></i>
@@ -1077,6 +1081,91 @@ const GLOBAL_NAV_TEMPLATE = `
 `;
 
 const NAV_COLLAPSED_KEY = 'crm-nav-collapsed';
+const MOBILE_PREVIEW_PARAM = 'mobilePreview';
+
+function isMobilePreviewFrame() {
+    try {
+        if (window.self !== window.top) return true;
+    } catch (_) {
+        return true;
+    }
+    return new URLSearchParams(window.location.search).get(MOBILE_PREVIEW_PARAM) === '1';
+}
+
+function getMobilePreviewUrl() {
+    const url = new URL(window.location.href);
+    url.searchParams.set(MOBILE_PREVIEW_PARAM, '1');
+    return url.toString();
+}
+
+function ensureMobilePreviewOverlay() {
+    let overlay = document.getElementById('mobile-preview-overlay');
+    if (overlay) return overlay;
+
+    overlay = document.createElement('div');
+    overlay.id = 'mobile-preview-overlay';
+    overlay.className = 'mobile-preview-overlay hidden';
+    overlay.setAttribute('aria-hidden', 'true');
+    overlay.innerHTML = `
+        <div class="mobile-preview-scrim" data-mobile-preview-close></div>
+        <section class="mobile-preview-shell" role="dialog" aria-modal="true" aria-labelledby="mobile-preview-title">
+            <div class="mobile-preview-header">
+                <div>
+                    <p class="mobile-preview-kicker">Responsive Preview</p>
+                    <h2 id="mobile-preview-title">Mobile View</h2>
+                </div>
+                <button type="button" class="mobile-preview-close" data-mobile-preview-close aria-label="Close mobile view">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <div class="mobile-preview-phone" aria-label="Phone preview frame">
+                <div class="mobile-preview-speaker" aria-hidden="true"></div>
+                <iframe id="mobile-preview-frame" class="mobile-preview-frame" title="Mobile preview of this demo page"></iframe>
+                <div class="mobile-preview-home-indicator" aria-hidden="true"></div>
+            </div>
+        </section>
+    `;
+    document.body.appendChild(overlay);
+    return overlay;
+}
+
+function setupMobilePreviewToggle() {
+    const toggleBtn = document.getElementById('nav-mobile-preview-toggle');
+    if (!toggleBtn) return;
+
+    if (isMobilePreviewFrame()) {
+        toggleBtn.remove();
+        document.body.classList.add('mobile-preview-embedded');
+        return;
+    }
+
+    const overlay = ensureMobilePreviewOverlay();
+    const frame = overlay.querySelector('#mobile-preview-frame');
+
+    const setOpen = (open) => {
+        overlay.classList.toggle('hidden', !open);
+        overlay.setAttribute('aria-hidden', open ? 'false' : 'true');
+        toggleBtn.classList.toggle('active', open);
+        toggleBtn.setAttribute('aria-pressed', open ? 'true' : 'false');
+        document.body.classList.toggle('mobile-preview-open', open);
+        if (open && frame && frame.getAttribute('src') !== getMobilePreviewUrl()) {
+            frame.setAttribute('src', getMobilePreviewUrl());
+        }
+    };
+
+    toggleBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        setOpen(overlay.classList.contains('hidden'));
+    });
+
+    overlay.querySelectorAll('[data-mobile-preview-close]').forEach((el) => {
+        el.addEventListener('click', () => setOpen(false));
+    });
+
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !overlay.classList.contains('hidden')) setOpen(false);
+    });
+}
 
 export function injectGlobalNavigation() {
     const container = document.getElementById('global-nav-container');
@@ -1085,6 +1174,7 @@ export function injectGlobalNavigation() {
     container.innerHTML = GLOBAL_NAV_TEMPLATE;
 
     initHUD();
+    setupMobilePreviewToggle();
     updateManagerOnlyNavigation();
 
     const navSidebar = container.closest('.nav-sidebar');

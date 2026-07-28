@@ -356,7 +356,7 @@ export function openHUD() {
     }
     hudControlsLayer.classList.add("active");
     hudControlsLayer.setAttribute("aria-hidden", "false");
-    document.querySelector(".hud-trigger-fab")?.classList.add("hud-trigger-fab-hidden");
+    document.querySelectorAll(".hud-floating-control").forEach((el) => el.classList.add("hud-trigger-fab-hidden"));
     // Defer rect update so overlay is laid out and containers have correct dimensions
     requestAnimationFrame(() => {
         updateAllWireframeRects();
@@ -484,7 +484,7 @@ export function closeHUD() {
         hudControlsLayer.classList.remove("active");
         hudControlsLayer.setAttribute("aria-hidden", "true");
     }
-    document.querySelector(".hud-trigger-fab")?.classList.remove("hud-trigger-fab-hidden");
+    document.querySelectorAll(".hud-floating-control").forEach((el) => el.classList.remove("hud-trigger-fab-hidden"));
 }
 
 /**
@@ -548,7 +548,7 @@ export function addDealInsightsWireframe() {
 function buildHUDTriggerButton() {
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.className = "hud-trigger-fab";
+    btn.className = "hud-trigger-fab hud-floating-control";
     btn.setAttribute("title", "Page Tips & Tricks");
     btn.setAttribute("aria-label", "Open page tips and tricks overlay");
     btn.innerHTML = "<i class=\"fa-solid fa-lightbulb\"></i>";
@@ -557,6 +557,24 @@ function buildHUDTriggerButton() {
         openHUD();
     });
     return btn;
+}
+
+function getMainSiteHref() {
+    const path = window.location.pathname || "";
+    if (window.location.protocol === "file:" || path.includes("/demo-build/")) {
+        return new URL("../index.html", window.location.href).href;
+    }
+    return "/index.html";
+}
+
+function buildExitDemoButton() {
+    const link = document.createElement("a");
+    link.className = "hud-exit-demo-fab hud-floating-control";
+    link.href = getMainSiteHref();
+    link.setAttribute("title", "Exit demo");
+    link.setAttribute("aria-label", "Exit demo and return to the main Constellation site");
+    link.innerHTML = "<i class=\"fa-solid fa-arrow-right-from-bracket\"></i><span>Exit Demo</span>";
+    return link;
 }
 
 /**
@@ -585,5 +603,8 @@ export function initHUD() {
 
     if (!document.querySelector(".hud-trigger-fab")) {
         document.body.appendChild(buildHUDTriggerButton());
+    }
+    if (!document.querySelector(".hud-exit-demo-fab")) {
+        document.body.appendChild(buildExitDemoButton());
     }
 }
