@@ -154,7 +154,7 @@ html {
     position: absolute;
     top: -6.25rem;
     left: 50%;
-    z-index: 2;
+    z-index: 4;
     width: min(36rem, 96%);
     transform: translateX(-50%);
     pointer-events: none;
@@ -176,6 +176,8 @@ html {
     display: block;
     width: 100%;
     height: auto;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 76%, rgba(0, 0, 0, 0.78) 88%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 76%, rgba(0, 0, 0, 0.78) 88%, transparent 100%);
 }
 
 .sales-screenshot-stack .screenshot-frame {
