@@ -132,13 +132,13 @@ html {
 .sales-screenshot-stack {
     position: relative;
     isolation: isolate;
-    padding-top: clamp(6.5rem, 14vw, 9.25rem);
+    padding-top: 0;
 }
 
 .sales-screenshot-stack::before {
     content: "";
     position: absolute;
-    top: 1.2rem;
+    top: -5rem;
     left: 50%;
     width: min(28rem, 80%);
     height: 12rem;
@@ -152,11 +152,11 @@ html {
 
 .sales-cutout-layer {
     position: absolute;
-    top: 0;
+    top: -6.25rem;
     left: 50%;
     z-index: 2;
     width: min(36rem, 96%);
-    transform: translateX(-50%) translateY(-2.1rem);
+    transform: translateX(-50%);
     pointer-events: none;
     filter:
         drop-shadow(0 0 10px rgba(219, 234, 254, 0.12))
