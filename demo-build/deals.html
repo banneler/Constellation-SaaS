@@ -7,22 +7,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Constellation CRM - Deals</title>
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.5.2/dist/css/tom-select.css" rel="stylesheet">
-    <link rel="stylesheet" href="output.css?v=deals-mobile-filters-5">
+    <link rel="stylesheet" href="output.css?v=deals-mobile-filters-6">
     <link rel="stylesheet" href="css/global-loader.css">
     <style id="deals-mobile-filter-fix">
+        .deals-mobile-filter-toggle {
+            display: none !important;
+        }
         @media (max-width: 700px) {
             body.deals-page .deals-pipeline-card .section-card-header {
                 display: flex !important;
                 flex-direction: column !important;
                 align-items: stretch !important;
                 justify-content: flex-start !important;
-                gap: 1rem !important;
+                gap: 0.75rem !important;
             }
             body.deals-page .deals-pipeline-card .section-card-header > div:first-child {
                 width: 100% !important;
             }
+            body.deals-page .deals-mobile-filter-toggle {
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 0.45rem !important;
+                width: 100% !important;
+                min-height: 2.35rem !important;
+                border: 1px solid var(--border-color) !important;
+                border-radius: 0.75rem !important;
+                background: var(--bg-medium) !important;
+                color: var(--text-light) !important;
+                font-size: 0.78rem !important;
+                font-weight: 800 !important;
+                letter-spacing: 0.06em !important;
+                text-transform: uppercase !important;
+                cursor: pointer !important;
+            }
+            body.deals-page .deals-mobile-filter-toggle i {
+                transition: transform 0.2s ease !important;
+            }
+            body.deals-page .deals-mobile-filter-toggle[aria-expanded="true"] i {
+                transform: rotate(180deg) !important;
+            }
             body.deals-page .deals-pipeline-card .deals-filters {
-                display: flex !important;
                 flex-direction: column !important;
                 flex-wrap: nowrap !important;
                 align-items: stretch !important;
@@ -162,7 +187,11 @@
                             <h2 class="section-title m-0">Deal Pipeline</h2>
                             <button type="button" id="add-deal-btn" class="btn-icon-header" title="New Deal" aria-label="New Deal"><i class="fas fa-plus"></i></button>
                         </div>
-                        <div class="deals-filters flex flex-wrap items-center gap-4">
+                        <button type="button" id="deals-mobile-filter-toggle" class="deals-mobile-filter-toggle" aria-controls="deals-mobile-filters" aria-expanded="false">
+                            <span>Show filters</span>
+                            <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+                        </button>
+                        <div id="deals-mobile-filters" class="deals-filters flex flex-wrap items-center gap-4">
                             <div class="deals-filter-group flex items-center gap-2">
                                 <span class="text-xs font-semibold uppercase tracking-wider text-[var(--text-medium)]">Committed</span>
                                 <div id="filter-committed-pills" class="deals-filter-pills flex gap-1 rounded-lg border border-[var(--border-color)] p-0.5 bg-[var(--bg-medium)]"></div>
@@ -285,40 +314,78 @@
         document.body.className = `theme-${savedTheme} deals-page`;
     })();
     (function() {
-        const applyDealsMobileFilterLayout = () => {
-            const isMobile = window.matchMedia('(max-width: 700px)').matches;
-            const header = document.querySelector('.deals-pipeline-card .section-card-header');
-            const filters = document.querySelector('.deals-pipeline-card .deals-filters');
-            if (!header || !filters) return;
+        const media = window.matchMedia('(max-width: 700px)');
+        let filtersOpen = false;
 
+        const getEls = () => ({
+            header: document.querySelector('.deals-pipeline-card .section-card-header'),
+            filters: document.querySelector('.deals-pipeline-card .deals-filters'),
+            toggle: document.getElementById('deals-mobile-filter-toggle'),
+            label: document.querySelector('#deals-mobile-filter-toggle span')
+        });
+
+        const applyDealsMobileFilterLayout = () => {
+            const { header, filters, toggle, label } = getEls();
+            if (!header || !filters || !toggle) return;
+
+            const isMobile = media.matches;
             if (!isMobile) {
+                filtersOpen = false;
                 header.style.removeProperty('flex-direction');
                 header.style.removeProperty('align-items');
+                filters.classList.remove('deals-mobile-filters-open');
                 filters.style.removeProperty('display');
                 filters.style.removeProperty('flex-direction');
                 filters.style.removeProperty('flex-wrap');
                 filters.style.removeProperty('width');
                 filters.style.removeProperty('max-width');
                 filters.style.removeProperty('min-width');
+                toggle.setAttribute('aria-expanded', 'false');
+                if (label) label.textContent = 'Show filters';
                 return;
             }
 
             header.style.setProperty('flex-direction', 'column', 'important');
             header.style.setProperty('align-items', 'stretch', 'important');
-            filters.style.setProperty('display', 'flex', 'important');
             filters.style.setProperty('flex-direction', 'column', 'important');
             filters.style.setProperty('flex-wrap', 'nowrap', 'important');
             filters.style.setProperty('width', '100%', 'important');
             filters.style.setProperty('max-width', '100%', 'important');
             filters.style.setProperty('min-width', '0', 'important');
+            filters.classList.toggle('deals-mobile-filters-open', filtersOpen);
+            filters.style.setProperty('display', filtersOpen ? 'flex' : 'none', 'important');
+            toggle.setAttribute('aria-expanded', filtersOpen ? 'true' : 'false');
+            if (label) label.textContent = filtersOpen ? 'Hide filters' : 'Show filters';
+        };
+
+        const bindToggle = () => {
+            const { toggle } = getEls();
+            if (!toggle || toggle.dataset.bound === '1') return;
+            toggle.dataset.bound = '1';
+            toggle.addEventListener('click', (event) => {
+                event.preventDefault();
+                if (!media.matches) return;
+                filtersOpen = !filtersOpen;
+                applyDealsMobileFilterLayout();
+            });
+        };
+
+        const init = () => {
+            bindToggle();
+            applyDealsMobileFilterLayout();
         };
 
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', applyDealsMobileFilterLayout, { once: true });
+            document.addEventListener('DOMContentLoaded', init, { once: true });
         } else {
-            applyDealsMobileFilterLayout();
+            init();
         }
         window.addEventListener('resize', applyDealsMobileFilterLayout);
+        if (typeof media.addEventListener === 'function') {
+            media.addEventListener('change', applyDealsMobileFilterLayout);
+        } else if (typeof media.addListener === 'function') {
+            media.addListener(applyDealsMobileFilterLayout);
+        }
     })();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.5.2/dist/js/tom-select.complete.min.js"></script>
