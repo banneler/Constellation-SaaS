@@ -17,7 +17,7 @@ import {
     setupModalListeners,
     hideModal,
     setModalDismissPolicy
-} from './shared_constants.js?v=iphone-frame-2';
+} from './shared_constants.js?v=iphone-frame-3';
 import { AI_FUNCTION_IDS, callAiApi, mountAIFeedback } from './ai-memory.js';
 
 document.addEventListener("DOMContentLoaded", async () => {
