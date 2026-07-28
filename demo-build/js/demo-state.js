@@ -217,28 +217,7 @@
         globalRep: 'Alex Rivera',
         globalDate: dateOnlyFromToday(0),
         coverText: 'Thank you for the opportunity to evaluate Constellation as the Strategic Account Operating System for Stark Logistics.\n\nConstellation is built for enterprise revenue teams that need more than CRM record keeping. It brings account planning, relationship intelligence, Cognito signals, campaigns, sequences, proposal generation, and investment review into one guided workflow so leaders can see where strategic attention is creating pipeline.\n\nFor this pilot, we recommend activating a focused set of high-value accounts, enabling the Command Center for leadership visibility, configuring signal-driven plays through Cognito, and using Proposal Studio and IRR workflows to connect account strategy to customer-facing assets and business cases.\n\nThe result is a cleaner operating rhythm for enterprise selling: fewer disconnected spreadsheets, faster follow-up on market signals, stronger executive alignment, and a proposal motion that reflects the full account strategy.',
-        customPages: {
-          '0': {
-            title: 'Enterprise CRM, Rebuilt for Strategic Accounts',
-            body: 'Constellation turns CRM from a passive system of record into an active operating system for enterprise revenue teams.\n\nThe platform gives account executives, sales leaders, sales engineering, and executive sponsors a shared workspace for pursuit strategy, relationship mapping, opportunity movement, and customer-ready proposal assets. Instead of chasing context across call notes, spreadsheets, decks, and disconnected AI tools, teams work from one account command surface.\n\nThe goal for Stark Logistics is simple: make strategic selling visible, repeatable, and measurable.'
-          },
-          '1': {
-            title: 'Command Center',
-            body: 'The Command Center gives leadership a live view of the accounts and pursuits that need attention.\n\n- Account health, stage movement, committed revenue, and priority tasks are visible in one place.\n- Reps can see what changed, what is due, and where executive support is needed.\n- Managers can coach from real account context instead of relying on stale forecast notes.\n- Strategic account plans become operating documents, not one-time planning exercises.\n\nFor the pilot, Command Center will focus on target-account visibility, opportunity movement, proposal readiness, and campaign execution.'
-          },
-          '2': {
-            title: 'Cognito, Campaigns, and Sequences',
-            body: 'Cognito surfaces timely account and market signals, then connects those signals to action.\n\nWhen expansion news, leadership change, buying committee movement, renewal timing, or strategic initiative signals appear, Constellation helps the team turn that context into account-plan updates, campaign audiences, sequence steps, and customer-ready messaging.\n\nCampaigns and Sequences give teams a structured way to coordinate outreach without losing the human judgment required for enterprise deals. The result is faster signal response, better personalization, and clearer accountability for every next step.'
-          },
-          '3': {
-            title: 'Proposal Studio',
-            body: 'Proposal Studio connects account strategy to polished customer-facing assets.\n\nTeams can assemble a multi-page proposal, reuse approved positioning, add custom executive narratives, import pricing, include references, and package ROI or impact analysis without rebuilding the story from scratch. The same workflow supports internal review and customer delivery.\n\nFor Stark Logistics, this means proposals can reflect the full strategic account plan: business priorities, stakeholder context, solution scope, commercial terms, and investment rationale.'
-          },
-          '4': {
-            title: 'Pilot Success Plan',
-            body: 'Recommended pilot scope:\n\n- Activate a focused set of enterprise accounts and contacts.\n- Configure Command Center views for sales leadership and account owners.\n- Enable Cognito signals for expansion triggers, executive movement, and account-risk moments.\n- Launch two coordinated Campaigns or Sequences tied to priority account plays.\n- Build customer-ready proposal assets through Proposal Studio.\n- Review IRR or business-case workflows for opportunities that require investment approval.\n\nSuccess will be measured by account-plan adoption, signal-to-action speed, campaign follow-through, proposal cycle time, and leadership visibility into strategic pipeline movement.'
-          }
-        },
+        customPages: {},
         impactCurrentState: 'Strategic account work is split across CRM records, spreadsheets, slide decks, ad hoc AI prompts, and manual proposal assembly. Leaders have limited visibility into whether account strategy is turning into coordinated action.',
         impactProposedState: 'Constellation centralizes strategic account planning, Command Center visibility, Cognito signals, coordinated Campaigns and Sequences, Proposal Studio, and IRR workflows in one enterprise selling motion.',
         impactCurrentCost: '58000',
@@ -264,22 +243,19 @@
         readiness: { rfpBiz: true, cover: true, pricing: true, ready: true },
         modules: [
           { filename: '01_Title_Page.pdf', checked: true },
+          { filename: '02_Constellation_CRM_Cover_Page.pdf', checked: true },
           { filename: 'CUSTOM_COVER', checked: true },
           { filename: 'TOC', checked: true },
-          { filename: '02_Why_GPC.pdf', checked: false },
-          { filename: '05_DIA.pdf', checked: false },
-          { filename: '04_NOC_Monitoring.pdf', checked: false },
+          { filename: '03_Constellation_Platform_Overview.pdf', checked: true },
+          { filename: '04_Constellation_Command_Center.pdf', checked: true },
+          { filename: '05_Constellation_Cognito.pdf', checked: true },
           { filename: 'CUSTOM_PDF', checked: false },
           { filename: 'CUSTOM_PRICING', checked: true },
-          { filename: '03_About_GPC.pdf', checked: false },
-          { filename: 'CUSTOM_TEXT', checked: true, customIndex: '0' },
-          { filename: 'CUSTOM_TEXT', checked: true, customIndex: '1' },
-          { filename: 'CUSTOM_TEXT', checked: true, customIndex: '2' },
-          { filename: 'CUSTOM_TEXT', checked: true, customIndex: '3' },
-          { filename: 'CUSTOM_TEXT', checked: true, customIndex: '4' },
+          { filename: '06_Constellation_Proposal_Studio.pdf', checked: true },
+          { filename: 'CUSTOM_TEXT', checked: false, customIndex: '0' },
           { filename: 'CUSTOM_REFERENCES', checked: true },
           { filename: 'CUSTOM_IMPACT', checked: true },
-          { filename: '11_Escalation.pdf', checked: false },
+          { filename: '07_Constellation_Pilot_Plan.pdf', checked: true },
           { filename: '09_Project.pdf', checked: false },
           { filename: '08_SPIN.pdf', checked: false },
           { filename: '10_Leadership.pdf', checked: false },
@@ -517,12 +493,7 @@
         globalRep: 'Alex Rivera',
         globalDate: dateOnlyFromToday(0),
         coverText: `Thank you for the opportunity to evaluate Constellation as the Strategic Account Operating System for ${name}. This proposal outlines a focused enterprise CRM pilot spanning Command Center visibility, Cognito signal intelligence, coordinated Campaigns and Sequences, Proposal Studio, and business-case workflows.`,
-        customPages: {
-          '0': {
-            title: 'Constellation Pilot Overview',
-            body: `${name} can use Constellation to connect account strategy, timely signals, coordinated outreach, proposal generation, and investment review in one CRM-native operating rhythm.`
-          }
-        },
+        customPages: {},
         pricingOptions: [{ term: '36', solutionId: `SAOS-${accountId}`, locations: [{ name: `${city} Revenue Team`, promotions: [], items: [{ prod: proposalProducts[index % proposalProducts.length], price: String(mrc), qty: '1', nrcEnabled: true, nrcDescription: 'Implementation enablement', nrcAmount: String(18000 + index * 2500) }] }] }],
         readiness: { rfpBiz: true, cover: true, pricing: true, ready: true },
         references: []
