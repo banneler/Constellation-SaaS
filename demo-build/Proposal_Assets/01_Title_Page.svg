@@ -1,52 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 612 792">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="612" y2="792" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#f8fbff"/>
-      <stop offset="0.52" stop-color="#ffffff"/>
-      <stop offset="1" stop-color="#dbeafe"/>
-    </linearGradient>
-    <linearGradient id="panel" x1="286" y1="0" x2="612" y2="792" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#3880ee"/>
-      <stop offset="1" stop-color="#0b3a75"/>
-    </linearGradient>
+    <linearGradient id="panel" x1="306" y1="0" x2="612" y2="792" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#3880ee"/><stop offset="1" stop-color="#0b3a75"/></linearGradient>
   </defs>
-  <rect width="612" height="792" fill="url(#bg)"/>
-  <path d="M310 0h302v792H236L310 0Z" fill="url(#panel)"/>
-  <path d="M0 0h612v792H0z" fill="none"/>
-  <g fill="none" stroke="#bfdbfe" stroke-width="1.4" opacity=".62">
-    <path d="M384 122l48 38 70-20 42 58-32 72 48 54-64 60 12 82-80 28-32 78-84-10-58 62-72-44"/>
-    <path d="M432 160l64 224-100 188"/>
-    <path d="M502 140l-6 244 12 82"/>
-    <path d="M384 122l112 262-242 240"/>
+  <rect width="612" height="792" fill="#f8fbff"/>
+  <rect x="306" width="306" height="792" fill="#0b3a75"/>
+  <path d="M306 0h306v792H366z" fill="url(#panel)"/>
+  <path d="M0 0h245l121 792H0z" fill="#fff" opacity=".98"/>
+  <path d="M250 0l116 792h16L266 0z" fill="#dbeafe" opacity=".55"/>
+  <g fill="none" stroke="#bfdbfe" stroke-width="1.2" opacity=".5">
+    <path d="M384 126l48 38 70-20 42 58-32 72 48 54-64 60 12 82-80 28-32 78-84-10-58 58"/>
+    <path d="M384 126l112 262-242 236M502 144l-6 244 12 82M432 164l64 224-100 188"/>
   </g>
-  <g fill="#fff" opacity=".95">
-    <circle cx="384" cy="122" r="5"/>
-    <circle cx="432" cy="160" r="4"/>
-    <circle cx="502" cy="140" r="4"/>
-    <circle cx="544" cy="198" r="5"/>
-    <circle cx="512" cy="270" r="4"/>
-    <circle cx="560" cy="324" r="5"/>
-    <circle cx="496" cy="384" r="4"/>
-    <circle cx="508" cy="466" r="4"/>
-    <circle cx="428" cy="494" r="5"/>
-    <circle cx="396" cy="572" r="4"/>
-    <circle cx="312" cy="562" r="4"/>
-    <circle cx="254" cy="624" r="5"/>
+  <g fill="#fff" opacity=".92">
+    <circle cx="384" cy="126" r="4.2"/><circle cx="432" cy="164" r="3.4"/><circle cx="502" cy="144" r="3.4"/><circle cx="544" cy="202" r="4.2"/><circle cx="512" cy="274" r="3.4"/><circle cx="560" cy="328" r="4.2"/><circle cx="496" cy="388" r="3.4"/><circle cx="508" cy="470" r="3.4"/><circle cx="428" cy="498" r="4.2"/><circle cx="396" cy="576" r="3.4"/><circle cx="312" cy="566" r="3.4"/><circle cx="254" cy="624" r="4.2"/>
   </g>
-  <g transform="translate(58 64)">
-    <circle cx="0" cy="0" r="4.5" fill="#3880ee"/>
-    <circle cx="44" cy="18" r="3.5" fill="#3880ee"/>
-    <circle cx="78" cy="-8" r="3.5" fill="#3880ee"/>
-    <circle cx="118" cy="14" r="4.5" fill="#3880ee"/>
-    <path d="M0 0l44 18 34-26 40 22" fill="none" stroke="#3880ee" stroke-width="2"/>
-    <text x="0" y="54" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="28" font-weight="700" fill="#0f172a">Constellation</text>
-    <text x="0" y="78" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="600" letter-spacing="2.4" fill="#3880ee">STRATEGIC ACCOUNT OS</text>
+  <g transform="translate(58 82)">
+    <path d="M0 34l34 15 61-17 42 18" fill="none" stroke="#3880ee" stroke-width="2"/>
+    <circle cx="0" cy="34" r="4" fill="#3880ee"/><circle cx="34" cy="49" r="3.2" fill="#3880ee"/><circle cx="95" cy="32" r="3.2" fill="#3880ee"/><circle cx="137" cy="50" r="4" fill="#3880ee"/>
+    <text x="0" y="88" font-family="Helvetica, Arial, sans-serif" font-size="28" font-weight="700" fill="#0f172a">Constellation</text>
+    <text x="0" y="112" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="3" fill="#3880ee">STRATEGIC ACCOUNT OS</text>
   </g>
-  <g transform="translate(58 256)">
-    <text x="0" y="0" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="2" fill="#3880ee">ENTERPRISE CRM PROPOSAL</text>
-    <text x="0" y="42" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="34" font-weight="800" fill="#0f172a">Turn account strategy</text>
-    <text x="0" y="84" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="34" font-weight="800" fill="#0f172a">into coordinated action.</text>
-    <text x="0" y="126" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" fill="#475569">Command Center | Cognito | Campaigns | Sequences | Proposals | IRR</text>
+  <g transform="translate(58 316)">
+    <text x="0" y="0" font-family="Helvetica, Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="2" fill="#3880ee">ENTERPRISE CRM PROPOSAL</text>
+    <text x="0" y="46" font-family="Helvetica, Arial, sans-serif" font-size="36" font-weight="800" fill="#0f172a">Turn account strategy</text>
+    <text x="0" y="90" font-family="Helvetica, Arial, sans-serif" font-size="36" font-weight="800" fill="#0f172a">into coordinated action.</text>
+    <line x1="0" y1="130" x2="255" y2="130" stroke="#d7e4f5"/>
+    <text x="0" y="158" font-family="Helvetica, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#475569">Command Center  |  Cognito  |  Proposal Studio  |  IRR</text>
   </g>
 </svg>

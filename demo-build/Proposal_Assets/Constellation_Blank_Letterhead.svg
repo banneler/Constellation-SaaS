@@ -1,22 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 612 792">
-  <defs>
-    <linearGradient id="header" x1="0" y1="0" x2="612" y2="90" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#0b3a75"/>
-      <stop offset="1" stop-color="#3880ee"/>
-    </linearGradient>
-  </defs>
-  <rect width="612" height="792" fill="#ffffff"/>
+  <defs><linearGradient id="header" x1="0" y1="0" x2="612" y2="92" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#0b3a75"/><stop offset="1" stop-color="#3880ee"/></linearGradient></defs>
+  <rect width="612" height="792" fill="#fff"/>
   <rect width="612" height="92" fill="url(#header)"/>
-  <path d="M430 0h182v92H362L430 0Z" fill="#2563eb" opacity=".42"/>
+  <path d="M430 0h182v92H362z" fill="#2563eb" opacity=".42"/>
+  <path d="M344 92L424 0h-44l-80 92z" fill="#0b3a75"/>
+  <g transform="translate(444 32)" fill="none" stroke="#dbeafe" stroke-width="1.35" opacity=".86">
+    <path d="M0 18l30-14 34 20 40-18 28 28"/>
+    <circle cx="0" cy="18" r="3.2" fill="#fff" stroke="none"/><circle cx="30" cy="4" r="3.2" fill="#fff" stroke="none"/><circle cx="64" cy="24" r="3.2" fill="#fff" stroke="none"/><circle cx="104" cy="6" r="3.2" fill="#fff" stroke="none"/><circle cx="132" cy="34" r="3.2" fill="#fff" stroke="none"/>
+  </g>
   <path d="M0 756h612v36H0z" fill="#eff6ff"/>
   <path d="M0 756h612" stroke="#3880ee" stroke-width="3"/>
-  <g transform="translate(444 32)" fill="none" stroke="#dbeafe" stroke-width="1.2" opacity=".82">
-    <path d="M0 18l30-14 34 20 40-18 28 28"/>
-    <circle cx="0" cy="18" r="3" fill="#fff" stroke="none"/>
-    <circle cx="30" cy="4" r="3" fill="#fff" stroke="none"/>
-    <circle cx="64" cy="24" r="3" fill="#fff" stroke="none"/>
-    <circle cx="104" cy="6" r="3" fill="#fff" stroke="none"/>
-    <circle cx="132" cy="34" r="3" fill="#fff" stroke="none"/>
-  </g>
 </svg>

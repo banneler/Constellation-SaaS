@@ -2658,8 +2658,23 @@ Proposal Studio and IRR workflows complete the motion by connecting internal str
                 }
                 return { num: idx + 1, label: label || filename };
             });
-            const tocBodyHtml = tocEntries.length ? tocEntries.map(e => '<p style="margin-bottom: 0.6rem;">' + e.num + '. ' + escapeHtml(e.label) + '</p>').join('') : '<p style="color:#64748b;">No sections in this proposal.</p>';
-            const canvas = await captureInteriorPageGPC('Table of Contents', tocBodyHtml, { extraPaddingTop: 46 });
+            const tocBodyHtml = tocEntries.length
+                ? '<div style="max-width: 640px; margin: 0 auto;">' +
+                    '<div style="margin-bottom: 22px; padding: 18px 20px; background: #f8fbff; border: 1px solid #dbeafe; border-left: 5px solid #3880ee;">' +
+                        '<div style="font-size: 11px; font-weight: 800; color: #3880ee; text-transform: uppercase; letter-spacing: .12em; margin-bottom: 7px;">Proposal Roadmap</div>' +
+                        '<div style="font-size: 17px; line-height: 1.35; font-weight: 800; color: #0f172a;">A guided path from account strategy to commercial recommendation.</div>' +
+                    '</div>' +
+                    tocEntries.map(function(e) {
+                        var num = String(e.num).padStart(2, '0');
+                        return '<div style="display: flex; align-items: center; gap: 16px; margin-bottom: 10px; padding: 13px 16px; background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 1px 0 rgba(15,23,42,.04);">' +
+                            '<div style="width: 42px; height: 42px; background: #0b3a75; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800;">' + escapeHtml(num) + '</div>' +
+                            '<div style="flex: 1; font-size: 15px; font-weight: 750; color: #0f172a;">' + escapeHtml(e.label) + '</div>' +
+                            '<div style="width: 72px; height: 2px; background: linear-gradient(90deg, #3880ee, #dbeafe);"></div>' +
+                        '</div>';
+                    }).join('') +
+                  '</div>'
+                : '<p style="color:#64748b;">No sections in this proposal.</p>';
+            const canvas = await captureInteriorPageGPC('Table of Contents', tocBodyHtml, { extraPaddingTop: 38 });
             await addPageFromCanvas(canvas);
             continue;
         }
@@ -2685,32 +2700,43 @@ Proposal Studio and IRR workflows complete the motion by connecting internal str
             var impactLabel = diff >= 0 ? 'SAVINGS' : 'NET IMPACT';
             var impactAmount = '$' + Math.abs(Math.round(diff)).toLocaleString() + '/MO';
             var impactAccent = diff >= 0 ? '#15803d' : '#1d4ed8';
-            var toHtmlLines = function(s) {
-                return escapeHtml((s || '').trim() || '—').replace(/\n/g, '<br>');
+            var defaultCurrent = 'Strategic account work is split across CRM records, spreadsheets, slide decks, ad hoc AI prompts, and manual proposal assembly. Leaders have limited visibility into whether Stark account strategy is turning into coordinated action.';
+            var defaultProposed = 'Constellation centralizes strategic account planning, Command Center visibility, Cognito signals, coordinated campaigns and sequences, Proposal Studio, and IRR workflows in one enterprise selling motion.';
+            var toHtmlLines = function(s, fallback) {
+                return escapeHtml((s || '').trim() || fallback).replace(/\n/g, '<br>');
             };
             var impactHtml =
                 '<div style="margin: 0 auto; width: 640px;">' +
+                    '<div style="margin-bottom: 18px; padding: 16px 18px; background: #f8fbff; border: 1px solid #dbeafe; border-left: 5px solid #3880ee;">' +
+                        '<div style="font-size: 11px; font-weight: 800; color: #3880ee; text-transform: uppercase; letter-spacing: .12em; margin-bottom: 6px;">Business Impact</div>' +
+                        '<div style="font-size: 16px; line-height: 1.35; font-weight: 800; color: #0f172a;">A cleaner operating model with lower monthly spend and stronger execution visibility.</div>' +
+                    '</div>' +
                     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px;">' +
-                        '<div style="border:1px solid #d1d5db;border-radius:12px;background:#f8fafc;padding:18px;">' +
-                            '<div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid #e2e8f0;padding-bottom:8px;margin-bottom:12px;">Current State</div>' +
-                            '<div style="font-size:13px;line-height:1.6;color:#0f172a;font-weight:500;">' + toHtmlLines(cur) + '</div>' +
+                        '<div style="border:1px solid #d1d5db;background:#ffffff;padding:18px;min-height:148px;">' +
+                            '<div style="font-size:11px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid #e2e8f0;padding-bottom:8px;margin-bottom:12px;">Current State</div>' +
+                            '<div style="font-size:12.5px;line-height:1.55;color:#0f172a;font-weight:500;">' + toHtmlLines(cur, defaultCurrent) + '</div>' +
                         '</div>' +
-                        '<div style="border:1px solid #d1d5db;border-left:4px solid #3880ee;border-radius:12px;background:#f8fafc;padding:18px;">' +
-                            '<div style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid #e2e8f0;padding-bottom:8px;margin-bottom:12px;">Proposed Solution</div>' +
-                            '<div style="font-size:13px;line-height:1.6;color:#0f172a;font-weight:500;">' + toHtmlLines(prop) + '</div>' +
+                        '<div style="border:1px solid #93c5fd;border-left:5px solid #3880ee;background:#f8fbff;padding:18px;min-height:148px;">' +
+                            '<div style="font-size:11px;font-weight:800;color:#3880ee;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid #dbeafe;padding-bottom:8px;margin-bottom:12px;">Proposed Solution</div>' +
+                            '<div style="font-size:12.5px;line-height:1.55;color:#0f172a;font-weight:500;">' + toHtmlLines(prop, defaultProposed) + '</div>' +
                         '</div>' +
                     '</div>' +
-                    '<div style="display:grid;grid-template-columns:1fr auto 1fr auto;align-items:center;gap:20px;background:#0b3a75;color:#fff;border-radius:12px;padding:18px 20px;border:1px solid #2563eb;">' +
+                    '<div style="display:grid;grid-template-columns:1fr auto 1fr auto;align-items:center;gap:20px;background:#0b3a75;color:#fff;padding:18px 20px;border:1px solid #2563eb;margin-bottom:16px;">' +
                         '<div style="text-align:center;"><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;">Current Spend</div><div style="font-size:20px;font-weight:700;">' + escapeHtml(curDollar) + '</div></div>' +
                         '<div style="font-size:20px;opacity:.55;">→</div>' +
                         '<div style="text-align:center;"><div style="font-size:10px;color:#bfdbfe;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;">Proposed Constellation Spend</div><div style="font-size:20px;font-weight:700;">' + escapeHtml(propDollar) + '</div></div>' +
-                        '<div style="text-align:center;background:#fff;color:' + impactAccent + ';padding:10px 16px;border-radius:10px;border:2px solid ' + impactAccent + ';min-width: 180px;">' +
+                        '<div style="text-align:center;background:#fff;color:' + impactAccent + ';padding:10px 16px;border:2px solid ' + impactAccent + ';min-width: 180px;">' +
                             '<div style="font-size:10px;font-weight:800;letter-spacing:.08em;margin-bottom:3px;text-transform:uppercase;">' + escapeHtml(impactLabel) + '</div>' +
                             '<div style="font-size:20px;font-weight:800;line-height:1.1;white-space:nowrap;">' + escapeHtml(impactAmount) + '</div>' +
                         '</div>' +
                     '</div>' +
+                    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">' +
+                        '<div style="border:1px solid #dbeafe;background:#f8fbff;padding:13px 14px;"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#3880ee;font-weight:800;margin-bottom:5px;">Visibility</div><div style="font-size:12px;line-height:1.35;color:#334155;font-weight:650;">Leadership sees account work and proposal readiness in one view.</div></div>' +
+                        '<div style="border:1px solid #dbeafe;background:#ffffff;padding:13px 14px;"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#3880ee;font-weight:800;margin-bottom:5px;">Speed</div><div style="font-size:12px;line-height:1.35;color:#334155;font-weight:650;">Signals move faster into campaigns, sequences, and proposals.</div></div>' +
+                        '<div style="border:1px solid #dbeafe;background:#f8fbff;padding:13px 14px;"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#3880ee;font-weight:800;margin-bottom:5px;">Control</div><div style="font-size:12px;line-height:1.35;color:#334155;font-weight:650;">Approved modules keep the Stark proposal motion consistent.</div></div>' +
+                    '</div>' +
                 '</div>';
-            const canvas = await captureInteriorPageGPC('Impact & ROI', impactHtml, { extraPaddingTop: 37 });
+            const canvas = await captureInteriorPageGPC('Impact & ROI', impactHtml, { extraPaddingTop: 28 });
             await addPageFromCanvas(canvas);
         }
         else if (slideFile === 'CUSTOM_REFERENCES') {
@@ -2718,19 +2744,27 @@ Proposal Studio and IRR workflows complete the motion by connecting internal str
                 name: b.querySelector('.ref-name').value, org: b.querySelector('.ref-org').value,
                 addr: b.querySelector('.ref-addr').value, phone: b.querySelector('.ref-phone').value, email: b.querySelector('.ref-email').value
             })).filter(r => r.name || r.org);
-            let refsHtml = '';
-            refs.forEach(ref => {
-                refsHtml += '<div style="margin-bottom: 1.75rem; padding-bottom: 1.25rem; border-bottom: 1px solid #3880ee;"><div style="font-size: 1.5rem; font-weight: bold; color: #0f172a;">' + escapeHtml(ref.name) + '</div><div style="font-size: 1.3rem; font-weight: bold; color: #1e293b;">' + escapeHtml(ref.org) + '</div><div style="font-size: 1.1rem; color: #334155; margin-bottom: 0.75rem;">' + escapeHtml(ref.addr) + '</div><div style="font-size: 1.1rem; color: #334155;">' + escapeHtml(ref.phone) + ' &nbsp;|&nbsp; ' + escapeHtml(ref.email) + '</div></div>';
+            let refsHtml = '<div style="margin-bottom: 18px; padding: 16px 18px; background: #f8fbff; border: 1px solid #dbeafe; border-left: 5px solid #3880ee;"><div style="font-size: 11px; font-weight: 800; color: #3880ee; text-transform: uppercase; letter-spacing: .12em; margin-bottom: 6px;">Reference Bench</div><div style="font-size: 16px; line-height: 1.35; font-weight: 800; color: #0f172a;">Demo references aligned to strategic account execution and revenue operations workflow.</div></div>';
+            refs.forEach(function(ref, idx) {
+                refsHtml += '<div style="display:flex; gap: 18px; margin-bottom: 16px; padding: 20px; background: #ffffff; border: 1px solid #dbe3ef; box-shadow: 0 1px 0 rgba(15,23,42,.04);">' +
+                    '<div style="width: 46px; height: 46px; background: ' + (idx % 2 ? '#15803d' : '#0b3a75') + '; color: #ffffff; display:flex; align-items:center; justify-content:center; font-size: 16px; font-weight: 800;">' + escapeHtml(String(idx + 1).padStart(2, '0')) + '</div>' +
+                    '<div style="flex:1;">' +
+                        '<div style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 3px;">' + escapeHtml(ref.name) + '</div>' +
+                        '<div style="font-size: 14px; font-weight: 800; color: #1e293b; margin-bottom: 3px;">' + escapeHtml(ref.org) + '</div>' +
+                        '<div style="font-size: 11.5px; color: #475569; line-height: 1.4; margin-bottom: 10px;">' + escapeHtml(ref.addr) + '</div>' +
+                        '<div style="display:inline-block; padding: 6px 9px; background:#f1f5f9; border:1px solid #e2e8f0; font-size: 10.5px; color:#334155; font-weight: 700;">' + escapeHtml(ref.phone) + ' &nbsp;|&nbsp; ' + escapeHtml(ref.email) + '</div>' +
+                    '</div>' +
+                '</div>';
             });
-            const refsWrapped = '<div style="max-width: ' + REFERENCES_CONTENT_MAX_WIDTH_PX + 'px; margin: 0 auto;">' + (refsHtml || '<p style="color:#64748b;">No references added.</p>') + '</div>';
-            const canvas = await captureInteriorPageGPC('References', refsWrapped, { extraPaddingTop: 52 });
+            const refsWrapped = '<div style="max-width: 620px; margin: 0 auto;">' + (refs.length ? refsHtml : '<p style="color:#64748b;">No references added.</p>') + '</div>';
+            const canvas = await captureInteriorPageGPC('References', refsWrapped, { extraPaddingTop: 34 });
             await addPageFromCanvas(canvas);
         }
         else if (slideFile === 'CUSTOM_PRICING') {
             const optionBlocks = Array.from(document.querySelectorAll('.pricing-option-block'));
-            const borderClr = '#d1d5db';
+            const borderClr = '#dbe3ef';
             const useAmyDecimalsPdf = pricingUsesDecimalPoints();
-            const locHeaderOrange = '<div style="display: flex; background-color: #3880ee; color: white; font-weight: bold; text-transform: uppercase; border: 1px solid ' + borderClr + '; border-bottom: none;"><div style="width: 380px; padding: 12px 16px; border-right: 1px solid ' + borderClr + ';">PRODUCT</div><div style="width: 140px; padding: 12px 5px; text-align: center; border-right: 1px solid ' + borderClr + ';">LIST PRICE</div><div style="width: 90px; padding: 12px 5px; text-align: center; border-right: 1px solid ' + borderClr + ';">QTY</div><div style="width: 140px; padding: 12px 16px; text-align: center;">TOTAL</div></div>';
+            const locHeaderOrange = '<div style="display: flex; background-color: #0b3a75; color: white; font-weight: bold; text-transform: uppercase; border: 1px solid ' + borderClr + '; border-bottom: none; letter-spacing:.04em; font-size: 11px;"><div style="width: 380px; padding: 12px 16px; border-right: 1px solid rgba(255,255,255,.25);">PRODUCT</div><div style="width: 140px; padding: 12px 5px; text-align: center; border-right: 1px solid rgba(255,255,255,.25);">LIST PRICE</div><div style="width: 90px; padding: 12px 5px; text-align: center; border-right: 1px solid rgba(255,255,255,.25);">QTY</div><div style="width: 140px; padding: 12px 16px; text-align: center;">TOTAL</div></div>';
             
             const rowToHtml = (item, bg) => {
                 var priceVal = formatLineListPriceDisplay(item.price);
@@ -2749,7 +2783,7 @@ Proposal Studio and IRR workflows complete the motion by connecting internal str
                     nrcHtml = '<div style="font-size: 11px; color: #475569; margin-top: 6px;">' + nrcLabel + (nrcAmountText ? (' <strong style="font-size: 11px; color: #334155; margin-left: 8px;">' + escapeHtml(nrcAmountText) + '</strong>') : '') + '</div>';
                 }
 
-                return '<div style="display: flex; background-color: ' + bg + '; border: 1px solid ' + borderClr + '; border-top: none;"><div style="width: 380px; padding: 12px 16px; border-right: 1px solid ' + borderClr + ';">' + formatProdTextForPdf(item.prod) + nrcHtml + '</div><div style="width: 140px; padding: 12px 5px; border-right: 1px solid ' + borderClr + '; text-align: center;">' + escapeHtml(priceVal) + '</div><div style="width: 90px; padding: 12px 5px; border-right: 1px solid ' + borderClr + '; text-align: center;">' + escapeHtml(item.qty) + '</div><div style="width: 140px; padding: 12px 16px; text-align: center;">' + escapeHtml(totalVal) + '</div></div>';
+                return '<div style="display: flex; background-color: ' + bg + '; border: 1px solid ' + borderClr + '; border-top: none; color:#1e293b;"><div style="width: 380px; padding: 12px 16px; border-right: 1px solid ' + borderClr + '; font-weight:650;">' + formatProdTextForPdf(item.prod) + nrcHtml + '</div><div style="width: 140px; padding: 12px 5px; border-right: 1px solid ' + borderClr + '; text-align: center;">' + escapeHtml(priceVal) + '</div><div style="width: 90px; padding: 12px 5px; border-right: 1px solid ' + borderClr + '; text-align: center;">' + escapeHtml(item.qty) + '</div><div style="width: 140px; padding: 12px 16px; text-align: center; font-weight:700;">' + escapeHtml(totalVal) + '</div></div>';
             };
 
             var enableLocSubtotalsPdf = !!(document.getElementById('pricing-enable-location-subtotals') && document.getElementById('pricing-enable-location-subtotals').checked);
@@ -2781,7 +2815,7 @@ Proposal Studio and IRR workflows complete the motion by connecting internal str
                     });
                     const promotions = readLocationPromotions(block);
                     allRows.push({ type: 'loc', name: locName });
-                    rows.forEach((item, idx) => { allRows.push({ type: 'row', item, bg: (idx % 2 === 0) ? '#E8E8E8' : '#f5f5f5' }); });
+                    rows.forEach((item, idx) => { allRows.push({ type: 'row', item, bg: (idx % 2 === 0) ? '#f8fafc' : '#ffffff' }); });
                     promotions.forEach((promo) => { allRows.push({ type: 'promo', promo }); });
                     if (enableLocSubtotalsPdf && rows.length) {
                         var monthlySum = rows.reduce(function(acc, it) {
@@ -2806,7 +2840,10 @@ Proposal Studio and IRR workflows complete the motion by connecting internal str
                     });
                 });
                 var grandTotalFormatted = formatPricingMoney(optTotalPdf, useAmyDecimalsPdf);
-                const totalBlockHtml = '<div style="margin-top: 20px;">' + '<div style="display: flex; background-color: #0b3a75; color: white; font-weight: bold; font-size: 1.1rem; border: 1px solid ' + borderClr + '; border-radius: 0; box-sizing: border-box;"><div style="width: 610px; padding: 16px;">TOTAL MONTHLY COST</div><div style="width: 140px; padding: 16px; text-align: center;">' + escapeHtml(grandTotalFormatted) + '</div></div>' + '</div>';
+                const totalBlockHtml = '<div style="margin-top: 20px;">' +
+                    '<div style="padding: 12px 16px; background:#f8fbff; border:1px solid #dbeafe; border-bottom:none; color:#0f172a; font-size:12px; font-weight:750;">Commercial summary for the selected Constellation pilot scope</div>' +
+                    '<div style="display: flex; background-color: #0b3a75; color: white; font-weight: bold; font-size: 1.1rem; border: 1px solid #0b3a75; box-sizing: border-box;"><div style="width: 610px; padding: 16px;">TOTAL MONTHLY COST</div><div style="width: 140px; padding: 16px; text-align: center;">' + escapeHtml(grandTotalFormatted) + '</div></div>' +
+                    '</div>';
                 const termLineHtml = buildPricingTermLineHtml(contractTerm);
 
                 let baseHeader = optionBlocks.length > 1 ? `Proposed Pricing Option ${optIdx + 1}` : 'Proposed Pricing';
@@ -2868,7 +2905,7 @@ Proposal Studio and IRR workflows complete the motion by connecting internal str
                     for (let r = 0; r < allRows.length; r++) {
                         let rowObj;
                         if (allRows[r].type === 'loc') {
-                            rowObj = { type: 'loc', html: '<div style="display: flex; background-color: #A6A6A6; color: white; font-weight: bold; padding: 8px 16px; border: 1px solid ' + borderClr + '; border-top: none;">' + escapeHtml(allRows[r].name) + '</div>' };
+                            rowObj = { type: 'loc', html: '<div style="display: flex; background-color: #64748b; color: white; font-weight: bold; padding: 8px 16px; border: 1px solid ' + borderClr + '; border-top: none;">' + escapeHtml(allRows[r].name) + '</div>' };
                         } else if (allRows[r].type === 'promo') {
                             var promoAmountVal2 = parseFloat(allRows[r].promo.amount);
                             var promoAmountText2 = (!isNaN(promoAmountVal2) && promoAmountVal2 !== 0)

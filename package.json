@@ -5,10 +5,12 @@
   "private": true,
   "scripts": {
     "build:css": "npx @tailwindcss/cli -i css/input.css -o css/output.css",
+    "generate:proposal-assets": "node scripts/generate-constellation-proposal-assets.mjs",
     "build": "npm run build:css"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.2.1",
+    "pdf-lib": "^1.17.1",
     "tailwindcss": "^4.2.1"
   },
   "dependencies": {
