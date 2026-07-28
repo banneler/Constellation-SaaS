@@ -1082,6 +1082,8 @@ const GLOBAL_NAV_TEMPLATE = `
 
 const NAV_COLLAPSED_KEY = 'crm-nav-collapsed';
 const MOBILE_PREVIEW_PARAM = 'mobilePreview';
+const MOBILE_PREVIEW_VERSION_PARAM = 'mobilePreviewVersion';
+const MOBILE_PREVIEW_VERSION = 'deals-mobile-filters-4';
 
 function isMobilePreviewFrame() {
     try {
@@ -1095,6 +1097,7 @@ function isMobilePreviewFrame() {
 function getMobilePreviewUrl() {
     const url = new URL(window.location.href);
     url.searchParams.set(MOBILE_PREVIEW_PARAM, '1');
+    url.searchParams.set(MOBILE_PREVIEW_VERSION_PARAM, MOBILE_PREVIEW_VERSION);
     return url.toString();
 }
 

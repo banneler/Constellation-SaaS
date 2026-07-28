@@ -7,8 +7,72 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Constellation CRM - Deals</title>
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.5.2/dist/css/tom-select.css" rel="stylesheet">
-    <link rel="stylesheet" href="output.css?v=deals-mobile-filters-3">
+    <link rel="stylesheet" href="output.css?v=deals-mobile-filters-4">
     <link rel="stylesheet" href="css/global-loader.css">
+    <style id="deals-mobile-filter-fix">
+        @media (max-width: 700px) {
+            body.deals-page .deals-pipeline-card .section-card-header {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: stretch !important;
+                justify-content: flex-start !important;
+                gap: 1rem !important;
+            }
+            body.deals-page .deals-pipeline-card .section-card-header > div:first-child {
+                width: 100% !important;
+            }
+            body.deals-page .deals-pipeline-card .deals-filters {
+                display: flex !important;
+                flex-direction: column !important;
+                flex-wrap: nowrap !important;
+                align-items: stretch !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                flex: 0 0 auto !important;
+                gap: 0.75rem !important;
+                box-sizing: border-box !important;
+            }
+            body.deals-page .deals-filters .deals-filter-group {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                gap: 0.35rem !important;
+                box-sizing: border-box !important;
+            }
+            body.deals-page .deals-filters .deals-filter-group > span {
+                white-space: nowrap !important;
+            }
+            body.deals-page .deals-filters .deals-filter-pills {
+                display: flex !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                justify-content: flex-start !important;
+            }
+            body.deals-page .deals-filters #filter-stage-pills,
+            body.deals-page .deals-filters #filter-committed-pills {
+                flex-wrap: wrap !important;
+            }
+            body.deals-page .deals-filters .deals-close-month-filter {
+                display: flex !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                box-sizing: border-box !important;
+            }
+            body.deals-page .deals-filters .deals-close-month-scroll {
+                flex: 1 1 auto !important;
+                width: auto !important;
+                min-width: 0 !important;
+            }
+            body.deals-page .deals-filters .deals-filter-reset {
+                align-self: flex-end !important;
+            }
+        }
+    </style>
     <script src="js/demo-auth-guard.js?v=demo-foundation-2"></script>
     <script src="js/demo-state.js?v=demo-fixtures-2"></script>
     <script src="js/demo-supabase.js?v=demo-adapter-2"></script>
