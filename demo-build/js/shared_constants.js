@@ -1083,7 +1083,7 @@ const GLOBAL_NAV_TEMPLATE = `
 const NAV_COLLAPSED_KEY = 'crm-nav-collapsed';
 const MOBILE_PREVIEW_PARAM = 'mobilePreview';
 const MOBILE_PREVIEW_VERSION_PARAM = 'mobilePreviewVersion';
-const MOBILE_PREVIEW_VERSION = 'deals-mobile-filters-6';
+const MOBILE_PREVIEW_VERSION = 'iphone-frame-1';
 
 function isMobilePreviewFrame() {
     try {
@@ -1115,9 +1115,10 @@ function ensureMobilePreviewOverlay() {
             <button type="button" class="mobile-preview-close" data-mobile-preview-close aria-label="Close mobile view">
                 <i class="fa-solid fa-times"></i>
             </button>
-            <div class="mobile-preview-speaker" aria-hidden="true"></div>
-            <iframe id="mobile-preview-frame" class="mobile-preview-frame" title="Mobile preview of this demo page"></iframe>
-            <div class="mobile-preview-home-indicator" aria-hidden="true"></div>
+            <div class="mobile-preview-screen">
+                <iframe id="mobile-preview-frame" class="mobile-preview-frame" title="Mobile preview of this demo page"></iframe>
+            </div>
+            <img class="mobile-preview-bezel" src="assets/iphone-frame.png" alt="" width="2314" height="4502" aria-hidden="true" draggable="false">
         </section>
     `;
     document.body.appendChild(overlay);
