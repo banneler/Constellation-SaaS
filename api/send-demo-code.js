@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer');
 
 const DEMO_CODE = 'C0nste11ation';
-const FROM_EMAIL = process.env.GMAIL_USER || 'projectgalaxyai@gmail.com';
+const FROM_EMAIL = process.env.GMAIL_USER || 'demo@constellation-crm.com';
 const LOGO_URL = 'https://www.constellation-crm.com/assets/constellation-logo-full.svg';
 
 function isValidEmail(email) {
