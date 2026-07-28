@@ -3,6 +3,7 @@ const nodemailer = require('nodemailer');
 const DEMO_CODE = 'C0nste11ation';
 const FROM_EMAIL = process.env.GMAIL_USER || 'demo@constellation-crm.com';
 const LOGO_URL = 'https://www.constellation-crm.com/assets/constellation-logo-full.svg';
+const GMAIL_APP_PASSWORD = (process.env.GMAIL_APP_PASSWORD || '').replace(/\s+/g, '');
 
 function isValidEmail(email) {
   return typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -19,7 +20,7 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'Valid email is required' });
   }
 
-  if (!process.env.GMAIL_APP_PASSWORD) {
+  if (!GMAIL_APP_PASSWORD) {
     return res.status(500).json({ error: 'Email sender is not configured' });
   }
 
@@ -27,7 +28,7 @@ module.exports = async function handler(req, res) {
     service: 'gmail',
     auth: {
       user: FROM_EMAIL,
-      pass: process.env.GMAIL_APP_PASSWORD
+      pass: GMAIL_APP_PASSWORD
     }
   });
 
