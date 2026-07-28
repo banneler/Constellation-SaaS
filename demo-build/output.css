@@ -14245,7 +14245,7 @@ body.theme-green ::-webkit-scrollbar-track {
 }
 .mobile-preview-phone {
   position: relative;
-  width: min(390px, calc(100vw - 4.5rem));
+  width: min(454px, calc(100vw - 2rem));
   height: min(78vh, 812px);
   min-height: 620px;
   padding: 2.05rem 0.75rem 1.35rem;
