@@ -1108,21 +1108,13 @@ function ensureMobilePreviewOverlay() {
     overlay.setAttribute('aria-hidden', 'true');
     overlay.innerHTML = `
         <div class="mobile-preview-scrim" data-mobile-preview-close></div>
-        <section class="mobile-preview-shell" role="dialog" aria-modal="true" aria-labelledby="mobile-preview-title">
-            <div class="mobile-preview-header">
-                <div>
-                    <p class="mobile-preview-kicker">Responsive Preview</p>
-                    <h2 id="mobile-preview-title">Mobile View</h2>
-                </div>
-                <button type="button" class="mobile-preview-close" data-mobile-preview-close aria-label="Close mobile view">
-                    <i class="fa-solid fa-times"></i>
-                </button>
-            </div>
-            <div class="mobile-preview-phone" aria-label="Phone preview frame">
-                <div class="mobile-preview-speaker" aria-hidden="true"></div>
-                <iframe id="mobile-preview-frame" class="mobile-preview-frame" title="Mobile preview of this demo page"></iframe>
-                <div class="mobile-preview-home-indicator" aria-hidden="true"></div>
-            </div>
+        <section class="mobile-preview-phone" role="dialog" aria-modal="true" aria-label="Mobile preview phone frame">
+            <button type="button" class="mobile-preview-close" data-mobile-preview-close aria-label="Close mobile view">
+                <i class="fa-solid fa-times"></i>
+            </button>
+            <div class="mobile-preview-speaker" aria-hidden="true"></div>
+            <iframe id="mobile-preview-frame" class="mobile-preview-frame" title="Mobile preview of this demo page"></iframe>
+            <div class="mobile-preview-home-indicator" aria-hidden="true"></div>
         </section>
     `;
     document.body.appendChild(overlay);
