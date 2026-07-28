@@ -1,6 +1,27 @@
 (() => {
   const originalFetch = window.fetch.bind(window);
 
+  function demoProspectEmail(body = {}) {
+    const contactName = String(body.contactName || 'there').trim();
+    const firstName = contactName.split(/\s+/)[0] || 'there';
+    const accountName = String(body.accountName || 'your team').trim() || 'your team';
+
+    return {
+      subject: 'AI-guided outreach that improves with every response',
+      body: `Hi ${firstName},
+
+I wanted to share a quick view of how Constellation's AI sales assistant helps revenue teams create more relevant outreach without losing control of the message.
+
+Administrators define the core guidance for the assistant, including approved positioning, tone, products, and compliance boundaries. When a rep generates an email, the assistant combines that guidance with the account record, contact role, opportunity context, recent activity, and any selected product focus so the draft is grounded in what is actually happening with ${accountName}.
+
+The system also learns from the field. Reps can rate each response and leave feedback on what worked, what missed the mark, or what should be handled differently next time. Those signals feed a weekly refinement cycle that sharpens each user's prompt guidance while keeping the broader admin standards intact.
+
+The result is a sales agent that produces faster, more consistent first drafts today and becomes more accurate for each seller over time.
+
+Worth a brief walkthrough of how this could support your account planning and outbound motion?`
+    };
+  }
+
   const responses = {
     'get-daily-briefing': {
       priorities: [
@@ -27,9 +48,7 @@
         { type: 'Call', subject: 'Discovery follow-up', message: 'Ask about renewal timing, site count, and executive priorities.', content: 'Ask about renewal timing, site count, and executive priorities.', delay_days: 4 }
       ]
     },
-    'generate-prospect-email': {
-      email: 'Hi Sarah, I saw Stark is expanding cold-chain capacity. Teams usually revisit WAN resilience when new facilities add operational risk. Worth comparing notes on how you are thinking about uptime and provider consolidation?'
-    },
+    'generate-prospect-email': demoProspectEmail,
     'generate-custom-suggestion': {
       subject: 'Follow-up: network readiness and expansion timing',
       body: 'Hi Sarah, based on the expansion timing, it may be worth pressure-testing WAN resiliency before the new facilities come online. Constellation can help benchmark uptime, provider complexity, and phased deployment risk in one working session.'
@@ -73,6 +92,7 @@
   };
 
   window.__constellationDemoApiResponse = (name, body = {}) => {
+    if (typeof responses[name] === 'function') return responses[name](body);
     if (responses[name]) return responses[name];
     return {
       suggestion: 'Demo AI response generated from canned local data.',
