@@ -69,8 +69,8 @@ module.exports = async function handler(req, res) {
   const interest = clean(req.body?.interest || 'general', 40);
   const source = clean(req.body?.source || 'website', 80);
 
-  if (!name || !isValidEmail(email) || !message) {
-    return res.status(400).json({ error: 'Name, valid email, and message are required' });
+  if (!name || !isValidEmail(email) || !company || !message) {
+    return res.status(400).json({ error: 'Name, valid email, company, and message are required' });
   }
 
   if (!TEAM_SIZES.has(teamSize)) {
@@ -106,13 +106,13 @@ module.exports = async function handler(req, res) {
       from: `"Constellation Website" <${FROM_EMAIL}>`,
       to: TO_EMAIL,
       replyTo: email,
-      subject: `${interestLabel}: ${name}${company ? ` (${company})` : ''} · ${teamSize} · ${industry}`,
+      subject: `${interestLabel}: ${name} (${company}) · ${teamSize} · ${industry}`,
       text: [
         `Interest: ${interestLabel}`,
         `Source: ${source}`,
         `Name: ${name}`,
         `Email: ${email}`,
-        `Company: ${company || '—'}`,
+        `Company: ${company}`,
         `Role: ${role || '—'}`,
         `Sales team size: ${teamSize}`,
         `Industry: ${industry}`,
@@ -145,7 +145,7 @@ module.exports = async function handler(req, res) {
           <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;border-top:1px solid #eef2f7;">
             ${fieldRow('Name', escapeHtml(name))}
             ${fieldRow('Email', emailLink)}
-            ${fieldRow('Company', escapeHtml(company || '—'))}
+            ${fieldRow('Company', escapeHtml(company))}
             ${fieldRow('Role', escapeHtml(role || '—'))}
             ${fieldRow('Team size', escapeHtml(teamSize))}
             ${fieldRow('Industry', escapeHtml(industry))}
