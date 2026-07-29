@@ -1,7 +1,7 @@
 // js/shared_constants.js
 
 // --- SHARED CONSTANTS AND FUNCTIONS ---
-import { initHUD, refreshHUDNodes, removeDealInsightsWireframe, addDealInsightsWireframe, reloadHUDWireframes } from './hud.js';
+import { initHUD, refreshHUDNodes, removeDealInsightsWireframe, addDealInsightsWireframe, reloadHUDWireframes } from './hud.js?v=iphone-frame-5';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './env.config.js';
 
 export { refreshHUDNodes, removeDealInsightsWireframe, addDealInsightsWireframe, reloadHUDWireframes };
@@ -1083,7 +1083,7 @@ const GLOBAL_NAV_TEMPLATE = `
 const NAV_COLLAPSED_KEY = 'crm-nav-collapsed';
 const MOBILE_PREVIEW_PARAM = 'mobilePreview';
 const MOBILE_PREVIEW_VERSION_PARAM = 'mobilePreviewVersion';
-const MOBILE_PREVIEW_VERSION = 'iphone-frame-4';
+const MOBILE_PREVIEW_VERSION = 'iphone-frame-5';
 const MOBILE_PREVIEW_LOGICAL_WIDTH = 390;
 
 function isMobilePreviewFrame() {

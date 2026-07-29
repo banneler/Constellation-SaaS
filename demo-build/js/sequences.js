@@ -1,4 +1,4 @@
-import { SUPABASE_URL, SUPABASE_ANON_KEY, formatDate, parseCsvRow, themes, setupModalListeners, showModal, hideModal, showToast, updateActiveNavLink, setupUserMenuAndAuth, initializeAppState, getState, addDays, loadSVGs, showGlobalLoader, hideGlobalLoader, setupGlobalSearch, checkAndSetNotifications, injectGlobalNavigation } from './shared_constants.js?v=iphone-frame-4';
+import { SUPABASE_URL, SUPABASE_ANON_KEY, formatDate, parseCsvRow, themes, setupModalListeners, showModal, hideModal, showToast, updateActiveNavLink, setupUserMenuAndAuth, initializeAppState, getState, addDays, loadSVGs, showGlobalLoader, hideGlobalLoader, setupGlobalSearch, checkAndSetNotifications, injectGlobalNavigation } from './shared_constants.js?v=iphone-frame-5';
 import { AI_FUNCTION_IDS, callAiApi, mountAIFeedback } from './ai-memory.js';
 
 document.addEventListener("DOMContentLoaded", async () => {

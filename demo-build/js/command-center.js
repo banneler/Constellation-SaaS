@@ -23,7 +23,7 @@ import {
     hideGlobalLoader,
     refreshHUDNodes,
     filterOutOwnershipOrphanedCrmRows
-} from './shared_constants.js?v=iphone-frame-4';
+} from './shared_constants.js?v=iphone-frame-5';
 import { AI_FUNCTION_IDS, callAiApi, mountAIFeedback } from './ai-memory.js';
 
 document.addEventListener("DOMContentLoaded", async () => {

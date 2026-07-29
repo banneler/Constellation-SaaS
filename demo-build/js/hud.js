@@ -573,7 +573,7 @@ function buildExitDemoButton() {
     link.href = getMainSiteHref();
     link.setAttribute("title", "Exit demo");
     link.setAttribute("aria-label", "Exit demo and return to the main Constellation site");
-    link.innerHTML = "<i class=\"fa-solid fa-arrow-right-from-bracket\"></i><span>Exit Demo</span>";
+    link.innerHTML = "<i class=\"fa-solid fa-arrow-right-from-bracket\"></i>";
     return link;
 }
 

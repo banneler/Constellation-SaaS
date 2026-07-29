@@ -12,7 +12,7 @@ import {
     setupUserMenuAndAuth,
     SUPABASE_URL,
     SUPABASE_ANON_KEY
-} from './shared_constants.js?v=iphone-frame-4';
+} from './shared_constants.js?v=iphone-frame-5';
 
 document.addEventListener('DOMContentLoaded', async () => {
     injectGlobalNavigation();
