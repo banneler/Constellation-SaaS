@@ -8,7 +8,7 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <link rel="stylesheet" href="css/style.css?v=contact-modal-1">
+    <link rel="stylesheet" href="css/style.css?v=contact-modal-2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="theme-dark min-h-screen flex flex-col bg-slate-950 text-slate-100">
@@ -380,13 +380,55 @@
                         <input type="email" id="contact-email" name="email" required autocomplete="email" placeholder="you@company.com">
                     </label>
                 </div>
+                <div class="contact-form-grid">
+                    <label>
+                        <span>Company</span>
+                        <input type="text" id="contact-company" name="company" autocomplete="organization" placeholder="Company name">
+                    </label>
+                    <label>
+                        <span>Role</span>
+                        <input type="text" id="contact-role" name="role" autocomplete="organization-title" placeholder="e.g. VP Sales">
+                    </label>
+                </div>
+                <div class="contact-form-grid">
+                    <label>
+                        <span>Sales team size</span>
+                        <select id="contact-team-size" name="teamSize" required>
+                            <option value="" disabled selected>Select size</option>
+                            <option value="1-10">1–10</option>
+                            <option value="10-20">10–20</option>
+                            <option value="20+">20+</option>
+                        </select>
+                    </label>
+                    <label>
+                        <span>Industry</span>
+                        <select id="contact-industry" name="industry" required>
+                            <option value="" disabled selected>Select industry</option>
+                            <option value="Technology / SaaS">Technology / SaaS</option>
+                            <option value="Financial Services">Financial Services</option>
+                            <option value="Healthcare">Healthcare</option>
+                            <option value="Manufacturing">Manufacturing</option>
+                            <option value="Professional Services">Professional Services</option>
+                            <option value="Media & Entertainment">Media & Entertainment</option>
+                            <option value="Retail & Consumer">Retail & Consumer</option>
+                            <option value="Telecom & Communications">Telecom & Communications</option>
+                            <option value="Energy & Utilities">Energy & Utilities</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </label>
+                </div>
                 <label>
-                    <span>Company</span>
-                    <input type="text" id="contact-company" name="company" autocomplete="organization" placeholder="Company name">
+                    <span>Timeline</span>
+                    <select id="contact-timeline" name="timeline">
+                        <option value="" selected>Not sure yet</option>
+                        <option value="Exploring">Just exploring</option>
+                        <option value="This quarter">Looking this quarter</option>
+                        <option value="ASAP">Ready to move ASAP</option>
+                    </select>
                 </label>
                 <label>
                     <span>Message</span>
-                    <textarea id="contact-message" name="message" required rows="4" placeholder="What are you looking to solve?"></textarea>
+                    <textarea id="contact-message" name="message" required rows="3" placeholder="What are you looking to solve?"></textarea>
                 </label>
                 <button type="submit" id="contact-submit" class="btn-primary w-full">Send message</button>
                 <p id="contact-form-status" class="contact-form-status" aria-live="polite"></p>
@@ -566,6 +608,10 @@
                     name: document.getElementById('contact-name').value.trim(),
                     email: document.getElementById('contact-email').value.trim(),
                     company: document.getElementById('contact-company').value.trim(),
+                    role: document.getElementById('contact-role').value.trim(),
+                    teamSize: document.getElementById('contact-team-size').value,
+                    industry: document.getElementById('contact-industry').value,
+                    timeline: document.getElementById('contact-timeline').value,
                     message: document.getElementById('contact-message').value.trim(),
                     interest: interestInput.value,
                     source: sourceInput.value
