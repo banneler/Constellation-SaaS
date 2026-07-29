@@ -36,12 +36,17 @@ function escapeHtml(value) {
     .replace(/"/g, '&quot;');
 }
 
-function fieldRow(label, value) {
+function fieldRow(label, value, isLast = false) {
+  const border = isLast ? 'none' : '1px solid #eef2f7';
   return `
     <tr>
-      <td style="padding:10px 0;border-bottom:1px solid #e2e8f0;" class="field-row">
-        <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#64748b;font-weight:700;margin:0 0 4px;" class="field-label">${escapeHtml(label)}</div>
-        <div style="font-size:15px;line-height:1.45;color:#0f172a;font-weight:600;" class="field-value">${value}</div>
+      <td style="padding:11px 0;border-bottom:${border};">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
+          <tr>
+            <td width="38%" style="font-size:13px;line-height:1.4;color:#64748b;vertical-align:top;padding-right:12px;">${escapeHtml(label)}</td>
+            <td style="font-size:14px;line-height:1.45;color:#0f172a;font-weight:600;vertical-align:top;">${value}</td>
+          </tr>
+        </table>
       </td>
     </tr>
   `;
@@ -94,7 +99,7 @@ module.exports = async function handler(req, res) {
     }
   });
 
-  const emailLink = `<a href="mailto:${escapeHtml(email)}" style="color:#2563eb;text-decoration:none;">${escapeHtml(email)}</a>`;
+  const emailLink = `<a href="mailto:${escapeHtml(email)}" style="color:#2563eb;text-decoration:none;font-weight:600;">${escapeHtml(email)}</a>`;
 
   try {
     await transporter.sendMail({
@@ -120,69 +125,35 @@ module.exports = async function handler(req, res) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light dark">
-  <meta name="supported-color-schemes" content="light dark">
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
   <title>${escapeHtml(interestLabel)} inquiry</title>
   <style>
-    :root { color-scheme: light dark; }
-    @media (prefers-color-scheme: dark) {
-      .email-bg { background-color: #020617 !important; }
-      .email-card { background-color: #0f172a !important; border-color: #1e293b !important; }
-      .email-body { background-color: #0f172a !important; }
-      .field-row { border-bottom-color: #1e293b !important; }
-      .field-label { color: #94a3b8 !important; }
-      .field-value { color: #f8fafc !important; }
-      .message-box { background-color: #020617 !important; border-color: #334155 !important; color: #e2e8f0 !important; }
-      .header-kicker { color: #bfdbfe !important; }
-      .header-title { color: #ffffff !important; }
-      .logo-pill { background-color: #ffffff !important; }
-    }
-    [data-ogsc] .header-title,
-    [data-ogsb] .header-title { color: #ffffff !important; }
-    [data-ogsc] .header-kicker,
-    [data-ogsb] .header-kicker { color: #bfdbfe !important; }
-    [data-ogsc] .field-value,
-    [data-ogsb] .field-value { color: #f8fafc !important; }
-    [data-ogsc] .field-label,
-    [data-ogsb] .field-label { color: #94a3b8 !important; }
-    [data-ogsc] .message-box,
-    [data-ogsb] .message-box { background-color: #020617 !important; border-color: #334155 !important; color: #e2e8f0 !important; }
-    [data-ogsc] .logo-pill,
-    [data-ogsb] .logo-pill { background-color: #ffffff !important; }
+    :root { color-scheme: light only; }
+    body, table, td, a { -webkit-text-size-adjust: 100%; }
   </style>
 </head>
-<body style="margin:0;padding:0;background:#f1f5f9;">
-  <div class="email-bg" style="margin:0;padding:28px 16px;background:#f1f5f9;font-family:Inter,Segoe UI,Arial,sans-serif;">
-    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:560px;margin:0 auto;border-collapse:collapse;">
+<body style="margin:0;padding:0;background:#f8fafc;">
+  <div style="margin:0;padding:24px 14px;background:#f8fafc;font-family:Inter,Segoe UI,Helvetica,Arial,sans-serif;">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:520px;margin:0 auto;border-collapse:collapse;">
       <tr>
-        <td class="email-card" bgcolor="#ffffff" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:18px;overflow:hidden;">
-          <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;">
-            <tr>
-              <td bgcolor="#0f172a" style="padding:26px 28px;background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 55%,#2563eb 100%);">
-                <div class="logo-pill" style="display:inline-block;background:#ffffff;border-radius:12px;padding:10px 14px;margin:0 0 18px;">
-                  <img src="${LOGO_URL}" width="168" height="36" alt="Constellation CRM" style="display:block;width:168px;max-width:100%;height:auto;border:0;outline:none;text-decoration:none;">
-                </div>
-                <div class="header-kicker" style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#bfdbfe;font-weight:700;mso-color-alt:#bfdbfe;">Website inquiry</div>
-                <h1 class="header-title" style="margin:8px 0 0;font-size:24px;line-height:1.25;color:#ffffff;font-weight:800;mso-color-alt:#ffffff;">${escapeHtml(interestLabel)}</h1>
-              </td>
-            </tr>
-            <tr>
-              <td class="email-body" bgcolor="#ffffff" style="padding:8px 28px 26px;background:#ffffff;">
-                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;">
-                  ${fieldRow('Name', escapeHtml(name))}
-                  ${fieldRow('Email', emailLink)}
-                  ${fieldRow('Company', escapeHtml(company || '—'))}
-                  ${fieldRow('Role', escapeHtml(role || '—'))}
-                  ${fieldRow('Sales team size', escapeHtml(teamSize))}
-                  ${fieldRow('Industry', escapeHtml(industry))}
-                  ${fieldRow('Timeline', escapeHtml(timelineLabel))}
-                  ${fieldRow('Source', escapeHtml(source))}
-                </table>
-                <div style="margin:22px 0 8px;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#64748b;font-weight:700;" class="field-label">Message</div>
-                <div class="message-box" style="padding:14px 16px;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;color:#0f172a;white-space:pre-wrap;line-height:1.55;font-size:15px;">${escapeHtml(message)}</div>
-              </td>
-            </tr>
+        <td bgcolor="#ffffff" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:14px;padding:28px 26px;">
+          <img src="${LOGO_URL}" width="156" alt="Constellation CRM" style="display:block;width:156px;max-width:55%;height:auto;border:0;outline:none;margin:0 0 18px;">
+          <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#64748b;font-weight:700;margin:0 0 6px;">Website inquiry</div>
+          <h1 style="margin:0 0 6px;font-size:22px;line-height:1.25;color:#0f172a;font-weight:700;">${escapeHtml(interestLabel)}</h1>
+          <p style="margin:0 0 18px;font-size:14px;line-height:1.5;color:#64748b;">New message from the Constellation website.</p>
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;border-top:1px solid #eef2f7;">
+            ${fieldRow('Name', escapeHtml(name))}
+            ${fieldRow('Email', emailLink)}
+            ${fieldRow('Company', escapeHtml(company || '—'))}
+            ${fieldRow('Role', escapeHtml(role || '—'))}
+            ${fieldRow('Team size', escapeHtml(teamSize))}
+            ${fieldRow('Industry', escapeHtml(industry))}
+            ${fieldRow('Timeline', escapeHtml(timelineLabel))}
+            ${fieldRow('Source', escapeHtml(source), true)}
           </table>
+          <div style="margin:18px 0 8px;font-size:13px;color:#64748b;">Message</div>
+          <div style="padding:14px 15px;border:1px solid #e2e8f0;border-radius:10px;background:#f8fafc;color:#0f172a;white-space:pre-wrap;line-height:1.55;font-size:14px;">${escapeHtml(message)}</div>
         </td>
       </tr>
     </table>
