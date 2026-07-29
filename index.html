@@ -8,7 +8,7 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <link rel="stylesheet" href="css/style.css?v=photo-social-shrink-2">
+    <link rel="stylesheet" href="css/style.css?v=contact-modal-1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="theme-dark min-h-screen flex flex-col bg-slate-950 text-slate-100">
@@ -22,9 +22,9 @@
                 <a href="#platform-tour" class="text-sm font-medium text-slate-300 hover:text-blue-400 no-underline transition-colors">CRM</a>
                 <a href="#saos" class="text-sm font-medium text-slate-300 hover:text-blue-400 no-underline transition-colors">SAOS</a>
                 <a href="#integrations" class="text-sm font-medium text-slate-300 hover:text-blue-400 no-underline transition-colors">Integrations</a>
-                <a href="mailto:demo@constellation-crm.com?subject=Requesting%20Access%20to%20Constellation%20CRM%20and%20SAOS" class="btn-primary nav-cta no-underline">Get Started</a>
+                <button type="button" class="btn-primary nav-cta" data-open-contact data-contact-interest="get-started" data-contact-source="nav-get-started">Get Started</button>
             </nav>
-            <a href="mailto:demo@constellation-crm.com?subject=Requesting%20Access%20to%20Constellation%20CRM%20and%20SAOS" class="md:hidden btn-primary nav-cta no-underline">Get Started</a>
+            <button type="button" class="md:hidden btn-primary nav-cta" data-open-contact data-contact-interest="get-started" data-contact-source="nav-get-started-mobile">Get Started</button>
         </div>
     </header>
 
@@ -333,7 +333,7 @@
                     Constellation is for teams that want more than a CRM ledger: strategic account discipline, AI-assisted execution, real product workflows, and manager-visible follow-through.
                 </p>
                 <div class="flex flex-wrap justify-center gap-4">
-                    <a href="mailto:demo@constellation-crm.com?subject=Requesting%20Access%20to%20Constellation%20CRM%20and%20SAOS" class="btn-primary no-underline px-8 py-3.5 text-base inline-block">Get Started</a>
+                    <button type="button" class="btn-primary px-8 py-3.5 text-base" data-open-contact data-contact-interest="get-started" data-contact-source="footer-get-started">Get Started</button>
                     <a href="demo-build/index.html" class="btn-secondary no-underline px-8 py-3.5 text-base inline-block">Test Drive</a>
                 </div>
             </div>
@@ -346,11 +346,53 @@
                 <img src="assets/Constellation-Logo-Full-Sales.svg" alt="Constellation CRM" class="h-8 w-auto" width="180" height="32">
             </a>
             <div class="flex items-center gap-6 text-sm text-slate-500">
+                <button type="button" class="text-slate-400 hover:text-blue-400 transition-colors bg-transparent border-0 p-0 cursor-pointer" data-open-contact data-contact-interest="general" data-contact-source="footer-contact">Contact</button>
                 <a href="#" class="text-slate-400 hover:text-blue-400 no-underline transition-colors">Privacy</a>
                 <a href="#" class="text-slate-400 hover:text-blue-400 no-underline transition-colors">Terms</a>
             </div>
         </div>
     </footer>
+
+    <button type="button" id="contact-orb" class="contact-orb" data-open-contact data-contact-interest="general" data-contact-source="floating-orb" aria-label="Contact us">
+        <i class="fa-solid fa-comment-dots" aria-hidden="true"></i>
+        <span>Contact</span>
+    </button>
+
+    <div id="contact-modal" class="contact-modal hidden" aria-hidden="true">
+        <div class="contact-modal-scrim" data-close-contact></div>
+        <section class="contact-modal-panel" role="dialog" aria-modal="true" aria-labelledby="contact-modal-title">
+            <button type="button" class="contact-modal-close" data-close-contact aria-label="Close contact form">
+                <i class="fa-solid fa-times" aria-hidden="true"></i>
+            </button>
+            <p class="contact-modal-kicker" id="contact-modal-kicker">Contact</p>
+            <h2 id="contact-modal-title">Let’s talk Constellation.</h2>
+            <p class="contact-modal-copy" id="contact-modal-copy">Tell us a little about your team and we’ll follow up quickly.</p>
+            <form id="contact-form" class="contact-form">
+                <input type="hidden" id="contact-interest" name="interest" value="general">
+                <input type="hidden" id="contact-source" name="source" value="website">
+                <div class="contact-form-grid">
+                    <label>
+                        <span>Name</span>
+                        <input type="text" id="contact-name" name="name" required autocomplete="name" placeholder="Your name">
+                    </label>
+                    <label>
+                        <span>Work email</span>
+                        <input type="email" id="contact-email" name="email" required autocomplete="email" placeholder="you@company.com">
+                    </label>
+                </div>
+                <label>
+                    <span>Company</span>
+                    <input type="text" id="contact-company" name="company" autocomplete="organization" placeholder="Company name">
+                </label>
+                <label>
+                    <span>Message</span>
+                    <textarea id="contact-message" name="message" required rows="4" placeholder="What are you looking to solve?"></textarea>
+                </label>
+                <button type="submit" id="contact-submit" class="btn-primary w-full">Send message</button>
+                <p id="contact-form-status" class="contact-form-status" aria-live="polite"></p>
+            </form>
+        </section>
+    </div>
     <script>
         const saosSlides = [
             {
@@ -440,6 +482,117 @@
             render(0);
         });
 
+        (function initContactModal() {
+            const modal = document.getElementById('contact-modal');
+            const form = document.getElementById('contact-form');
+            const submitBtn = document.getElementById('contact-submit');
+            const statusEl = document.getElementById('contact-form-status');
+            const interestInput = document.getElementById('contact-interest');
+            const sourceInput = document.getElementById('contact-source');
+            const kickerEl = document.getElementById('contact-modal-kicker');
+            const titleEl = document.getElementById('contact-modal-title');
+            const copyEl = document.getElementById('contact-modal-copy');
+            if (!modal || !form) return;
+
+            const copyByInterest = {
+                'get-started': {
+                    kicker: 'Get Started',
+                    title: 'Ready to run Constellation?',
+                    copy: 'Share a few details and we’ll reach out about access, rollout, and the right next step for your team.'
+                },
+                general: {
+                    kicker: 'Contact',
+                    title: 'Let’s talk Constellation.',
+                    copy: 'Tell us a little about your team and we’ll follow up quickly.'
+                }
+            };
+
+            let lastFocus = null;
+
+            const setStatus = (message, type) => {
+                statusEl.textContent = message || '';
+                statusEl.classList.toggle('is-success', type === 'success');
+                statusEl.classList.toggle('is-error', type === 'error');
+            };
+
+            const openModal = (interest, source) => {
+                const nextInterest = interest === 'get-started' ? 'get-started' : 'general';
+                const copy = copyByInterest[nextInterest];
+                interestInput.value = nextInterest;
+                sourceInput.value = source || 'website';
+                kickerEl.textContent = copy.kicker;
+                titleEl.textContent = copy.title;
+                copyEl.textContent = copy.copy;
+                setStatus('');
+                lastFocus = document.activeElement;
+                modal.classList.remove('hidden');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('contact-modal-open');
+                window.setTimeout(() => document.getElementById('contact-name')?.focus(), 20);
+            };
+
+            const closeModal = () => {
+                modal.classList.add('hidden');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('contact-modal-open');
+                if (lastFocus && typeof lastFocus.focus === 'function') {
+                    lastFocus.focus();
+                }
+            };
+
+            document.querySelectorAll('[data-open-contact]').forEach((el) => {
+                el.addEventListener('click', () => {
+                    openModal(el.getAttribute('data-contact-interest'), el.getAttribute('data-contact-source'));
+                });
+            });
+
+            modal.querySelectorAll('[data-close-contact]').forEach((el) => {
+                el.addEventListener('click', closeModal);
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
+                    closeModal();
+                }
+            });
+
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                setStatus('');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Sending…';
+
+                const payload = {
+                    name: document.getElementById('contact-name').value.trim(),
+                    email: document.getElementById('contact-email').value.trim(),
+                    company: document.getElementById('contact-company').value.trim(),
+                    message: document.getElementById('contact-message').value.trim(),
+                    interest: interestInput.value,
+                    source: sourceInput.value
+                };
+
+                try {
+                    const response = await fetch('/api/send-contact', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const data = await response.json().catch(() => ({}));
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Could not send your message');
+                    }
+                    form.reset();
+                    interestInput.value = payload.interest;
+                    sourceInput.value = payload.source;
+                    setStatus('Message sent. We’ll be in touch shortly.', 'success');
+                } catch (error) {
+                    setStatus(error.message || 'Something went wrong. Please try again.', 'error');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Send message';
+                }
+            });
+        })();
     </script>
 </body>
 </html>
