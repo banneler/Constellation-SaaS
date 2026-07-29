@@ -144,6 +144,12 @@
           const marketing = (state.tables.marketing_sequences || []).map((row) => ({ ...row, sequence_type: 'marketing' }));
           return Promise.resolve({ data: clone([...abm, ...marketing]), error: null });
         }
+        if (name === 'get_admin_users') {
+          return Promise.resolve({ data: clone(state.tables.user_quotas || []), error: null });
+        }
+        if (name === 'get_admin_activity_log' || name === 'get_admin_script_logs') {
+          return Promise.resolve({ data: [], error: null });
+        }
         return Promise.resolve({ data: [], error: null });
       },
       functions: {

@@ -194,11 +194,26 @@ export function setEffectiveUser(userId, fullName) {
  */
 export async function initializeAppState(supabase) {
     if (window.CONSTELLATION_DEMO_STATE?.user) {
-        appState.currentUser = window.CONSTELLATION_DEMO_STATE.user;
-        appState.effectiveUserId = window.CONSTELLATION_DEMO_STATE.user.id;
-        appState.effectiveUserFullName = window.CONSTELLATION_DEMO_STATE.user.user_metadata?.full_name || 'Demo User';
-        appState.isManager = false;
-        appState.managedUsers = [];
+        const demoUser = window.CONSTELLATION_DEMO_STATE.user;
+        const demoQuotas = window.CONSTELLATION_DEMO_STATE.tables?.user_quotas || [];
+        const demoProfile = demoQuotas.find((row) => String(row.user_id) === String(demoUser.id));
+        appState.currentUser = demoUser;
+        appState.effectiveUserId = demoUser.id;
+        appState.effectiveUserFullName =
+            demoProfile?.full_name || demoUser.user_metadata?.full_name || 'Demo User';
+        appState.isManager =
+            demoProfile?.is_manager === true || demoUser.user_metadata?.is_manager === true;
+        appState.managedUsers = demoQuotas
+            .filter(
+                (row) =>
+                    String(row.user_id) !== String(demoUser.id) &&
+                    !row.deactivated_at &&
+                    !row.exclude_from_reporting
+            )
+            .map((row) => ({
+                user_id: row.user_id,
+                full_name: row.full_name || 'Teammate',
+            }));
         updateManagerOnlyNavigation();
         return appState;
     }
@@ -1042,6 +1057,7 @@ const GLOBAL_NAV_TEMPLATE = `
     <a href="deals.html" class="nav-button"><i class="fa-solid fa-handshake nav-icon"></i><span class="nav-label-text">Deals</span></a>
     <a href="contacts.html" class="nav-button"><i class="fa-solid fa-address-book nav-icon"></i><span class="nav-label-text">Contacts</span></a>
     <a href="accounts.html" class="nav-button"><i class="fa-solid fa-building nav-icon"></i><span class="nav-label-text">Accounts</span></a>
+    <a href="insights.html" class="nav-button hidden" data-manager-only-nav="true" aria-hidden="true"><i class="fa-solid fa-chart-line nav-icon"></i><span class="nav-label-text">Insights</span></a>
     <a href="proposals.html" class="nav-button"><i class="fa-solid fa-file-lines nav-icon"></i><span class="nav-label-text">Proposals</span></a>
     <a href="irr.html" class="nav-button"><i class="fa-solid fa-calculator nav-icon"></i><span class="nav-label-text">IRR</span></a>
     <a href="campaigns.html" class="nav-button"><i class="fa-solid fa-bullhorn nav-icon"></i><span class="nav-label-text">Campaigns</span></a>

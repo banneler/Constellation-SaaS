@@ -1,5 +1,7 @@
 (() => {
   const userId = 'demo-user-001';
+  const repAlexId = 'demo-user-002';
+  const repJordanId = 'demo-user-003';
   const today = new Date();
   today.setHours(12, 0, 0, 0);
   const now = today.toISOString();
@@ -82,6 +84,42 @@
       employee_count: 8200,
       sf_account_locator: 'SF-NEX-014',
       starred: false
+    },
+    {
+      id: 1004,
+      user_id: repAlexId,
+      name: 'Horizon Retail Group',
+      website: 'https://horizonretail.example.com',
+      industry: 'Retail',
+      phone: '214-555-0199',
+      address: '500 Commerce St, Dallas, TX',
+      city: 'Dallas',
+      state: 'TX',
+      tier: 'Tier 2',
+      notes: 'Multi-store connectivity refresh owned by Alex.',
+      is_customer: false,
+      quantity_of_sites: 42,
+      employee_count: 6400,
+      sf_account_locator: 'SF-HOR-042',
+      starred: false
+    },
+    {
+      id: 1005,
+      user_id: repJordanId,
+      name: 'Cascade Manufacturing',
+      website: 'https://cascademfg.example.com',
+      industry: 'Manufacturing',
+      phone: '503-555-0166',
+      address: '1200 Industrial Way, Portland, OR',
+      city: 'Portland',
+      state: 'OR',
+      tier: 'Tier 3',
+      notes: 'Quiet account with limited recent outreach — useful for penetration reporting.',
+      is_customer: false,
+      quantity_of_sites: 6,
+      employee_count: 900,
+      sf_account_locator: 'SF-CAS-006',
+      starred: false
     }
   ];
 
@@ -90,7 +128,10 @@
     { id: 2002, user_id: userId, account_id: 1001, first_name: 'Marcus', last_name: 'Wright', name: 'Marcus Wright', title: 'VP Network Operations', email: 'marcus.wright@caesars.example.com', phone: '702-555-1288', reports_to: 2001, notes: 'Operational champion for the Las Vegas pilot.' },
     { id: 2003, user_id: userId, account_id: 1002, first_name: 'Sarah', last_name: 'Chen', name: 'Sarah Chen', title: 'Director of Infrastructure', email: 'sarah.chen@starklogistics.example.com', phone: '312-555-8830', reports_to: null, notes: 'Owns WAN refresh technical requirements.' },
     { id: 2004, user_id: userId, account_id: 1002, first_name: 'James', last_name: 'Holden', name: 'James Holden', title: 'Procurement Lead', email: 'james.holden@starklogistics.example.com', phone: '312-555-8835', reports_to: 2003, notes: 'Controls commercial review and redlines.' },
-    { id: 2005, user_id: userId, account_id: 1003, first_name: 'Mina', last_name: 'Patel', name: 'Mina Patel', title: 'CIO', email: 'mina.patel@nexushealth.example.com', phone: '404-555-0177', reports_to: null, notes: 'Focused on outage risk and patient-care resiliency.' }
+    { id: 2005, user_id: userId, account_id: 1003, first_name: 'Mina', last_name: 'Patel', name: 'Mina Patel', title: 'CIO', email: 'mina.patel@nexushealth.example.com', phone: '404-555-0177', reports_to: null, notes: 'Focused on outage risk and patient-care resiliency.' },
+    { id: 2006, user_id: repAlexId, account_id: 1004, first_name: 'Priya', last_name: 'Nair', name: 'Priya Nair', title: 'VP Technology', email: 'priya.nair@horizonretail.example.com', phone: '214-555-0133', reports_to: null, notes: 'Owns store WAN roadmap.' },
+    { id: 2007, user_id: repJordanId, account_id: 1005, first_name: 'Owen', last_name: 'Blake', name: 'Owen Blake', title: 'Plant IT Lead', email: 'owen.blake@cascademfg.example.com', phone: '503-555-0188', reports_to: null, notes: 'Primary contact with little recent engagement.' },
+    { id: 2008, user_id: repJordanId, account_id: 1005, first_name: 'Rita', last_name: 'Nguyen', name: 'Rita Nguyen', title: 'Operations Manager', email: 'rita.nguyen@cascademfg.example.com', phone: '503-555-0189', reports_to: 2007, notes: 'Secondary contact on Cascade.' }
   ];
 
   const dealStages = [
@@ -103,21 +144,28 @@
   ];
 
   const deals = [
-    { id: 3001, user_id: userId, account_id: 1001, name: 'Caesars Multi-Property Fiber Expansion', stage: 'Proposal', term: 60, mrc: 42800, close_month: monthFromToday(0), products: 'DIA, Managed SD-WAN, Cloud Connect', notes: 'Executive business case pending finance review.', is_committed: true, notes_last_updated: now },
-    { id: 3002, user_id: userId, account_id: 1002, name: 'Stark Logistics SD-WAN Refresh', stage: 'Negotiation', term: 60, mrc: 34400, close_month: monthFromToday(0), products: 'DIA, SD-WAN, Managed Router', notes: 'Waiting on redline feedback from procurement.', is_committed: true, notes_last_updated: now },
-    { id: 3003, user_id: userId, account_id: 1001, name: 'Caesars Regional Resiliency Upgrade', stage: 'Discovery', term: 48, mrc: 18600, close_month: monthFromToday(90), products: 'DIA, Ethernet, Voice', notes: 'Technical discovery scheduled.', is_committed: false, notes_last_updated: now }
+    { id: 3001, user_id: userId, account_id: 1001, name: 'Caesars Multi-Property Fiber Expansion', stage: 'Proposal', term: 60, mrc: 42800, close_month: monthFromToday(0), products: 'DIA, Managed SD-WAN, Cloud Connect', notes: 'Executive business case pending finance review.', is_committed: true, notes_last_updated: now, created_at: timestampFromToday(-18) },
+    { id: 3002, user_id: userId, account_id: 1002, name: 'Stark Logistics SD-WAN Refresh', stage: 'Negotiation', term: 60, mrc: 34400, close_month: monthFromToday(0), products: 'DIA, SD-WAN, Managed Router', notes: 'Waiting on redline feedback from procurement.', is_committed: true, notes_last_updated: now, created_at: timestampFromToday(-12) },
+    { id: 3003, user_id: userId, account_id: 1001, name: 'Caesars Regional Resiliency Upgrade', stage: 'Discovery', term: 48, mrc: 18600, close_month: monthFromToday(90), products: 'DIA, Ethernet, Voice', notes: 'Technical discovery scheduled.', is_committed: false, notes_last_updated: now, created_at: timestampFromToday(-5) },
+    { id: 3004, user_id: repAlexId, account_id: 1004, name: 'Horizon Store WAN Rollout', stage: 'Closed Won', term: 36, mrc: 22000, close_month: monthFromToday(0), products: 'DIA, SD-WAN', notes: 'Signed this month.', is_committed: true, notes_last_updated: now, created_at: timestampFromToday(-40) },
+    { id: 3005, user_id: repJordanId, account_id: 1005, name: 'Cascade Plant Connectivity', stage: 'Qualification', term: 36, mrc: 9800, close_month: monthFromToday(60), products: 'Ethernet', notes: 'Early-stage deal with limited activity.', is_committed: false, notes_last_updated: now, created_at: timestampFromToday(-8) }
   ];
 
   const tasks = [
     { id: 4001, user_id: userId, account_id: 1002, contact_id: 2003, description: 'Send preliminary SD-WAN pricing deck', due_date: dateOnlyFromToday(2), status: 'Pending', priority: 'High' },
     { id: 4002, user_id: userId, account_id: 1001, contact_id: 2002, description: 'Confirm Caesars pilot-property success criteria', due_date: dateOnlyFromToday(3), status: 'Pending', priority: 'High' },
-    { id: 4003, user_id: userId, account_id: 1003, contact_id: 2005, description: 'Prepare healthcare resiliency case study', due_date: dateOnlyFromToday(5), status: 'Pending', priority: 'Medium' }
+    { id: 4003, user_id: userId, account_id: 1003, contact_id: 2005, description: 'Prepare healthcare resiliency case study', due_date: dateOnlyFromToday(5), status: 'Pending', priority: 'Medium' },
+    { id: 4004, user_id: repAlexId, account_id: 1004, contact_id: 2006, description: 'Schedule Horizon executive readout', due_date: dateOnlyFromToday(-1), status: 'Pending', priority: 'High' },
+    { id: 4005, user_id: repJordanId, account_id: 1005, contact_id: 2007, description: 'Re-engage Cascade after plant outage', due_date: dateOnlyFromToday(-3), status: 'Pending', priority: 'Medium' }
   ];
 
   const activities = [
-    { id: 5001, user_id: userId, account_id: 1002, contact_id: 2003, type: 'Email', description: 'Sent SD-WAN pricing matrix and implementation assumptions.', date: dateOnlyFromToday(-3), logged_to_sf: false },
-    { id: 5002, user_id: userId, account_id: 1001, contact_id: 2002, type: 'Call', description: 'Discussed Caesars Las Vegas pilot scope and operational pain.', date: dateOnlyFromToday(-4), logged_to_sf: true },
-    { id: 5003, user_id: userId, account_id: 1001, contact_id: 2001, type: 'Meeting', description: 'Discovery session on outage risk and network redundancy.', date: dateOnlyFromToday(-7), logged_to_sf: false }
+    { id: 5001, user_id: userId, account_id: 1002, contact_id: 2003, type: 'Email', description: 'Sent SD-WAN pricing matrix and implementation assumptions.', date: dateOnlyFromToday(-3), logged_to_sf: false, created_at: timestampFromToday(-3) },
+    { id: 5002, user_id: userId, account_id: 1001, contact_id: 2002, type: 'Call', description: 'Discussed Caesars Las Vegas pilot scope and operational pain.', date: dateOnlyFromToday(-4), logged_to_sf: true, created_at: timestampFromToday(-4) },
+    { id: 5003, user_id: userId, account_id: 1001, contact_id: 2001, type: 'Meeting', description: 'Discovery session on outage risk and network redundancy.', date: dateOnlyFromToday(-7), logged_to_sf: false, created_at: timestampFromToday(-7) },
+    { id: 5004, user_id: repAlexId, account_id: 1004, contact_id: 2006, type: 'Call', description: 'Followed up on Horizon Cognito expansion trigger.', date: dateOnlyFromToday(-1), logged_to_sf: false, created_at: timestampFromToday(-1) },
+    { id: 5005, user_id: repAlexId, account_id: 1004, contact_id: 2006, type: 'Email', description: 'Shared store-connectivity pilot outline with Priya.', date: dateOnlyFromToday(-2), logged_to_sf: true, created_at: timestampFromToday(-2) },
+    { id: 5006, user_id: userId, account_id: 1002, contact_id: 2003, type: 'Call', description: 'Outreach after Stark Cognito cold-chain alert.', date: dateOnlyFromToday(-1), logged_to_sf: false, created_at: timestampFromToday(-1) }
   ];
 
   const sequences = [
@@ -135,8 +183,10 @@
   ];
 
   const contact_sequences = [
-    { id: 6201, user_id: userId, contact_id: 2003, sequence_id: 6001, current_step_number: 2, status: 'Active', next_step_due_date: dateOnlyFromToday(-2) },
-    { id: 6202, user_id: userId, contact_id: 2001, sequence_id: 6002, current_step_number: 1, status: 'Active', next_step_due_date: dateOnlyFromToday(0) }
+    { id: 6201, user_id: userId, contact_id: 2003, sequence_id: 6001, current_step_number: 2, status: 'Active', next_step_due_date: dateOnlyFromToday(-2), created_at: timestampFromToday(-10), last_completed_date: dateOnlyFromToday(-2) },
+    { id: 6202, user_id: userId, contact_id: 2001, sequence_id: 6002, current_step_number: 1, status: 'Active', next_step_due_date: dateOnlyFromToday(0), created_at: timestampFromToday(-6), last_completed_date: null },
+    { id: 6203, user_id: repAlexId, contact_id: 2006, sequence_id: 6001, current_step_number: 3, status: 'Completed', next_step_due_date: dateOnlyFromToday(-4), created_at: timestampFromToday(-20), last_completed_date: dateOnlyFromToday(-4) },
+    { id: 6204, user_id: repJordanId, contact_id: 2007, sequence_id: 6002, current_step_number: 1, status: 'Removed', next_step_due_date: dateOnlyFromToday(-9), created_at: timestampFromToday(-15), last_completed_date: dateOnlyFromToday(-9) }
   ];
 
   const contact_sequence_steps = [
@@ -147,13 +197,15 @@
 
   const campaigns = [
     { id: 9001, user_id: userId, name: 'Stark Cold-Chain Call Blitz', type: 'Call', filter_criteria: { selection_mode: 'abm_cart', contact_ids: [2003, 2004] }, email_subject: null, email_body: null, created_at: timestampFromToday(-7), completed_at: null },
-    { id: 9002, user_id: userId, name: 'Caesars Guided Email Pilot', type: 'Guided Email', filter_criteria: { selection_mode: 'abm_cart', contact_ids: [2002] }, email_subject: 'Guest experience uptime at {AccountName}', email_body: 'Hi {FirstName}, I saw Caesars is investing in digital guest operations. Worth comparing notes on how network uptime and provider consolidation support that rollout?', created_at: timestampFromToday(-12), completed_at: null }
+    { id: 9002, user_id: userId, name: 'Caesars Guided Email Pilot', type: 'Guided Email', filter_criteria: { selection_mode: 'abm_cart', contact_ids: [2002] }, email_subject: 'Guest experience uptime at {AccountName}', email_body: 'Hi {FirstName}, I saw Caesars is investing in digital guest operations. Worth comparing notes on how network uptime and provider consolidation support that rollout?', created_at: timestampFromToday(-12), completed_at: null },
+    { id: 9003, user_id: repAlexId, name: 'Horizon Retail Call Blitz', type: 'Call', filter_criteria: { selection_mode: 'abm_cart', contact_ids: [2006] }, email_subject: null, email_body: null, created_at: timestampFromToday(-5), completed_at: null }
   ];
 
   const campaign_members = [
-    { id: 9101, campaign_id: 9001, contact_id: 2003, user_id: userId, status: 'Pending', completed_at: null },
+    { id: 9101, campaign_id: 9001, contact_id: 2003, user_id: userId, status: 'Completed', completed_at: timestampFromToday(-2) },
     { id: 9102, campaign_id: 9001, contact_id: 2004, user_id: userId, status: 'Pending', completed_at: null },
-    { id: 9103, campaign_id: 9002, contact_id: 2002, user_id: userId, status: 'Pending', completed_at: null }
+    { id: 9103, campaign_id: 9002, contact_id: 2002, user_id: userId, status: 'Completed', completed_at: timestampFromToday(-1) },
+    { id: 9104, campaign_id: 9003, contact_id: 2006, user_id: repAlexId, status: 'Completed', completed_at: timestampFromToday(-3) }
   ];
 
   const marketing_sequences = [
@@ -166,8 +218,10 @@
   ];
 
   const cognito_alerts = [
-    { id: 7001, user_id: userId, account_id: 1002, headline: 'Stark Logistics announces cold-chain expansion', trigger_type: 'Expansion', summary: 'New facilities increase need for resilient WAN and real-time monitoring.', source_url: 'https://example.com/stark-expansion', source_name: 'Logistics Business Journal', relevance_score: 5, status: 'New', created_at: now },
-    { id: 7002, user_id: userId, account_id: 1001, headline: 'Caesars investing in guest experience technology', trigger_type: 'Technology Partnership', summary: 'Digital guest operations initiative creates a network modernization wedge.', source_url: 'https://example.com/caesars-guest-tech', source_name: 'Hospitality Tech Review', relevance_score: 4, status: 'New', created_at: now }
+    { id: 7001, user_id: userId, account_id: 1002, headline: 'Stark Logistics announces cold-chain expansion', trigger_type: 'Expansion', summary: 'New facilities increase need for resilient WAN and real-time monitoring.', source_url: 'https://example.com/stark-expansion', source_name: 'Logistics Business Journal', relevance_score: 5, status: 'Actioned', created_at: timestampFromToday(-2) },
+    { id: 7002, user_id: userId, account_id: 1001, headline: 'Caesars investing in guest experience technology', trigger_type: 'Technology Partnership', summary: 'Digital guest operations initiative creates a network modernization wedge.', source_url: 'https://example.com/caesars-guest-tech', source_name: 'Hospitality Tech Review', relevance_score: 4, status: 'New', created_at: now },
+    { id: 7003, user_id: repAlexId, account_id: 1004, headline: 'Horizon Retail opens 12 new stores', trigger_type: 'Expansion', summary: 'Store growth creates WAN standardization demand.', source_url: 'https://example.com/horizon-expansion', source_name: 'Retail Tech Daily', relevance_score: 5, status: 'Actioned', created_at: timestampFromToday(-3) },
+    { id: 7004, user_id: repJordanId, account_id: 1005, headline: 'Cascade evaluates OT network upgrades', trigger_type: 'Technology Partnership', summary: 'Plant modernization signal with no follow-up yet.', source_url: 'https://example.com/cascade-ot', source_name: 'Manufacturing Signals', relevance_score: 3, status: 'New', created_at: timestampFromToday(-1) }
   ];
 
   const social_hub_posts = [
@@ -389,7 +443,8 @@
       products: products[index % products.length],
       notes: 'Demo opportunity seeded for pipeline depth and forecasting.',
       is_committed: index % 2 === 0,
-      notes_last_updated: now
+      notes_last_updated: now,
+      created_at: timestampFromToday(-25 + index)
     });
 
     tasks.push({
@@ -525,9 +580,13 @@
   }
 
   window.CONSTELLATION_DEMO_STATE = {
-    user: { id: userId, email: 'demo@constellation-crm.com', user_metadata: { full_name: 'Demo User' } },
+    user: { id: userId, email: 'demo@constellation-crm.com', user_metadata: { full_name: 'Demo User', is_manager: true } },
     tables: {
-      user_quotas: [{ user_id: userId, full_name: 'Demo User', monthly_quota: 50000, is_manager: true, show_in_pipeline: true }],
+      user_quotas: [
+        { user_id: userId, full_name: 'Demo User', monthly_quota: 50000, is_manager: true, show_in_pipeline: true, exclude_from_reporting: false, deactivated_at: null },
+        { user_id: repAlexId, full_name: 'Alex Rivera', monthly_quota: 40000, is_manager: false, show_in_pipeline: true, exclude_from_reporting: false, deactivated_at: null },
+        { user_id: repJordanId, full_name: 'Jordan Lee', monthly_quota: 35000, is_manager: false, show_in_pipeline: true, exclude_from_reporting: false, deactivated_at: null }
+      ],
       user_preferences: [],
       accounts,
       contacts,
