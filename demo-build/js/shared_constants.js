@@ -3,6 +3,13 @@
 // --- SHARED CONSTANTS AND FUNCTIONS ---
 import { initHUD, refreshHUDNodes, removeDealInsightsWireframe, addDealInsightsWireframe, reloadHUDWireframes } from './hud.js?v=iphone-frame-5';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './env.config.js';
+import {
+    clearIntegrationStateCache,
+    disconnectIntegration,
+    getIntegrationState,
+    handleIntegrationsQueryToast,
+    startConnect,
+} from './integrations.js';
 
 export { refreshHUDNodes, removeDealInsightsWireframe, addDealInsightsWireframe, reloadHUDWireframes };
 export { SUPABASE_URL, SUPABASE_ANON_KEY };
@@ -799,6 +806,10 @@ export async function setupUserMenuAndAuth(supabase, appState, options = {}) {
         appState.currentUser = appState.currentUser || window.CONSTELLATION_DEMO_STATE.user;
         const userNameDisplay = document.getElementById('user-name-display');
         if (userNameDisplay) userNameDisplay.textContent = 'Demo User';
+        await setupIntegrationsMenu(supabase);
+        handleIntegrationsQueryToast((msg, type) => {
+            try { showToast?.(msg, type); } catch (_) { /* optional */ }
+        });
         return;
     }
     const userMenuPopup = document.getElementById('user-menu-popup');
@@ -959,6 +970,10 @@ export async function setupUserMenuAndAuth(supabase, appState, options = {}) {
     } else {
         await setupTheme(supabase, appState.currentUser);
         attachUserMenuListeners();
+        await setupIntegrationsMenu(supabase);
+        handleIntegrationsQueryToast((msg, type) => {
+            try { showToast?.(msg, type); } catch (_) { /* optional */ }
+        });
     }
 
     function attachUserMenuListeners() {
@@ -975,6 +990,85 @@ export async function setupUserMenuAndAuth(supabase, appState, options = {}) {
 
         if (userMenu) userMenu.dataset.listenerAttached = 'true';
     }
+}
+
+async function setupIntegrationsMenu(supabase) {
+    const popup = document.getElementById('user-menu-popup');
+    if (!popup) return;
+
+    document.getElementById('user-integrations-menu')?.remove();
+
+    let state;
+    try {
+        state = await getIntegrationState(supabase, { force: true });
+    } catch (error) {
+        console.warn('[integrations] menu state unavailable', error);
+        return;
+    }
+
+    if (!state.orgEnabled) return;
+
+    const section = document.createElement('div');
+    section.id = 'user-integrations-menu';
+    section.className = 'user-integrations-menu';
+
+    const providerLabel =
+        state.provider === 'microsoft' ? 'Outlook' : state.provider === 'google' ? 'Google' : '';
+    const statusText = state.connected
+        ? `Connected${providerLabel ? ` via ${providerLabel}` : ''}${state.email ? ` · ${state.email}` : ''}`
+        : 'Not connected';
+
+    section.innerHTML = `
+        <div class="user-menu-downloads">
+            <span class="user-menu-downloads-label">Integrations</span>
+            <p class="user-integrations-status" id="user-integrations-status">${statusText}</p>
+            <div class="user-integrations-actions">
+                ${
+                    state.connected
+                        ? `<button type="button" class="nav-button" id="integrations-disconnect-btn" title="Disconnect">Disconnect</button>`
+                        : `<button type="button" class="nav-button" id="integrations-connect-google-btn" title="Connect Google">Connect Google</button>
+                           <button type="button" class="nav-button" id="integrations-connect-outlook-btn" title="Connect Outlook">Connect Outlook</button>`
+                }
+            </div>
+        </div>
+    `;
+
+    const exitDemo = popup.querySelector('a[href="index.html"].nav-button-logout') || popup.querySelector('a[href="index.html"]');
+    const aiAdmin = popup.querySelector('a[href="ai-admin.html"]');
+    const logoutBtn = document.getElementById('logout-btn');
+    if (aiAdmin) popup.insertBefore(section, aiAdmin);
+    else if (exitDemo) popup.insertBefore(section, exitDemo);
+    else if (logoutBtn) popup.insertBefore(section, logoutBtn);
+    else popup.appendChild(section);
+
+    section.querySelector('#integrations-connect-google-btn')?.addEventListener('click', async (e) => {
+        e.preventDefault();
+        try {
+            await startConnect(supabase, 'google');
+        } catch (error) {
+            alert(error.message || 'Could not start Google connection.');
+        }
+    });
+    section.querySelector('#integrations-connect-outlook-btn')?.addEventListener('click', async (e) => {
+        e.preventDefault();
+        try {
+            await startConnect(supabase, 'microsoft');
+        } catch (error) {
+            alert(error.message || 'Could not start Outlook connection.');
+        }
+    });
+    section.querySelector('#integrations-disconnect-btn')?.addEventListener('click', async (e) => {
+        e.preventDefault();
+        if (!confirm('Disconnect your email & calendar account?')) return;
+        try {
+            await disconnectIntegration(supabase);
+            clearIntegrationStateCache();
+            await setupIntegrationsMenu(supabase);
+            showToast?.('Disconnected email & calendar.', 'success');
+        } catch (error) {
+            alert(error.message || 'Could not disconnect.');
+        }
+    });
 }
 export async function loadSVGs() {
     const svgPlaceholders = document.querySelectorAll('[data-svg-loader]');

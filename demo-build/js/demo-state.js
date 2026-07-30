@@ -611,7 +611,9 @@
       personal_context: [],
       product_knowledge: [{ product_name: 'Strategic Account OS' }, { product_name: 'Command Center' }, { product_name: 'Cognito Signal Intelligence' }],
       marketing_sequences,
-      marketing_sequence_steps
+      marketing_sequence_steps,
+      org_settings: [{ id: 1, email_calendar_enabled: true, updated_at: null, updated_by: null }],
+      user_integrations: []
     }
   };
 })();

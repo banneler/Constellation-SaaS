@@ -26,6 +26,7 @@ import {
     createPersonalContext,
     renderAIFeedback
 } from './ai-memory.js';
+import { sendEmail } from './integrations.js?v=demo-integrations-1';
 
 document.addEventListener("DOMContentLoaded", async () => {
     injectGlobalNavigation();
@@ -52,8 +53,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     const ORIGINAL_PROMPT_BASE_TEXT = `
-        You are an expert enterprise connectivity and strategic account executive working in Constellation CRM. 
-        Based on the account intelligence, CRM context, and network modernization themes, write a concise, 
+        You are an expert telecommunications sales executive working for Great Plains Communications. 
+        Based on what you know about the products and services your company offers, Write a concise, 
         professional outreach email based on this intelligence. Let's leave out bracketed sections 
         that require user input or selection in your final response. Read through your response twice 
         and modify before providing your final suggested text. Finally, we want to be careful to not sound 
@@ -664,7 +665,7 @@ async function generateCustomOutreachCopy(alert, account, contacts, customPrompt
         }
     }
 
-    function handleEmailAction(isCustom = false) { 
+    async function handleEmailAction(isCustom = false) { 
         const contactId = contactSelector.value;
         if (!contactId) {
             alert('Please select a contact to email.');
@@ -678,7 +679,15 @@ async function generateCustomOutreachCopy(alert, account, contacts, customPrompt
 
         const subject = isCustom ? customOutreachSubjectInput.value : outreachSubjectInput.value;
         const body = isCustom ? customOutreachBodyTextarea.value : outreachBodyTextarea.value;
-        window.location.href = `mailto:${contact.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        try {
+            await sendEmail(
+                supabase,
+                { to: contact.email, subject, body },
+                { onNotice: (msg, type) => showToast(msg, type) }
+            );
+        } catch (error) {
+            alert(error.message || 'Could not send email.');
+        }
     }
 
     function handleCopyAction(isCustom = false) { 

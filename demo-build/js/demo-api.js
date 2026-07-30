@@ -100,15 +100,100 @@ Worth a brief walkthrough of how this could support your account planning and ou
     };
   };
 
+  function jsonResponse(data, status = 200) {
+    return new Response(JSON.stringify(data), {
+      status,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+
+  function demoUserId() {
+    return window.CONSTELLATION_DEMO_STATE?.user?.id || 'demo-user';
+  }
+
+  function ensureDemoTables() {
+    const state = window.CONSTELLATION_DEMO_STATE;
+    if (!state) return null;
+    state.tables = state.tables || {};
+    if (!state.tables.org_settings) {
+      state.tables.org_settings = [{ id: 1, email_calendar_enabled: true }];
+    }
+    if (!state.tables.user_integrations) state.tables.user_integrations = [];
+    return state;
+  }
+
+  async function handleIntegrationsApi(url, options = {}) {
+    const method = (options.method || 'GET').toUpperCase();
+    const body = options.body ? JSON.parse(options.body) : {};
+    const state = ensureDemoTables();
+    if (!state) return jsonResponse({ error: 'Demo state unavailable' }, 500);
+
+    if (url.includes('/api/integrations/nylas/auth-url') && method === 'POST') {
+      const provider = body.provider === 'microsoft' ? 'microsoft' : 'google';
+      const email = provider === 'microsoft' ? 'demo@outlook.com' : 'demo@gmail.com';
+      state.tables.user_integrations = [{
+        id: 'demo-integration-1',
+        user_id: demoUserId(),
+        provider,
+        nylas_grant_id: `demo-grant-${provider}`,
+        email,
+        status: 'connected'
+      }];
+      const returnTo = typeof body.returnTo === 'string' ? body.returnTo : '/command-center.html';
+      const sep = returnTo.includes('?') ? '&' : '?';
+      return jsonResponse({ authUrl: `${returnTo}${sep}integrations=connected`, provider });
+    }
+
+    if (url.includes('/api/integrations/nylas/disconnect') && method === 'POST') {
+      state.tables.user_integrations = [];
+      return jsonResponse({ ok: true });
+    }
+
+    if (url.includes('/api/integrations/email/send') && method === 'POST') {
+      const integration = (state.tables.user_integrations || [])[0];
+      if (!state.tables.org_settings?.[0]?.email_calendar_enabled) {
+        return jsonResponse({ error: 'Email & calendar integrations are disabled for this organization.' }, 403);
+      }
+      if (!integration || integration.status !== 'connected') {
+        return jsonResponse({ error: 'Connect Google or Outlook from the user menu to send email in-app.', code: 'not_connected' }, 409);
+      }
+      return jsonResponse({ ok: true, provider: integration.provider, from: integration.email, result: { id: 'demo-message-1' } });
+    }
+
+    if (url.includes('/api/integrations/calendar/events') && method === 'POST') {
+      const integration = (state.tables.user_integrations || [])[0];
+      if (!integration || integration.status !== 'connected') {
+        return jsonResponse({ error: 'Connect Google or Outlook from the user menu to use calendar.', code: 'not_connected' }, 409);
+      }
+      return jsonResponse({ ok: true, provider: integration.provider, from: integration.email, result: { id: 'demo-event-1' } });
+    }
+
+    if (url.includes('/api/integrations/status') && method === 'GET') {
+      const settings = state.tables.org_settings?.[0] || { email_calendar_enabled: false };
+      const integration = (state.tables.user_integrations || []).find((row) => row.user_id === demoUserId());
+      const connected = Boolean(settings.email_calendar_enabled && integration?.status === 'connected' && integration?.nylas_grant_id);
+      return jsonResponse({
+        orgEnabled: Boolean(settings.email_calendar_enabled),
+        connected,
+        provider: connected ? integration.provider : null,
+        email: connected ? integration.email : null,
+        status: integration?.status || null
+      });
+    }
+
+    return null;
+  }
+
   window.fetch = async (resource, options = {}) => {
     const url = typeof resource === 'string' ? resource : resource?.url || '';
+    if (url.includes('/api/integrations/')) {
+      const handled = await handleIntegrationsApi(url, options);
+      if (handled) return handled;
+    }
     const match = url.match(/\/api\/ai\/([^/?#]+)/);
     if (match) {
       const data = window.__constellationDemoApiResponse(match[1], options.body ? JSON.parse(options.body) : {});
-      return new Response(JSON.stringify(data), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return jsonResponse(data);
     }
     return originalFetch(resource, options);
   };

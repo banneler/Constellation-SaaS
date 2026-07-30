@@ -1,5 +1,6 @@
 import { SUPABASE_URL, SUPABASE_ANON_KEY, formatDate, formatMonthYear, formatSimpleDate, parseCsvRow, getDealNotesStatus, themes, setupModalListeners, showModal, hideModal, updateActiveNavLink, setupUserMenuAndAuth, initializeAppState, getState, loadSVGs, showGlobalLoader, hideGlobalLoader, setupGlobalSearch, checkAndSetNotifications, injectGlobalNavigation, logToSalesforce, showToast, showActionSuccessConfirm, filterOutOwnershipOrphanedCrmRows } from './shared_constants.js?v=iphone-frame-5';
 import { AI_FUNCTION_IDS, attachAIFeedbackHandler, callAiApi, mountAIFeedback, renderAIFeedback } from './ai-memory.js';
+import { createCalendarEvent, getIntegrationState } from './integrations.js?v=demo-integrations-1';
 import { fetchPlanForAccount } from './account-plan-data.js';
 import { initStrategicMode, setAccountViewMode, updateStrategicModeControls, cancelPlanAutosave, flushPlanAutosave, promoteActivityToInteractionLog } from './account-plan-ui.js';
 
@@ -87,6 +88,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const agendaResultWrap = document.getElementById("agenda-result-wrap");
     const agendaResult = document.getElementById("agenda-result");
     const agendaCopyBtn = document.getElementById("agenda-copy-btn");
+    const agendaCalendarBtn = document.getElementById("agenda-calendar-btn");
 
     function isMobileAccountsViewport() {
         return window.matchMedia('(max-width: 768px)').matches;
@@ -2379,10 +2381,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     function handleOpenSalesforce() {
-        if (window.CONSTELLATION_DEMO_STATE) {
-            showToast("Demo mode: Salesforce account links are simulated locally.", "info");
-            return;
-        }
         if (!state.selectedAccountId) {
             showModal("Error", "Please select an account first.", null, false, `<button id="modal-ok-btn" class="btn-primary">OK</button>`);
             return;
@@ -3016,6 +3014,34 @@ document.addEventListener("DOMContentLoaded", async () => {
             agendaCopyBtn.addEventListener("click", () => {
                 if (!agendaResult?.value) return;
                 navigator.clipboard.writeText(agendaResult.value).then(() => showToast("Copied to clipboard", "success")).catch(() => showToast("Copy failed", "error"));
+            });
+        }
+        if (agendaCalendarBtn) {
+            agendaCalendarBtn.addEventListener("click", async () => {
+                if (!agendaResult?.value) return;
+                const accountName = state.selectedAccountDetails?.account?.name || "Customer meeting";
+                const startTime = Math.floor(Date.now() / 1000) + 3600;
+                try {
+                    await createCalendarEvent(
+                        supabase,
+                        {
+                            title: `Meeting — ${accountName}`,
+                            description: agendaResult.value,
+                            startTime,
+                            endTime: startTime + 3600,
+                        },
+                        { onNotice: (msg, type) => showToast(msg, type) }
+                    );
+                } catch (error) {
+                    showToast(error.message || "Could not create calendar event.", "error");
+                }
+            });
+            getIntegrationState(supabase).then((integrationState) => {
+                if (!integrationState.orgEnabled) {
+                    agendaCalendarBtn.classList.add("hidden");
+                }
+            }).catch(() => {
+                agendaCalendarBtn.classList.add("hidden");
             });
         }
         if (agendaEditToggle) {
