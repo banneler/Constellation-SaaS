@@ -119,7 +119,24 @@ Worth a brief walkthrough of how this could support your account planning and ou
       state.tables.org_settings = [{ id: 1, email_calendar_enabled: true }];
     }
     if (!state.tables.user_integrations) state.tables.user_integrations = [];
+    if (!state.tables.user_settings) state.tables.user_settings = [];
+    if (!state.tables.calendar_events) state.tables.calendar_events = [];
     return state;
+  }
+
+  function parseUrl(url) {
+    try {
+      return new URL(url, window.location.origin);
+    } catch {
+      return null;
+    }
+  }
+
+  function connectedIntegration(state) {
+    const settings = state.tables.org_settings?.[0] || { email_calendar_enabled: false };
+    const integration = (state.tables.user_integrations || []).find((row) => row.user_id === demoUserId());
+    const connected = Boolean(settings.email_calendar_enabled && integration?.status === 'connected' && integration?.nylas_grant_id);
+    return { settings, integration, connected };
   }
 
   async function handleIntegrationsApi(url, options = {}) {
@@ -127,6 +144,7 @@ Worth a brief walkthrough of how this could support your account planning and ou
     const body = options.body ? JSON.parse(options.body) : {};
     const state = ensureDemoTables();
     if (!state) return jsonResponse({ error: 'Demo state unavailable' }, 500);
+    const parsed = parseUrl(url);
 
     if (url.includes('/api/integrations/nylas/auth-url') && method === 'POST') {
       const provider = body.provider === 'microsoft' ? 'microsoft' : 'google';
@@ -139,7 +157,7 @@ Worth a brief walkthrough of how this could support your account planning and ou
         email,
         status: 'connected'
       }];
-      const returnTo = typeof body.returnTo === 'string' ? body.returnTo : '/command-center.html';
+      const returnTo = typeof body.returnTo === 'string' ? body.returnTo : 'ai-admin.html?tab=integrations';
       const sep = returnTo.includes('?') ? '&' : '?';
       return jsonResponse({ authUrl: `${returnTo}${sep}integrations=connected`, provider });
     }
@@ -150,28 +168,65 @@ Worth a brief walkthrough of how this could support your account planning and ou
     }
 
     if (url.includes('/api/integrations/email/send') && method === 'POST') {
-      const integration = (state.tables.user_integrations || [])[0];
-      if (!state.tables.org_settings?.[0]?.email_calendar_enabled) {
+      const { settings, integration, connected } = connectedIntegration(state);
+      if (!settings.email_calendar_enabled) {
         return jsonResponse({ error: 'Email & calendar integrations are disabled for this organization.' }, 403);
       }
-      if (!integration || integration.status !== 'connected') {
-        return jsonResponse({ error: 'Connect Google or Outlook from the user menu to send email in-app.', code: 'not_connected' }, 409);
+      if (!connected) {
+        return jsonResponse({ error: 'Connect Google or Outlook in User Settings to send email in-app.', code: 'not_connected' }, 409);
       }
       return jsonResponse({ ok: true, provider: integration.provider, from: integration.email, result: { id: 'demo-message-1' } });
     }
 
-    if (url.includes('/api/integrations/calendar/events') && method === 'POST') {
-      const integration = (state.tables.user_integrations || [])[0];
-      if (!integration || integration.status !== 'connected') {
-        return jsonResponse({ error: 'Connect Google or Outlook from the user menu to use calendar.', code: 'not_connected' }, 409);
+    if (url.includes('/api/integrations/calendar/events') && method === 'GET') {
+      const { settings, integration, connected } = connectedIntegration(state);
+      if (!settings.email_calendar_enabled) {
+        return jsonResponse({ error: 'Email & calendar integrations are disabled for this organization.' }, 403);
       }
-      return jsonResponse({ ok: true, provider: integration.provider, from: integration.email, result: { id: 'demo-event-1' } });
+      if (!connected) {
+        return jsonResponse({ error: 'Connect Google or Outlook in User Settings to use calendar.', code: 'not_connected' }, 409);
+      }
+      const start = Number(parsed?.searchParams.get('start'));
+      const end = Number(parsed?.searchParams.get('end'));
+      const limit = Number(parsed?.searchParams.get('limit')) || 50;
+      let events = [...(state.tables.calendar_events || [])];
+      if (Number.isFinite(start)) events = events.filter((ev) => Number(ev.startTime) >= start);
+      if (Number.isFinite(end)) events = events.filter((ev) => Number(ev.startTime) <= end);
+      events.sort((a, b) => Number(a.startTime) - Number(b.startTime));
+      events = events.slice(0, Math.max(1, Math.min(limit, 100)));
+      return jsonResponse({
+        ok: true,
+        provider: integration.provider,
+        calendarColor: '#4285F4',
+        events
+      });
+    }
+
+    if (url.includes('/api/integrations/calendar/events') && method === 'POST') {
+      const { integration, connected } = connectedIntegration(state);
+      if (!connected) {
+        return jsonResponse({ error: 'Connect Google or Outlook in User Settings to use calendar.', code: 'not_connected' }, 409);
+      }
+      const startTime = Number(body.startTime);
+      const endTime = Number(body.endTime) || startTime + 3600;
+      const created = {
+        id: `demo-evt-${Date.now()}`,
+        title: String(body.title || 'Untitled event').trim() || 'Untitled event',
+        description: body.description ? String(body.description).slice(0, 160) : null,
+        startTime,
+        endTime,
+        allDay: Boolean(body.allDay),
+        location: body.location || null,
+        calendarId: body.calendarId || 'primary',
+        color: body.color || (integration.provider === 'microsoft' ? '#0078D4' : '#4285F4')
+      };
+      state.tables.calendar_events = state.tables.calendar_events || [];
+      state.tables.calendar_events.push(created);
+      return jsonResponse({ ok: true, provider: integration.provider, from: integration.email, result: created, events: [created] });
     }
 
     if (url.includes('/api/integrations/status') && method === 'GET') {
-      const settings = state.tables.org_settings?.[0] || { email_calendar_enabled: false };
-      const integration = (state.tables.user_integrations || []).find((row) => row.user_id === demoUserId());
-      const connected = Boolean(settings.email_calendar_enabled && integration?.status === 'connected' && integration?.nylas_grant_id);
+      const { settings, integration, connected } = connectedIntegration(state);
       return jsonResponse({
         orgEnabled: Boolean(settings.email_calendar_enabled),
         connected,

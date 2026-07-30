@@ -30,6 +30,109 @@
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
   }
 
+  function unixAtLocal(offsetDays, hour, minute = 0) {
+    const date = dateFromToday(offsetDays);
+    date.setHours(hour, minute, 0, 0);
+    return Math.floor(date.getTime() / 1000);
+  }
+
+  function unixAllDay(offsetDays) {
+    const date = dateFromToday(offsetDays);
+    date.setHours(0, 0, 0, 0);
+    return Math.floor(date.getTime() / 1000);
+  }
+
+  const calendarEvents = [
+    {
+      id: 'demo-evt-1',
+      title: 'Standup — Pipeline sync',
+      description: 'Quick sync on open deals and sequence follow-ups.',
+      startTime: unixAtLocal(0, 9, 30),
+      endTime: unixAtLocal(0, 10, 0),
+      allDay: false,
+      location: null,
+      calendarId: 'primary',
+      color: '#4285F4'
+    },
+    {
+      id: 'demo-evt-2',
+      title: 'Discovery call — Stark Logistics',
+      description: 'SD-WAN refresh walkthrough with network lead.',
+      startTime: unixAtLocal(0, 14, 0),
+      endTime: unixAtLocal(0, 15, 0),
+      allDay: false,
+      location: 'Zoom',
+      calendarId: 'primary',
+      color: '#0F9D58'
+    },
+    {
+      id: 'demo-evt-3',
+      title: 'Customer demo — Nexus Health',
+      description: 'Command Center + Cognito walkthrough for clinical ops.',
+      startTime: unixAtLocal(1, 11, 0),
+      endTime: unixAtLocal(1, 12, 0),
+      allDay: false,
+      location: null,
+      calendarId: 'primary',
+      color: '#DB4437'
+    },
+    {
+      id: 'demo-evt-4',
+      title: 'Proposal review — Caesars',
+      description: 'IRR package dry-run before executive send.',
+      startTime: unixAtLocal(2, 15, 30),
+      endTime: unixAtLocal(2, 16, 30),
+      allDay: false,
+      location: null,
+      calendarId: 'primary',
+      color: '#F4B400'
+    },
+    {
+      id: 'demo-evt-5',
+      title: 'Team offsite planning',
+      description: null,
+      startTime: unixAllDay(3),
+      endTime: unixAllDay(4),
+      allDay: true,
+      location: null,
+      calendarId: 'primary',
+      color: '#AB47BC'
+    },
+    {
+      id: 'demo-evt-6',
+      title: 'QBR prep — Apex Manufacturing',
+      description: 'Account plan + open asks before Friday QBR.',
+      startTime: unixAtLocal(4, 10, 0),
+      endTime: unixAtLocal(4, 11, 0),
+      allDay: false,
+      location: null,
+      calendarId: 'primary',
+      color: '#4285F4'
+    },
+    {
+      id: 'demo-evt-7',
+      title: 'Follow-up — Meridian Financial',
+      description: 'Recap sequence touches and next meeting ask.',
+      startTime: unixAtLocal(5, 13, 0),
+      endTime: unixAtLocal(5, 13, 30),
+      allDay: false,
+      location: null,
+      calendarId: 'primary',
+      color: '#0F9D58'
+    },
+    {
+      id: 'demo-evt-8',
+      title: 'Manager 1:1',
+      description: 'Coaching on Tier 1 pursuits.',
+      startTime: unixAtLocal(6, 9, 0),
+      endTime: unixAtLocal(6, 9, 45),
+      allDay: false,
+      location: null,
+      calendarId: 'primary',
+      color: '#DB4437'
+    }
+  ];
+
   const accounts = [
     {
       id: 1001,
@@ -613,7 +716,19 @@
       marketing_sequences,
       marketing_sequence_steps,
       org_settings: [{ id: 1, email_calendar_enabled: true, updated_at: null, updated_by: null }],
-      user_integrations: []
+      user_integrations: [{
+        id: 'demo-integration-1',
+        user_id: userId,
+        provider: 'google',
+        nylas_grant_id: 'demo-grant-google',
+        email: 'demo@gmail.com',
+        status: 'connected'
+      }],
+      user_settings: [{
+        user_id: userId,
+        email_signature: 'Demo User\nAccount Executive\nConstellation CRM\n(555) 010-2000'
+      }],
+      calendar_events: calendarEvents
     }
   };
 })();

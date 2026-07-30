@@ -119,3 +119,80 @@
     color: var(--text-muted, #94a3b8);
     background: rgba(148, 163, 184, 0.08);
 }
+
+/* Pill toasts (aligned with Constellation-V) — loaded on every demo page */
+.toast-container {
+    position: fixed !important;
+    bottom: 30px !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%);
+    z-index: 11000 !important;
+    display: flex !important;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 10px;
+    width: max-content !important;
+    max-width: min(520px, calc(100vw - 2rem)) !important;
+    min-width: 0;
+    pointer-events: none;
+}
+
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: auto !important;
+    max-width: min(520px, calc(100vw - 2rem));
+    padding: 12px 24px !important;
+    border-radius: 50px;
+    background-color: var(--bg-medium) !important;
+    border: 1px solid var(--primary-blue);
+    color: var(--text-light) !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.35;
+    opacity: 0;
+    transform: translateY(100px);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+    pointer-events: auto;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast.hide {
+    opacity: 0 !important;
+    transform: translateY(24px) !important;
+}
+
+.toast > i {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.toast-success { border-color: var(--primary-blue); color: var(--text-light) !important; }
+.toast-success > i { color: #4ade80; }
+.toast-error { border-color: #f87171; color: var(--text-light) !important; }
+.toast-error > i { color: #f87171; }
+.toast-info { border-color: var(--primary-blue); color: var(--text-light) !important; }
+.toast-info > i { color: var(--primary-blue); }
+.toast-warning { border-color: var(--warning-color, #f59e0b); color: var(--text-light) !important; }
+.toast-warning > i { color: var(--warning-color, #f59e0b); }
+
+.user-integrations-menu {
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 0.25rem;
+    padding-bottom: 0.25rem;
+}
+
+.user-integrations-status {
+    margin: 0.25rem 0 0.5rem;
+    padding: 0 0.75rem;
+    font-size: 0.75rem;
+    color: var(--text-medium);
+    line-height: 1.35;
+}

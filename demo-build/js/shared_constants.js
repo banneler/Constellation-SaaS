@@ -4,11 +4,8 @@
 import { initHUD, refreshHUDNodes, removeDealInsightsWireframe, addDealInsightsWireframe, reloadHUDWireframes } from './hud.js?v=iphone-frame-5';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './env.config.js';
 import {
-    clearIntegrationStateCache,
-    disconnectIntegration,
     getIntegrationState,
     handleIntegrationsQueryToast,
-    startConnect,
 } from './integrations.js';
 
 export { refreshHUDNodes, removeDealInsightsWireframe, addDealInsightsWireframe, reloadHUDWireframes };
@@ -724,9 +721,19 @@ function getOrCreateToastContainer() {
 export function createToastElement(message, type = 'success') {
     const toast = document.createElement('div');
     toast.className = `toast toast-${type} pointer-events-auto`;
+    const iconMap = {
+        success: 'fa-check-circle',
+        error: 'fa-exclamation-circle',
+        warning: 'fa-triangle-exclamation',
+        info: 'fa-circle-info',
+    };
+    const icon = document.createElement('i');
+    icon.className = `fas ${iconMap[type] || iconMap.info}`;
+    icon.setAttribute('aria-hidden', 'true');
     const span = document.createElement('span');
     span.className = 'toast-message';
     span.textContent = String(message ?? '');
+    toast.appendChild(icon);
     toast.appendChild(span);
     return toast;
 }
@@ -737,11 +744,14 @@ export function showToast(message, type = 'success', durationMs = 4000) {
 
     const toast = createToastElement(message, type);
     toastContainer.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('show'));
 
     const dismiss = () => {
         if (!toast.isConnected) return;
+        toast.classList.remove('show');
         toast.classList.add('hide');
         toast.addEventListener('transitionend', () => toast.remove(), { once: true });
+        setTimeout(() => toast.remove(), 500);
     };
 
     let timeoutId;
@@ -753,6 +763,31 @@ export function showToast(message, type = 'success', durationMs = 4000) {
         if (timeoutId) clearTimeout(timeoutId);
         dismiss();
     };
+}
+
+/**
+ * Replace email merge tokens like [FirstName] / {AccountName} in draft templates.
+ */
+export function applyEmailMergeFields(template, contact = null, account = null) {
+    if (!template) return '';
+    let result = String(template);
+    const first = contact?.first_name || '';
+    const last = contact?.last_name || '';
+    const fullName = `${first} ${last}`.trim();
+    const accountName = account?.name || '';
+    const replacements = {
+        FirstName: first,
+        LastName: last,
+        FullName: fullName,
+        Name: fullName,
+        AccountName: accountName,
+        Account: accountName,
+    };
+    for (const [key, value] of Object.entries(replacements)) {
+        const re = new RegExp(`\\[${key}\\]|\\{${key}\\}`, 'gi');
+        result = result.replace(re, value);
+    }
+    return result;
 }
 
 
@@ -1022,14 +1057,10 @@ async function setupIntegrationsMenu(supabase) {
         <div class="user-menu-downloads">
             <span class="user-menu-downloads-label">Integrations</span>
             <p class="user-integrations-status" id="user-integrations-status">${statusText}</p>
-            <div class="user-integrations-actions">
-                ${
-                    state.connected
-                        ? `<button type="button" class="nav-button" id="integrations-disconnect-btn" title="Disconnect">Disconnect</button>`
-                        : `<button type="button" class="nav-button" id="integrations-connect-google-btn" title="Connect Google">Connect Google</button>
-                           <button type="button" class="nav-button" id="integrations-connect-outlook-btn" title="Connect Outlook">Connect Outlook</button>`
-                }
-            </div>
+            <a href="ai-admin.html?tab=integrations" class="nav-button" title="Manage in User Settings">
+                <i class="fa-solid fa-sliders nav-icon"></i>
+                <span class="nav-label-text">Manage in User Settings</span>
+            </a>
         </div>
     `;
 
@@ -1040,35 +1071,6 @@ async function setupIntegrationsMenu(supabase) {
     else if (exitDemo) popup.insertBefore(section, exitDemo);
     else if (logoutBtn) popup.insertBefore(section, logoutBtn);
     else popup.appendChild(section);
-
-    section.querySelector('#integrations-connect-google-btn')?.addEventListener('click', async (e) => {
-        e.preventDefault();
-        try {
-            await startConnect(supabase, 'google');
-        } catch (error) {
-            alert(error.message || 'Could not start Google connection.');
-        }
-    });
-    section.querySelector('#integrations-connect-outlook-btn')?.addEventListener('click', async (e) => {
-        e.preventDefault();
-        try {
-            await startConnect(supabase, 'microsoft');
-        } catch (error) {
-            alert(error.message || 'Could not start Outlook connection.');
-        }
-    });
-    section.querySelector('#integrations-disconnect-btn')?.addEventListener('click', async (e) => {
-        e.preventDefault();
-        if (!confirm('Disconnect your email & calendar account?')) return;
-        try {
-            await disconnectIntegration(supabase);
-            clearIntegrationStateCache();
-            await setupIntegrationsMenu(supabase);
-            showToast?.('Disconnected email & calendar.', 'success');
-        } catch (error) {
-            alert(error.message || 'Could not disconnect.');
-        }
-    });
 }
 export async function loadSVGs() {
     const svgPlaceholders = document.querySelectorAll('[data-svg-loader]');
@@ -1183,6 +1185,7 @@ const GLOBAL_NAV_TEMPLATE = `
                 <a href="accounts_template.csv" class="user-menu-download-link" download>Accounts</a>
                 <a href="sequence_steps_template.csv" class="user-menu-download-link" download>Sequence Steps</a>
             </div>
+            <a href="ai-admin.html" class="nav-button" title="User Settings"><i class="fa-solid fa-gear nav-icon"></i><span class="nav-label-text">User Settings</span></a>
             <a href="index.html" class="nav-button nav-button-logout"><i class="fa-solid fa-right-from-bracket nav-icon"></i><span class="nav-label-text">Exit Demo</span></a>
         </div>
     </div>
