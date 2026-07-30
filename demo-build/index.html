@@ -11,18 +11,20 @@
         <section class="bg-white border border-slate-200 shadow-xl rounded-2xl p-8 w-full max-w-md flex flex-col items-center text-slate-800">
             <img src="assets/constellation-logo-full.svg" alt="Constellation CRM" class="w-64 max-w-full h-auto mb-6">
             <p class="text-sm font-semibold text-blue-600 uppercase tracking-[0.22em] mb-2">Demo Access</p>
-            <h1 class="text-2xl font-bold text-slate-900 mb-2 text-center">Verify your email to enter Constellation.</h1>
-            <p class="text-sm text-slate-500 text-center mb-6">We will send a one-time demo code so we can confirm a real email address before opening the interactive demo.</p>
+            <h1 class="text-2xl font-bold text-slate-900 mb-2 text-center">Get your temporary demo password.</h1>
+            <p class="text-sm text-slate-500 text-center mb-6">Enter your name and work email. We’ll send a temporary password so you can open the interactive Constellation demo.</p>
 
             <form id="email-form" class="w-full">
+                <label for="demo-name" class="block text-sm font-semibold text-slate-700 mb-2">Full name</label>
+                <input type="text" id="demo-name" required autocomplete="name" placeholder="Jane Smith" class="w-full text-base bg-white border border-slate-300 text-slate-900 placeholder-slate-400 px-4 py-3 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-slate-50 transition-all">
                 <label for="demo-email" class="block text-sm font-semibold text-slate-700 mb-2">Work email</label>
-                <input type="email" id="demo-email" required placeholder="you@company.com" class="w-full text-base bg-white border border-slate-300 text-slate-900 placeholder-slate-400 px-4 py-3 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-slate-50 transition-all">
-                <button type="submit" id="send-code-btn" class="btn-primary w-full text-base">Send One-Time Code</button>
+                <input type="email" id="demo-email" required autocomplete="email" placeholder="you@company.com" class="w-full text-base bg-white border border-slate-300 text-slate-900 placeholder-slate-400 px-4 py-3 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-slate-50 transition-all">
+                <button type="submit" id="send-code-btn" class="btn-primary w-full text-base">Send Temporary Password</button>
             </form>
 
             <form id="code-form" class="hidden w-full">
-                <label for="demo-code" class="block text-sm font-semibold text-slate-700 mb-2">One-time code</label>
-                <input type="text" id="demo-code" required placeholder="Enter code" class="w-full text-base bg-white border border-slate-300 text-slate-900 placeholder-slate-400 px-4 py-3 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-slate-50 transition-all">
+                <label for="demo-code" class="block text-sm font-semibold text-slate-700 mb-2">Temporary password</label>
+                <input type="text" id="demo-code" required placeholder="Enter temporary password" class="w-full text-base bg-white border border-slate-300 text-slate-900 placeholder-slate-400 px-4 py-3 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-slate-50 transition-all">
                 <button type="submit" class="btn-primary w-full text-base">Enter Demo</button>
                 <button type="button" id="back-to-email-btn" class="btn-secondary w-full text-base mt-3">Use a different email</button>
             </form>
@@ -35,6 +37,7 @@
         const fixedCode = 'C0nste11ation';
         const emailForm = document.getElementById('email-form');
         const codeForm = document.getElementById('code-form');
+        const nameInput = document.getElementById('demo-name');
         const emailInput = document.getElementById('demo-email');
         const codeInput = document.getElementById('demo-code');
         const message = document.getElementById('demo-auth-message');
@@ -45,13 +48,19 @@
             emailForm.classList.add('hidden');
             codeForm.classList.remove('hidden');
             codeInput.value = codeFromEmail;
-            message.textContent = 'Your code is ready. Tap Enter Demo to continue.';
+            message.textContent = 'Your temporary password is ready. Tap Enter Demo to continue.';
             codeInput.focus();
         }
 
         emailForm.addEventListener('submit', async (event) => {
             event.preventDefault();
+            const name = nameInput.value.trim();
             const email = emailInput.value.trim();
+            if (!name || name.length < 2) {
+                message.textContent = 'Please enter your full name.';
+                nameInput.focus();
+                return;
+            }
             if (!email) return;
             sendButton.disabled = true;
             sendButton.textContent = 'Sending...';
@@ -60,26 +69,30 @@
                 const response = await fetch('/api/send-demo-code', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email })
+                    body: JSON.stringify({ name, email })
                 });
-                if (!response.ok) throw new Error('Email could not be sent.');
+                if (!response.ok) {
+                    const payload = await response.json().catch(() => ({}));
+                    throw new Error(payload.error || 'Email could not be sent.');
+                }
+                sessionStorage.setItem('constellation-demo-name', name);
                 sessionStorage.setItem('constellation-demo-email', email);
                 emailForm.classList.add('hidden');
                 codeForm.classList.remove('hidden');
                 codeInput.focus();
-                message.textContent = `We sent a demo code to ${email}.`;
+                message.textContent = `We sent a temporary password to ${email}.`;
             } catch (error) {
-                message.textContent = 'We could not send the email. Please try again.';
+                message.textContent = error.message || 'We could not send the email. Please try again.';
             } finally {
                 sendButton.disabled = false;
-                sendButton.textContent = 'Send One-Time Code';
+                sendButton.textContent = 'Send Temporary Password';
             }
         });
 
         codeForm.addEventListener('submit', (event) => {
             event.preventDefault();
             if (codeInput.value.trim() !== fixedCode) {
-                message.textContent = 'That code is not correct. Check the verification email and try again.';
+                message.textContent = 'That password is not correct. Check the email and try again.';
                 return;
             }
             sessionStorage.setItem('constellation-demo-verified', 'true');
@@ -90,7 +103,7 @@
             codeForm.classList.add('hidden');
             emailForm.classList.remove('hidden');
             message.textContent = '';
-            emailInput.focus();
+            nameInput.focus();
         });
     </script>
 </body>
