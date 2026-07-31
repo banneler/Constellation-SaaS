@@ -152,6 +152,16 @@ export async function listCalendarEvents(supabase, opts = {}) {
     );
 }
 
+export async function listCalendars(supabase, opts = {}) {
+    const params = new URLSearchParams();
+    if (opts.limit != null) params.set("limit", String(opts.limit));
+    const qs = params.toString();
+    return callIntegrationsApi(
+        supabase,
+        `/api/integrations/calendar/calendars${qs ? `?${qs}` : ""}`
+    );
+}
+
 export async function createCalendarEvent(supabase, event = {}, options = {}) {
     const state = await getIntegrationState(supabase, { force: options.forceRefresh });
     const toast = typeof options.onNotice === "function" ? options.onNotice : () => {};
@@ -185,6 +195,34 @@ export async function createCalendarEvent(supabase, event = {}, options = {}) {
         body: event,
     });
     toast("Calendar event created.", "success");
+    return { mode: "nylas", ok: true, data };
+}
+
+export async function updateCalendarEvent(supabase, event = {}, options = {}) {
+    const state = await getIntegrationState(supabase, { force: options.forceRefresh });
+    const toast = typeof options.onNotice === "function" ? options.onNotice : () => {};
+
+    if (!state.orgEnabled || !state.connected) {
+        toast(
+            state.orgEnabled
+                ? "Connect Google or Outlook in User Settings to edit calendar events."
+                : "Calendar integrations are disabled for this organization.",
+            "info"
+        );
+        return { mode: "disconnected", ok: false };
+    }
+
+    const eventId = event.eventId || event.id;
+    if (!eventId) {
+        toast("Missing event id.", "error");
+        return { mode: "nylas", ok: false };
+    }
+
+    const data = await callIntegrationsApi(supabase, "/api/integrations/calendar/events", {
+        method: "PATCH",
+        body: { ...event, eventId },
+    });
+    toast("Calendar event updated.", "success");
     return { mode: "nylas", ok: true, data };
 }
 

@@ -62,8 +62,32 @@
       endTime: unixAtLocal(0, 15, 0),
       allDay: false,
       location: 'Zoom',
-      calendarId: 'primary',
+      calendarId: 'demo-work',
+      calendarName: 'Work',
       color: '#0F9D58'
+    },
+    {
+      id: 'demo-evt-2b',
+      title: 'Internal prep — Stark deal desk',
+      description: 'Overlaps discovery to show side-by-side timeline packing.',
+      startTime: unixAtLocal(0, 14, 15),
+      endTime: unixAtLocal(0, 14, 45),
+      allDay: false,
+      location: null,
+      calendarId: 'primary',
+      calendarName: 'Primary',
+      color: '#DB4437'
+    },
+    {
+      id: 'demo-evt-2c',
+      title: 'Coffee chat — warm intro',
+      description: 'Short 30-min block for duration-driven height.',
+      startTime: unixAtLocal(0, 11, 0),
+      endTime: unixAtLocal(0, 11, 30),
+      allDay: false,
+      location: null,
+      calendarId: 'primary',
+      color: '#F4B400'
     },
     {
       id: 'demo-evt-3',

@@ -178,6 +178,33 @@ Worth a brief walkthrough of how this could support your account planning and ou
       return jsonResponse({ ok: true, provider: integration.provider, from: integration.email, result: { id: 'demo-message-1' } });
     }
 
+    if (url.includes('/api/integrations/calendar/calendars') && method === 'GET') {
+      const { settings, integration, connected } = connectedIntegration(state);
+      if (!settings.email_calendar_enabled) {
+        return jsonResponse({ error: 'Email & calendar integrations are disabled for this organization.' }, 403);
+      }
+      if (!connected) {
+        return jsonResponse({ error: 'Connect Google or Outlook in User Settings to use calendar.', code: 'not_connected' }, 409);
+      }
+      const calendars = [
+        {
+          id: 'primary',
+          name: integration.email || 'Primary',
+          color: integration.provider === 'microsoft' ? '#0078D4' : '#4285F4',
+          isPrimary: true,
+          readOnly: false
+        },
+        {
+          id: 'demo-work',
+          name: 'Work',
+          color: '#0F9D58',
+          isPrimary: false,
+          readOnly: false
+        }
+      ];
+      return jsonResponse({ ok: true, provider: integration.provider, calendars });
+    }
+
     if (url.includes('/api/integrations/calendar/events') && method === 'GET') {
       const { settings, integration, connected } = connectedIntegration(state);
       if (!settings.email_calendar_enabled) {
@@ -190,7 +217,7 @@ Worth a brief walkthrough of how this could support your account planning and ou
       const end = Number(parsed?.searchParams.get('end'));
       const limit = Number(parsed?.searchParams.get('limit')) || 50;
       let events = [...(state.tables.calendar_events || [])];
-      if (Number.isFinite(start)) events = events.filter((ev) => Number(ev.startTime) >= start);
+      if (Number.isFinite(start)) events = events.filter((ev) => Number(ev.endTime || ev.startTime) >= start);
       if (Number.isFinite(end)) events = events.filter((ev) => Number(ev.startTime) <= end);
       events.sort((a, b) => Number(a.startTime) - Number(b.startTime));
       events = events.slice(0, Math.max(1, Math.min(limit, 100)));
@@ -198,6 +225,11 @@ Worth a brief walkthrough of how this could support your account planning and ou
         ok: true,
         provider: integration.provider,
         calendarColor: '#4285F4',
+        calendars: [
+          { id: 'primary', name: integration.email || 'Primary', color: '#4285F4', isPrimary: true, readOnly: false },
+          { id: 'demo-work', name: 'Work', color: '#0F9D58', isPrimary: false, readOnly: false }
+        ],
+        calendarColors: { primary: '#4285F4', 'demo-work': '#0F9D58' },
         events
       });
     }
@@ -209,6 +241,10 @@ Worth a brief walkthrough of how this could support your account planning and ou
       }
       const startTime = Number(body.startTime);
       const endTime = Number(body.endTime) || startTime + 3600;
+      const calendarId = body.calendarId || 'primary';
+      const defaultColor = calendarId === 'demo-work'
+        ? '#0F9D58'
+        : (integration.provider === 'microsoft' ? '#0078D4' : '#4285F4');
       const created = {
         id: `demo-evt-${Date.now()}`,
         title: String(body.title || 'Untitled event').trim() || 'Untitled event',
@@ -217,12 +253,38 @@ Worth a brief walkthrough of how this could support your account planning and ou
         endTime,
         allDay: Boolean(body.allDay),
         location: body.location || null,
-        calendarId: body.calendarId || 'primary',
-        color: body.color || (integration.provider === 'microsoft' ? '#0078D4' : '#4285F4')
+        calendarId,
+        calendarName: calendarId === 'demo-work' ? 'Work' : 'Primary',
+        color: body.color || defaultColor
       };
       state.tables.calendar_events = state.tables.calendar_events || [];
       state.tables.calendar_events.push(created);
       return jsonResponse({ ok: true, provider: integration.provider, from: integration.email, result: created, events: [created] });
+    }
+
+    if (url.includes('/api/integrations/calendar/events') && method === 'PATCH') {
+      const { integration, connected } = connectedIntegration(state);
+      if (!connected) {
+        return jsonResponse({ error: 'Connect Google or Outlook in User Settings to use calendar.', code: 'not_connected' }, 409);
+      }
+      const eventId = String(body.eventId || body.id || '');
+      if (!eventId) return jsonResponse({ error: 'Missing event id' }, 400);
+      const list = state.tables.calendar_events || [];
+      const idx = list.findIndex((ev) => String(ev.id) === eventId);
+      if (idx < 0) return jsonResponse({ error: 'Event not found' }, 404);
+      const prev = list[idx];
+      const updated = {
+        ...prev,
+        title: body.title != null ? (String(body.title).trim() || prev.title) : prev.title,
+        description: body.description != null ? String(body.description).slice(0, 160) : prev.description,
+        startTime: body.startTime != null ? Number(body.startTime) : prev.startTime,
+        endTime: body.endTime != null ? Number(body.endTime) : prev.endTime,
+        calendarId: body.calendarId || prev.calendarId,
+        color: body.color || prev.color
+      };
+      list[idx] = updated;
+      state.tables.calendar_events = list;
+      return jsonResponse({ ok: true, provider: integration.provider, result: updated, events: [updated] });
     }
 
     if (url.includes('/api/integrations/status') && method === 'GET') {
