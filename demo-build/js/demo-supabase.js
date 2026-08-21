@@ -138,7 +138,7 @@
         async signOut() { return { error: null }; }
       },
       from(tableName) { return new DemoQuery(tableName); },
-      rpc(name) {
+      rpc(name, args = {}) {
         if (name === 'get_all_sequences_for_marketing') {
           const abm = (state.tables.sequences || []).map((row) => ({ ...row, sequence_type: 'abm' }));
           const marketing = (state.tables.marketing_sequences || []).map((row) => ({ ...row, sequence_type: 'marketing' }));
@@ -149,6 +149,72 @@
         }
         if (name === 'get_admin_activity_log' || name === 'get_admin_script_logs') {
           return Promise.resolve({ data: [], error: null });
+        }
+        if (name === 'approve_pathfinder_candidate') {
+          const candidates = ensureTable('pathfinder_candidates');
+          const contacts = ensureTable('contacts');
+          const candidate = candidates.find((row) => String(row.id) === String(args.p_candidate_id));
+          if (!candidate) return Promise.resolve({ data: null, error: { message: 'Pathfinder candidate not found' } });
+          if (!['pending', 'duplicate'].includes(candidate.status)) {
+            return Promise.resolve({ data: null, error: { message: 'Candidate has already been reviewed' } });
+          }
+
+          const email = String(candidate.email_address || '').trim().toLowerCase();
+          const existing = contacts.find((contact) => {
+            if (String(contact.account_id) !== String(candidate.account_id)) return false;
+            if (email && String(contact.email || '').trim().toLowerCase() === email) return true;
+            return String(contact.first_name || '').trim().toLowerCase() === String(candidate.first_name || '').trim().toLowerCase()
+              && String(contact.last_name || '').trim().toLowerCase() === String(candidate.last_name || '').trim().toLowerCase();
+          });
+
+          if (existing) {
+            if (!existing.profile_url && candidate.profile_url) existing.profile_url = candidate.profile_url;
+            Object.assign(candidate, {
+              status: 'duplicate',
+              crm_contact_id: existing.id,
+              reviewed_by: state.user.id,
+              reviewed_at: new Date().toISOString()
+            });
+            return Promise.resolve({ data: existing.id, error: null });
+          }
+
+          const created = {
+            id: Date.now() + Math.floor(Math.random() * 10000),
+            user_id: candidate.user_id,
+            account_id: candidate.account_id,
+            first_name: candidate.first_name,
+            last_name: candidate.last_name,
+            name: [candidate.first_name, candidate.last_name].filter(Boolean).join(' '),
+            title: candidate.title,
+            email: candidate.email_address || '',
+            phone: candidate.phone || '',
+            profile_url: candidate.profile_url || null,
+            reports_to: null,
+            notes: 'Created from Pathfinder review.',
+            last_saved: new Date().toISOString()
+          };
+          contacts.push(created);
+          Object.assign(candidate, {
+            status: 'approved',
+            crm_contact_id: created.id,
+            reviewed_by: state.user.id,
+            reviewed_at: new Date().toISOString()
+          });
+          return Promise.resolve({ data: created.id, error: null });
+        }
+        if (name === 'reject_pathfinder_candidate') {
+          const candidates = ensureTable('pathfinder_candidates');
+          const candidate = candidates.find((row) => String(row.id) === String(args.p_candidate_id));
+          if (!candidate) return Promise.resolve({ data: null, error: { message: 'Pathfinder candidate not found' } });
+          if (candidate.status !== 'pending') {
+            return Promise.resolve({ data: null, error: { message: 'Only pending candidates may be rejected' } });
+          }
+          Object.assign(candidate, {
+            status: 'rejected',
+            reviewed_by: state.user.id,
+            reviewed_at: new Date().toISOString()
+          });
+          return Promise.resolve({ data: null, error: null });
         }
         return Promise.resolve({ data: [], error: null });
       },

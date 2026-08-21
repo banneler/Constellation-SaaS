@@ -3,7 +3,7 @@ import {
     loadSVGs, updateActiveNavLink, initializeAppState,
     setupModalListeners, setupGlobalSearch, checkAndSetNotifications,
     injectGlobalNavigation, hideGlobalLoader, showToast
-} from './shared_constants.js?v=cc-calendar-1';
+} from './shared_constants.js?v=demo-pathfinder-1';
 import { AI_FUNCTION_IDS } from './ai-memory.js';
 import {
     clearIntegrationStateCache,

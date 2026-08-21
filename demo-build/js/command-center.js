@@ -25,7 +25,7 @@ import {
     filterOutOwnershipOrphanedCrmRows,
     showToast,
     applyEmailMergeFields
-} from './shared_constants.js?v=demo-calendar-timeline-1';
+} from './shared_constants.js?v=demo-pathfinder-1';
 import { AI_FUNCTION_IDS, callAiApi, mountAIFeedback } from './ai-memory.js';
 import { createCalendarEvent, emailActionLabel, getIntegrationState, listCalendarEvents, listCalendars, sendEmail, updateCalendarEvent } from './integrations.js?v=demo-calendar-timeline-1';
 import {

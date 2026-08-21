@@ -251,11 +251,12 @@
   ];
 
   const contacts = [
-    { id: 2001, user_id: userId, account_id: 1001, first_name: 'Elena', last_name: 'Rostov', name: 'Dr. Elena Rostov', title: 'Chief Medical Information Officer', email: 'elena.rostov@caesars.example.com', phone: '702-555-1211', reports_to: null, notes: 'Executive sponsor for guest experience technology.' },
-    { id: 2002, user_id: userId, account_id: 1001, first_name: 'Marcus', last_name: 'Wright', name: 'Marcus Wright', title: 'VP Network Operations', email: 'marcus.wright@caesars.example.com', phone: '702-555-1288', reports_to: 2001, notes: 'Operational champion for the Las Vegas pilot.' },
-    { id: 2003, user_id: userId, account_id: 1002, first_name: 'Sarah', last_name: 'Chen', name: 'Sarah Chen', title: 'Director of Infrastructure', email: 'sarah.chen@starklogistics.example.com', phone: '312-555-8830', reports_to: null, notes: 'Owns WAN refresh technical requirements.' },
+    { id: 2001, user_id: userId, account_id: 1001, first_name: 'Elena', last_name: 'Rostov', name: 'Dr. Elena Rostov', title: 'Chief Medical Information Officer', email: 'elena.rostov@caesars.example.com', phone: '702-555-1211', reports_to: null, notes: 'Executive sponsor for guest experience technology.', profile_url: 'https://www.caesars.com/corporate/leadership/elena-rostov' },
+    { id: 2002, user_id: userId, account_id: 1001, first_name: 'Marcus', last_name: 'Wright', name: 'Marcus Wright', title: 'VP Network Operations', email: 'marcus.wright@caesars.example.com', phone: '702-555-1288', reports_to: 2001, notes: 'Operational champion for the Las Vegas pilot.', profile_url: 'https://www.caesars.com/corporate/leadership/marcus-wright' },
+    { id: 2003, user_id: userId, account_id: 1002, first_name: 'Sarah', last_name: 'Chen', name: 'Sarah Chen', title: 'Director of Infrastructure', email: 'sarah.chen@starklogistics.example.com', phone: '312-555-8830', reports_to: null, notes: 'Owns WAN refresh technical requirements.', profile_url: 'https://starklogistics.example.com/team/sarah-chen' },
     { id: 2004, user_id: userId, account_id: 1002, first_name: 'James', last_name: 'Holden', name: 'James Holden', title: 'Procurement Lead', email: 'james.holden@starklogistics.example.com', phone: '312-555-8835', reports_to: 2003, notes: 'Controls commercial review and redlines.' },
-    { id: 2005, user_id: userId, account_id: 1003, first_name: 'Mina', last_name: 'Patel', name: 'Mina Patel', title: 'CIO', email: 'mina.patel@nexushealth.example.com', phone: '404-555-0177', reports_to: null, notes: 'Focused on outage risk and patient-care resiliency.' },
+    { id: 2005, user_id: userId, account_id: 1003, first_name: 'Mina', last_name: 'Patel', name: 'Mina Patel', title: 'CIO', email: 'mina.patel@nexushealth.example.com', phone: '404-555-0177', reports_to: null, notes: 'Focused on outage risk and patient-care resiliency.', profile_url: 'https://nexushealth.example.com/leadership/mina-patel' },
+    { id: 2009, user_id: userId, account_id: 1001, first_name: 'Alicia', last_name: 'Berman', name: 'Alicia Berman', title: 'Head of Digital Guest Platforms', email: 'alicia.berman@caesars.example.com', phone: '702-555-1340', reports_to: 2001, notes: 'Promoted from Pathfinder after public leadership-page evidence.', profile_url: 'https://www.caesars.com/corporate/leadership/alicia-berman' },
     { id: 2006, user_id: repAlexId, account_id: 1004, first_name: 'Priya', last_name: 'Nair', name: 'Priya Nair', title: 'VP Technology', email: 'priya.nair@horizonretail.example.com', phone: '214-555-0133', reports_to: null, notes: 'Owns store WAN roadmap.' },
     { id: 2007, user_id: repJordanId, account_id: 1005, first_name: 'Owen', last_name: 'Blake', name: 'Owen Blake', title: 'Plant IT Lead', email: 'owen.blake@cascademfg.example.com', phone: '503-555-0188', reports_to: null, notes: 'Primary contact with little recent engagement.' },
     { id: 2008, user_id: repJordanId, account_id: 1005, first_name: 'Rita', last_name: 'Nguyen', name: 'Rita Nguyen', title: 'Operations Manager', email: 'rita.nguyen@cascademfg.example.com', phone: '503-555-0189', reports_to: 2007, notes: 'Secondary contact on Cascade.' }
@@ -706,6 +707,299 @@
     });
   }
 
+  const pathfinderCandidates = [
+    {
+      id: 'pf-caesars-okonkwo',
+      user_id: userId,
+      account_id: 1001,
+      first_name: 'Diane',
+      last_name: 'Okonkwo',
+      title: 'SVP, Technology',
+      role_family: 'technology',
+      email_address: 'diane.okonkwo@caesars.example.com',
+      email_status: 'public',
+      email_pattern_samples: null,
+      phone: '702-555-1304',
+      location: 'Las Vegas, NV',
+      profile_url: 'https://www.caesars.com/corporate/leadership/diane-okonkwo',
+      confidence: 0.91,
+      confidence_reasons: [
+        { factor: 'source_authority', score: 0.95, weight: 0.25 },
+        { factor: 'company_match', score: 0.94, weight: 0.25 },
+        { factor: 'role_match', score: 0.9, weight: 0.2 },
+        { factor: 'recency', score: 0.88, weight: 0.15 },
+        { factor: 'corroboration', score: 0.86, weight: 0.15 }
+      ],
+      status: 'pending',
+      crm_contact_id: null,
+      discovered_at: timestampFromToday(-1),
+      created_at: timestampFromToday(-1),
+      pathfinder_candidate_sources: [
+        {
+          id: 'pf-src-1',
+          candidate_id: 'pf-caesars-okonkwo',
+          source_url: 'https://www.caesars.com/corporate/leadership',
+          source_title: 'Caesars Entertainment leadership',
+          evidence_excerpt: 'Diane Okonkwo, SVP, Technology, leads enterprise platforms and property technology for Caesars Entertainment.',
+          observed_at: timestampFromToday(-1),
+          created_at: timestampFromToday(-1)
+        },
+        {
+          id: 'pf-src-2',
+          candidate_id: 'pf-caesars-okonkwo',
+          source_url: 'https://example.com/hospitality-tech-forum-2026',
+          source_title: 'Hospitality Tech Forum speaker bio',
+          evidence_excerpt: 'Okonkwo discussed guest-experience platforms and multi-property network modernization at Caesars.',
+          observed_at: timestampFromToday(-3),
+          created_at: timestampFromToday(-3)
+        }
+      ]
+    },
+    {
+      id: 'pf-caesars-lang',
+      user_id: userId,
+      account_id: 1001,
+      first_name: 'Victor',
+      last_name: 'Lang',
+      title: 'Director, Network Architecture',
+      role_family: 'network',
+      email_address: 'victor.lang@caesars.example.com',
+      email_status: 'inferred',
+      email_pattern_samples: 3,
+      phone: null,
+      location: 'Las Vegas, NV',
+      profile_url: 'https://www.caesars.com/corporate/news/network-modernization',
+      confidence: 0.74,
+      confidence_reasons: [
+        { factor: 'source_authority', score: 0.72, weight: 0.25 },
+        { factor: 'company_match', score: 0.9, weight: 0.25 },
+        { factor: 'role_match', score: 0.84, weight: 0.2 },
+        { factor: 'recency', score: 0.7, weight: 0.15 },
+        { factor: 'corroboration', score: 0.48, weight: 0.15 }
+      ],
+      status: 'pending',
+      crm_contact_id: null,
+      discovered_at: timestampFromToday(-2),
+      created_at: timestampFromToday(-2),
+      pathfinder_candidate_sources: [
+        {
+          id: 'pf-src-3',
+          candidate_id: 'pf-caesars-lang',
+          source_url: 'https://www.caesars.com/corporate/news/network-modernization',
+          source_title: 'Caesars network modernization update',
+          evidence_excerpt: 'Victor Lang, Director of Network Architecture, is leading the multi-property WAN refresh and vendor consolidation work.',
+          observed_at: timestampFromToday(-2),
+          created_at: timestampFromToday(-2)
+        }
+      ]
+    },
+    {
+      id: 'pf-caesars-berman',
+      user_id: userId,
+      account_id: 1001,
+      first_name: 'Alicia',
+      last_name: 'Berman',
+      title: 'Head of Digital Guest Platforms',
+      role_family: 'technology',
+      email_address: 'alicia.berman@caesars.example.com',
+      email_status: 'public',
+      email_pattern_samples: null,
+      phone: '702-555-1340',
+      location: 'Las Vegas, NV',
+      profile_url: 'https://www.caesars.com/corporate/leadership/alicia-berman',
+      confidence: 0.88,
+      confidence_reasons: [
+        { factor: 'source_authority', score: 0.9, weight: 0.25 },
+        { factor: 'company_match', score: 0.93, weight: 0.25 },
+        { factor: 'role_match', score: 0.86, weight: 0.2 },
+        { factor: 'recency', score: 0.8, weight: 0.15 },
+        { factor: 'corroboration', score: 0.82, weight: 0.15 }
+      ],
+      status: 'approved',
+      crm_contact_id: 2009,
+      reviewed_by: userId,
+      reviewed_at: timestampFromToday(-6),
+      discovered_at: timestampFromToday(-8),
+      created_at: timestampFromToday(-8),
+      pathfinder_candidate_sources: [
+        {
+          id: 'pf-src-4',
+          candidate_id: 'pf-caesars-berman',
+          source_url: 'https://www.caesars.com/corporate/leadership',
+          source_title: 'Caesars Entertainment leadership',
+          evidence_excerpt: 'Alicia Berman leads digital guest platforms across Caesars properties.',
+          observed_at: timestampFromToday(-8),
+          created_at: timestampFromToday(-8)
+        }
+      ]
+    },
+    {
+      id: 'pf-stark-mehta',
+      user_id: userId,
+      account_id: 1002,
+      first_name: 'Rajiv',
+      last_name: 'Mehta',
+      title: 'Chief Information Officer',
+      role_family: 'technology',
+      email_address: 'rajiv.mehta@starklogistics.example.com',
+      email_status: 'public',
+      email_pattern_samples: null,
+      phone: '312-555-8842',
+      location: 'Chicago, IL',
+      profile_url: 'https://starklogistics.example.com/team/rajiv-mehta',
+      confidence: 0.86,
+      confidence_reasons: [
+        { factor: 'source_authority', score: 0.88, weight: 0.25 },
+        { factor: 'company_match', score: 0.92, weight: 0.25 },
+        { factor: 'role_match', score: 0.9, weight: 0.2 },
+        { factor: 'recency', score: 0.78, weight: 0.15 },
+        { factor: 'corroboration', score: 0.76, weight: 0.15 }
+      ],
+      status: 'pending',
+      crm_contact_id: null,
+      discovered_at: now,
+      created_at: now,
+      pathfinder_candidate_sources: [
+        {
+          id: 'pf-src-5',
+          candidate_id: 'pf-stark-mehta',
+          source_url: 'https://starklogistics.example.com/team',
+          source_title: 'Stark Logistics leadership team',
+          evidence_excerpt: 'Rajiv Mehta, Chief Information Officer, oversees enterprise infrastructure, warehouse connectivity, and cold-chain systems.',
+          observed_at: now,
+          created_at: now
+        },
+        {
+          id: 'pf-src-6',
+          candidate_id: 'pf-stark-mehta',
+          source_url: 'https://example.com/logistics-cio-roundtable-2026',
+          source_title: 'Logistics CIO Roundtable',
+          evidence_excerpt: 'Mehta outlined Stark’s plan to standardize SD-WAN across distribution sites.',
+          observed_at: timestampFromToday(-4),
+          created_at: timestampFromToday(-4)
+        }
+      ]
+    },
+    {
+      id: 'pf-stark-chen-dup',
+      user_id: userId,
+      account_id: 1002,
+      first_name: 'Sarah',
+      last_name: 'Chen',
+      title: 'Director of Infrastructure',
+      role_family: 'network',
+      email_address: 'sarah.chen@starklogistics.example.com',
+      email_status: 'public',
+      email_pattern_samples: null,
+      phone: '312-555-8830',
+      location: 'Chicago, IL',
+      profile_url: 'https://starklogistics.example.com/team/sarah-chen',
+      confidence: 0.93,
+      confidence_reasons: [
+        { factor: 'source_authority', score: 0.94, weight: 0.25 },
+        { factor: 'company_match', score: 0.96, weight: 0.25 },
+        { factor: 'role_match', score: 0.92, weight: 0.2 },
+        { factor: 'recency', score: 0.9, weight: 0.15 },
+        { factor: 'corroboration', score: 0.91, weight: 0.15 }
+      ],
+      status: 'duplicate',
+      crm_contact_id: 2003,
+      reviewed_by: userId,
+      reviewed_at: timestampFromToday(-5),
+      discovered_at: timestampFromToday(-7),
+      created_at: timestampFromToday(-7),
+      pathfinder_candidate_sources: [
+        {
+          id: 'pf-src-7',
+          candidate_id: 'pf-stark-chen-dup',
+          source_url: 'https://starklogistics.example.com/team/sarah-chen',
+          source_title: 'Sarah Chen profile',
+          evidence_excerpt: 'Sarah Chen directs infrastructure and WAN operations for Stark Logistics.',
+          observed_at: timestampFromToday(-7),
+          created_at: timestampFromToday(-7)
+        }
+      ]
+    },
+    {
+      id: 'pf-nexus-cho',
+      user_id: userId,
+      account_id: 1003,
+      first_name: 'Helen',
+      last_name: 'Cho',
+      title: 'Chief Information Security Officer',
+      role_family: 'technology',
+      email_address: null,
+      email_status: 'unavailable',
+      email_pattern_samples: null,
+      phone: null,
+      location: 'Atlanta, GA',
+      profile_url: 'https://nexushealth.example.com/leadership/helen-cho',
+      confidence: 0.81,
+      confidence_reasons: [
+        { factor: 'source_authority', score: 0.84, weight: 0.25 },
+        { factor: 'company_match', score: 0.9, weight: 0.25 },
+        { factor: 'role_match', score: 0.88, weight: 0.2 },
+        { factor: 'recency', score: 0.68, weight: 0.15 },
+        { factor: 'corroboration', score: 0.7, weight: 0.15 }
+      ],
+      status: 'pending',
+      crm_contact_id: null,
+      discovered_at: timestampFromToday(-1),
+      created_at: timestampFromToday(-1),
+      pathfinder_candidate_sources: [
+        {
+          id: 'pf-src-8',
+          candidate_id: 'pf-nexus-cho',
+          source_url: 'https://nexushealth.example.com/leadership',
+          source_title: 'Nexus Health leadership',
+          evidence_excerpt: 'Helen Cho, CISO, oversees clinical network security and third-party connectivity risk.',
+          observed_at: timestampFromToday(-1),
+          created_at: timestampFromToday(-1)
+        }
+      ]
+    },
+    {
+      id: 'pf-nexus-rejected',
+      user_id: userId,
+      account_id: 1003,
+      first_name: 'Tom',
+      last_name: 'Keller',
+      title: 'IT Contractor',
+      role_family: 'network',
+      email_address: 'tkeller@consulting.example.com',
+      email_status: 'public',
+      email_pattern_samples: null,
+      phone: null,
+      location: 'Atlanta, GA',
+      profile_url: null,
+      confidence: 0.41,
+      confidence_reasons: [
+        { factor: 'source_authority', score: 0.35, weight: 0.25 },
+        { factor: 'company_match', score: 0.4, weight: 0.25 },
+        { factor: 'role_match', score: 0.5, weight: 0.2 },
+        { factor: 'recency', score: 0.45, weight: 0.15 },
+        { factor: 'corroboration', score: 0.3, weight: 0.15 }
+      ],
+      status: 'rejected',
+      crm_contact_id: null,
+      reviewed_by: userId,
+      reviewed_at: timestampFromToday(-10),
+      discovered_at: timestampFromToday(-12),
+      created_at: timestampFromToday(-12),
+      pathfinder_candidate_sources: [
+        {
+          id: 'pf-src-9',
+          candidate_id: 'pf-nexus-rejected',
+          source_url: 'https://example.com/vendor-directory',
+          source_title: 'Vendor directory listing',
+          evidence_excerpt: 'Tom Keller appeared in a contractor directory adjacent to Nexus Health, without a clear employee relationship.',
+          observed_at: timestampFromToday(-12),
+          created_at: timestampFromToday(-12)
+        }
+      ]
+    }
+  ];
+
   window.CONSTELLATION_DEMO_STATE = {
     user: { id: userId, email: 'demo@constellation-crm.com', user_metadata: { full_name: 'Demo User', is_manager: true } },
     tables: {
@@ -736,10 +1030,10 @@
       activity_types: [{ id: 1, type_name: 'Call' }, { id: 2, type_name: 'Email' }, { id: 3, type_name: 'Meeting' }],
       email_log: [],
       personal_context: [],
-      product_knowledge: [{ product_name: 'Strategic Account OS' }, { product_name: 'Command Center' }, { product_name: 'Cognito Signal Intelligence' }],
+      product_knowledge: [{ product_name: 'Strategic Account OS' }, { product_name: 'Command Center' }, { product_name: 'Cognito Signal Intelligence' }, { product_name: 'Pathfinder Contact Discovery' }],
       marketing_sequences,
       marketing_sequence_steps,
-      org_settings: [{ id: 1, email_calendar_enabled: true, updated_at: null, updated_by: null }],
+      org_settings: [{ id: 1, email_calendar_enabled: true, pathfinder_enabled: true, updated_at: null, updated_by: null }],
       user_integrations: [{
         id: 'demo-integration-1',
         user_id: userId,
@@ -752,7 +1046,9 @@
         user_id: userId,
         email_signature: 'Demo User\nAccount Executive\nConstellation CRM\n(555) 010-2000'
       }],
-      calendar_events: calendarEvents
+      calendar_events: calendarEvents,
+      pathfinder_candidates: pathfinderCandidates,
+      pathfinder_scan_jobs: []
     }
   };
 })();

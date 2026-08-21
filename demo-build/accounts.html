@@ -11,10 +11,11 @@
     <!-- Cache-bust query string bumped whenever this file changes so users
          don't end up with a stale dialog/spinner from a previous deploy. -->
     <link rel="stylesheet" href="css/saos-strategic.css?v=2026-06-01-canvas-width">
+    <link rel="stylesheet" href="css/pathfinder.css?v=demo-pathfinder-1">
     <link rel="stylesheet" href="css/global-loader.css">
     <script src="js/demo-auth-guard.js?v=demo-foundation-2"></script>
-    <script src="js/demo-state.js?v=demo-fixtures-3"></script>
-    <script src="js/demo-supabase.js?v=demo-adapter-2"></script>
+    <script src="js/demo-state.js?v=demo-fixtures-4"></script>
+    <script src="js/demo-supabase.js?v=demo-adapter-3"></script>
     <script src="js/demo-api.js?v=demo-api-3"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://unpkg.com/@zumer/snapdom/dist/snapdom.js"></script>
@@ -191,6 +192,8 @@
                                 <div class="section-card-header flex justify-between items-center gap-3">
                                     <h2 class="section-title">Associated Contacts</h2>
                                     <div class="flex items-center gap-2">
+                                        <a id="pathfinder-pending-link" class="pathfinder-account-pending hidden" href="pathfinder.html" title="Review Pathfinder candidates"></a>
+                                        <button id="pathfinder-account-btn" class="btn-icon-header hidden" title="Run Pathfinder" aria-label="Run Pathfinder"><i class="fa-solid fa-compass"></i></button>
                                         <div class="view-mode-toggle">
                                             <button id="contact-list-btn" class="view-mode-btn active" title="List View"><i class="fas fa-list"></i></button>
                                             <button id="contact-org-chart-btn" class="view-mode-btn" title="Org Chart View"><i class="fas fa-sitemap"></i></button>
@@ -401,6 +404,6 @@
         })();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.5.2/dist/js/tom-select.complete.min.js"></script>
-    <script type="module" src="js/accounts.js?v=iphone-frame-5"></script>
+    <script type="module" src="js/accounts.js?v=demo-pathfinder-1"></script>
 </body>
 </html>

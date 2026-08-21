@@ -21,7 +21,7 @@ import {
     injectGlobalNavigation,
     filterOutOwnershipOrphanedCrmRows,
     showToast
-} from './shared_constants.js?v=iphone-frame-5';
+} from './shared_constants.js?v=demo-pathfinder-1';
 import { sendEmail } from './integrations.js?v=demo-integrations-1';
 
 document.addEventListener("DOMContentLoaded", async () => {

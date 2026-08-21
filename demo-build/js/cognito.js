@@ -18,7 +18,7 @@ import {
     checkAndSetNotifications,
     injectGlobalNavigation,
     showToast
-} from './shared_constants.js?v=iphone-frame-5';
+} from './shared_constants.js?v=demo-pathfinder-1';
 import {
     AI_FUNCTION_IDS,
     attachAIFeedbackHandler,

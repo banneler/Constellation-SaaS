@@ -27,7 +27,7 @@ import {
     updateActiveNavLink,
     showGlobalLoader,
     hideGlobalLoader
-} from './shared_constants.js?v=iphone-frame-5';
+} from './shared_constants.js?v=demo-pathfinder-1';
 
 // Wait for the DOM to be fully loaded before initializing
 document.addEventListener('DOMContentLoaded', async () => {

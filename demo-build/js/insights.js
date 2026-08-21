@@ -13,7 +13,7 @@ import {
     checkAndSetNotifications,
     updateActiveNavLink,
     showToast,
-} from './shared_constants.js';
+} from './shared_constants.js?v=demo-pathfinder-1';
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
